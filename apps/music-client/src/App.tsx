@@ -4,14 +4,7 @@ import LoginForm from './components/LoginForm.tsx';
 import Dashboard from './components/Dashboard.tsx';
 import { useAuthStore } from '../store/authStore.ts';
 
-// Define a type for a user
-interface User {
-  user_id: number;
-  first_name: string;
-  last_name: string;
-  email: string;
-  role_id: number;
-};
+
 
 const App = () => {
   const [authLoading, setAuthLoading] = useState(true);
