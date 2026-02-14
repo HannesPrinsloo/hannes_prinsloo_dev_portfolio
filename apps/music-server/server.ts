@@ -25,6 +25,9 @@ import eventRoutes from './routes/eventRoutes';
 
 // Initialise the Express application
 const app = express();
+// Enable proxy trust for Render/Vercel (Load Balancers)
+app.set('trust proxy', 1);
+
 // Get the port from the environment variables, or degault to 5000
 const port = process.env.PORT || 5000;
 

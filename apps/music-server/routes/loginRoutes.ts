@@ -4,7 +4,7 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { validateRequest } from '../middleware/validateRequest';
 import { userLoginSchema } from '../validation/loginValidation';
- 
+
 
 const router = Router();
 const JWT_SECRET = process.env.JWT_SECRET;
@@ -26,16 +26,18 @@ router.post('/', validateRequest(userLoginSchema), async (req, res) => {
 
         if (isMatch) {
             const payload = { user_id: user.user_id };
-            const token = jwt.sign(payload, JWT_SECRET, { expiresIn: '24h'});
-            
+            const token = jwt.sign(payload, JWT_SECRET, { expiresIn: '24h' });
+
+            const isProd = process.env.NODE_ENV === 'production';
+
             res.cookie('authToken', token, {
                 httpOnly: true,
-                secure: process.env.NODE_ENV === 'production',
-                sameSite: 'strict',
+                secure: isProd, // Render requires Secure for SameSite=None
+                sameSite: isProd ? 'none' : 'lax', // 'none' needed for cross-site (Vercel->Render)
                 maxAge: 24 * 60 * 60 * 1000,
             });
 
-            res.status(200).json( payload );
+            res.status(200).json(payload);
         } else {
             res.status(401).json({ error: 'Invalid credentials' });
         }

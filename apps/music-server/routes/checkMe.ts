@@ -11,7 +11,12 @@ const router = Router();
 
 router.get('/', async (req, res) => {
     const token = req.cookies.authToken;
+
+    // DEBUG LOG for production issues
+    console.log(`[CheckMe] Check initiated. Origin: ${req.headers.origin}, Token Present: ${!!token}`);
+
     if (!token) {
+        console.log('[CheckMe] No token in cookies.');
         return res.status(401).json({ message: 'No authentication token provided.' });
     }
     try {
