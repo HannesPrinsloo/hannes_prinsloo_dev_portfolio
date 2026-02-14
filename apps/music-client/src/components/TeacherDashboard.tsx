@@ -143,7 +143,7 @@ const TeacherDashboard: React.FC = () => {
 
     return (
         <div className="dashboard-container">
-            <h2>Teacher Dashboard</h2>
+            {/* Header removed - handled globally by Dashboard.tsx */}
             <div className="tabs">
                 <button className={activeTab === 'roster' ? 'active' : ''} onClick={() => setActiveTab('roster')}>My Roster</button>
                 <button className={activeTab === 'schedule' ? 'active' : ''} onClick={() => setActiveTab('schedule')}>Weekly Schedule</button>
@@ -211,24 +211,25 @@ const TeacherDashboard: React.FC = () => {
                         {teacherEvents.length === 0 ? <p>No relevant upcoming events found.</p> : (
                             <div className="events-list">
                                 {teacherEvents.map(event => (
-                                    <div key={event.event_id} className="event-card" style={{ background: '#333', padding: '15px', borderRadius: '8px', marginBottom: '15px' }}>
+                                    <div key={event.event_id} className="event-card" style={{ background: 'white', padding: '20px', borderRadius: '12px', marginBottom: '20px', boxShadow: '0 2px 8px rgba(0,0,0,0.08)', border: '1px solid #eee' }}>
                                         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                                            <h4>{event.event_name} <span style={{ fontSize: '0.8em', fontWeight: 'normal' }}>({event.event_type})</span></h4>
-                                            <span>{new Date(event.start_time).toLocaleDateString()}</span>
+                                            <h4 style={{ margin: '0 0 10px 0', fontSize: '1.2em' }}>{event.event_name} <span style={{ fontSize: '0.8em', fontWeight: 'normal', color: '#666', backgroundColor: '#f0f0f0', padding: '2px 8px', borderRadius: '12px' }}>{event.event_type}</span></h4>
+                                            <span style={{ color: '#666', fontWeight: '500' }}>{new Date(event.start_time).toLocaleDateString()}</span>
                                         </div>
                                         <p><strong>Venue:</strong> {event.venue_name}</p>
-                                        <p>{event.description}</p>
+                                        <p style={{ color: '#555', lineHeight: '1.6' }}>{event.description}</p>
 
-                                        <div style={{ marginTop: '10px', background: '#444', padding: '10px', borderRadius: '4px' }}>
-                                            <h5>Eligible Students</h5>
+                                        <div style={{ marginTop: '15px', background: '#f9f9f9', padding: '15px', borderRadius: '8px', border: '1px solid #eee' }}>
+                                            <h5 style={{ marginTop: 0, color: '#444' }}>Eligible Students</h5>
                                             {event.eligible_students.length === 0 ? <p style={{ fontSize: '0.9em', color: '#aaa' }}>None</p> : (
-                                                <ul style={{ listStyle: 'none', padding: 0 }}>
+                                                <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
                                                     {event.eligible_students.map((s: any) => (
-                                                        <li key={s.user_id} style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '5px', alignItems: 'center' }}>
-                                                            <span>{s.first_name} {s.last_name} ({s.current_level_name})</span>
+                                                        <li key={s.user_id} style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', alignItems: 'center', padding: '8px', backgroundColor: 'white', borderRadius: '6px', border: '1px solid #eee' }}>
+                                                            <span>{s.first_name} {s.last_name} <span style={{ fontSize: '0.85em', color: '#888' }}>({s.current_level_name})</span></span>
                                                             <button
+                                                                className="btn-primary"
                                                                 onClick={() => handleBookStudent(event.event_id, s.user_id)}
-                                                                style={{ background: '#4CAF50', color: 'white', border: 'none', borderRadius: '3px', padding: '5px 10px', cursor: 'pointer' }}
+                                                                style={{ padding: '6px 12px', fontSize: '0.9em' }}
                                                             >
                                                                 Book
                                                             </button>
@@ -238,13 +239,13 @@ const TeacherDashboard: React.FC = () => {
                                             )}
                                         </div>
 
-                                        <div style={{ marginTop: '10px', padding: '5px' }}>
-                                            <h5>Already Booked</h5>
+                                        <div style={{ marginTop: '15px', padding: '5px' }}>
+                                            <h5 style={{ color: '#444' }}>Already Booked</h5>
                                             {event.booked_students.length === 0 ? <p style={{ fontSize: '0.9em', color: '#aaa' }}>None</p> : (
                                                 <ul style={{ listStyle: 'none', padding: 0 }}>
                                                     {event.booked_students.map((s: any) => (
-                                                        <li key={s.user_id} style={{ fontSize: '0.9em', color: '#aaa' }}>
-                                                            ✅ {s.first_name} {s.last_name}
+                                                        <li key={s.user_id} style={{ fontSize: '0.9em', color: '#2e7d32', display: 'flex', alignItems: 'center', gap: '5px' }}>
+                                                            ✅ <span>{s.first_name} {s.last_name}</span>
                                                         </li>
                                                     ))}
                                                 </ul>
@@ -271,6 +272,7 @@ const TeacherDashboard: React.FC = () => {
                     </div>
                 )}
             </div>
+
             <BottomNav activeTab={activeTab} setActiveTab={setActiveTab} role="teacher" />
         </div>
     );

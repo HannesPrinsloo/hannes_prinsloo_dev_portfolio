@@ -149,7 +149,7 @@ const FamilyRegistrationModal = ({ isOpen, onClose, onSuccess }: FamilyRegistrat
             display: 'flex', justifyContent: 'center', alignItems: 'center',
             zIndex: 1000
         }}>
-            <div className="card" style={{ width: '500px', maxHeight: '90vh', overflowY: 'auto', textAlign: 'left', backgroundColor: '#242424', padding: '20px' }}>
+            <div className="card modal-content" style={{ width: '500px', maxHeight: '90vh', overflowY: 'auto', textAlign: 'left', backgroundColor: 'white', padding: '25px', color: 'var(--text-dark)' }}>
                 <h2 style={{ marginTop: 0 }}>Family Registration</h2>
 
                 {/* Step 1: Manager */}
@@ -193,7 +193,7 @@ const FamilyRegistrationModal = ({ isOpen, onClose, onSuccess }: FamilyRegistrat
 
                     {managerMode === 'new' && (
                         <div style={{ marginTop: '10px' }}>
-                            <label style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer', background: '#333', padding: '10px', borderRadius: '4px' }}>
+                            <label style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer', background: '#f9f9f9', padding: '10px', borderRadius: '4px', border: '1px solid #eee' }}>
                                 <input type="checkbox" checked={isAdultStudent} onChange={(e) => setIsAdultStudent(e.target.checked)} />
                                 <strong>This is an Adult Student</strong> (Student is their own Manager)
                             </label>
@@ -206,7 +206,7 @@ const FamilyRegistrationModal = ({ isOpen, onClose, onSuccess }: FamilyRegistrat
                     <h3 style={{ color: '#646cff' }}>Step 2: The Student(s)</h3>
 
                     {students.map((student, idx) => (
-                        <div key={idx} style={{ background: '#333', padding: '10px', borderRadius: '6px', marginBottom: '10px' }}>
+                        <div key={idx} style={{ background: '#f9f9f9', padding: '15px', borderRadius: '6px', marginBottom: '15px', border: '1px solid #eee' }}>
                             {!isAdultStudent && (
                                 <>
                                     <div style={{ display: 'flex', gap: '10px', marginBottom: '10px' }}>
@@ -270,9 +270,9 @@ const FamilyRegistrationModal = ({ isOpen, onClose, onSuccess }: FamilyRegistrat
                     )}
                 </div>
 
-                <div style={{ display: 'flex', gap: '10px', marginTop: '30px', borderTop: '1px solid #444', paddingTop: '20px' }}>
-                    <button onClick={onClose} disabled={loading} style={{ background: '#555' }}>Cancel</button>
-                    <button onClick={handleSubmit} disabled={loading} style={{ width: '100%' }}>
+                <div style={{ display: 'flex', gap: '10px', marginTop: '30px', borderTop: '1px solid #eee', paddingTop: '20px' }}>
+                    <button className="btn-secondary" onClick={onClose} disabled={loading}>Cancel</button>
+                    <button className="btn-primary" onClick={handleSubmit} disabled={loading} style={{ width: '100%' }}>
                         {loading ? 'Registering...' : 'Complete Registration'}
                     </button>
                 </div>

@@ -208,10 +208,10 @@ const WeeklySchedule: React.FC<WeeklyScheduleProps> = ({ teacherId, currentWeekS
     return (
         <div className="weekly-schedule">
             <div className="schedule-header">
-                <button onClick={handlePreviousWeek}>&lt; Prev Week</button>
+                <button className="btn-secondary" onClick={handlePreviousWeek}>&lt; Prev Week</button>
                 <h3>Week of {currentWeekStart.toLocaleDateString()}</h3>
-                <button onClick={handleNextWeek}>Next Week &gt;</button>
-                <button onClick={() => { setShowScheduler(true); setSchedulerDefaults({ startTime: '' }); }}>
+                <button className="btn-secondary" onClick={handleNextWeek}>Next Week &gt;</button>
+                <button className="btn-primary" onClick={() => { setShowScheduler(true); setSchedulerDefaults({ startTime: '' }); }}>
                     + Book Lesson
                 </button>
             </div>
@@ -303,48 +303,50 @@ const WeeklySchedule: React.FC<WeeklyScheduleProps> = ({ teacherId, currentWeekS
 
             <style>{`
                 .weekly-schedule * { box-sizing: border-box; }
-                .weekly-schedule { padding: 20px; color: #333; }
-                .schedule-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; color: #fff; }
-                .schedule-grid { display: flex; flex-direction: column; border: 1px solid #ddd; background: #fff; }
-                .grid-header-row { display: flex; border-bottom: 1px solid #ddd; background: #f5f5f5; color: #333; }
-                .time-col-header { width: 80px; flex-shrink: 0; border-right: 1px solid #ddd; }
-                .day-header { flex: 1; text-align: center; padding: 10px; border-left: 1px solid #ddd; font-weight: bold; }
-                .grid-row { display: flex; border-bottom: 1px solid #eee; }
-                .time-label { width: 80px; flex-shrink: 0; text-align: right; padding: 10px; color: #666; font-size: 0.8em; border-right: 1px solid #ddd; display: flex; align-items: center; justify-content: flex-end; }
-                .grid-cell { flex: 1; border-left: 1px solid #eee; padding: 2px; position: relative; cursor: pointer; transition: background 0.2s; color: #000; }
+                .weekly-schedule { padding: 20px; color: var(--text-dark); }
+                .schedule-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; color: var(--text-dark); flex-wrap: wrap; gap: 10px; }
+                .schedule-grid { display: flex; flex-direction: column; border: 1px solid #e0e0e0; background: #fff; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+                .grid-header-row { display: flex; border-bottom: 1px solid #e0e0e0; background: #f9f9f9; color: var(--text-dark); }
+                .time-col-header { width: 80px; flex-shrink: 0; border-right: 1px solid #e0e0e0; }
+                .day-header { flex: 1; text-align: center; padding: 12px; border-left: 1px solid #e0e0e0; font-weight: 600; font-size: 0.9em; }
+                .grid-row { display: flex; border-bottom: 1px solid #f0f0f0; }
+                .time-label { width: 80px; flex-shrink: 0; text-align: right; padding: 10px; color: #888; font-size: 0.8em; border-right: 1px solid #e0e0e0; display: flex; align-items: center; justify-content: flex-end; }
+                .grid-cell { flex: 1; border-left: 1px solid #f0f0f0; padding: 2px; position: relative; cursor: pointer; transition: background 0.2s; color: var(--text-dark); }
                 .grid-cell:hover { background: #fafafa; }
+                
                 .lesson-card { 
-                    background: #e3f2fd; 
-                    border-left: 3px solid #2196f3; 
-                    padding: 2px 5px; 
+                    background: #fff0f0; 
+                    border-left: 3px solid var(--primary-red); 
+                    padding: 4px 6px; 
                     border-radius: 3px; 
                     margin-bottom: 2px; 
                     font-size: 0.8em; 
                     cursor: pointer;
-                    color: #000;
+                    color: var(--text-dark);
                     overflow: hidden;
                     white-space: nowrap;
                     text-overflow: ellipsis;
+                    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
                 }
-                .lesson-card:hover { background: #bbdefb; }
-                .lesson-card.completed { border-left-color: #4caf50; background: #e8f5e9; }
+                .lesson-card:hover { background: #ffe0e0; }
+                .lesson-card.completed { border-left-color: #28a745; background: #e8f5e9; }
                 
                 .buffer-toggle {
-                    background: #eee;
+                    background: #f8f8f8;
                     color: #666;
                     text-align: center;
                     padding: 8px;
                     cursor: pointer;
                     font-size: 0.85em;
-                    font-weight: bold;
-                    border-bottom: 1px solid #ddd;
+                    font-weight: 600;
+                    border-bottom: 1px solid #e0e0e0;
                     transition: all 0.2s;
                 }
-                .buffer-toggle:hover { background: #e0e0e0; }
+                .buffer-toggle:hover { background: #f0f0f0; color: var(--primary-red); }
                 .buffer-toggle.has-lessons {
-                    background: #fff3e0;
-                    color: #e65100;
-                    border-bottom-color: #ffcc80;
+                    background: #fff8e1;
+                    color: #f57c00;
+                    border-bottom-color: #ffe0b2;
                 }
                 .buffer-toggle.has-lessons:hover {
                     background: #ffe0b2;
@@ -362,41 +364,44 @@ const WeeklySchedule: React.FC<WeeklyScheduleProps> = ({ teacherId, currentWeekS
                 }
 
                 /* Reuse Modal Styles */
-                /* ... same as before but ensured persistence ... */
-                .delete-btn { background: #f44336; color: white; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer; margin-right: 10px; }
-                .delete-btn.danger { background: #d32f2f; }
+                .delete-btn { background: #ff4444; color: white; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer; margin-right: 10px; }
+                .delete-btn.danger { background: #cc0000; }
                 .delete-btn:hover { opacity: 0.9; }
 
                 .modal-overlay { 
                     position: fixed; 
                     top: 0; left: 0; right: 0; bottom: 0; 
-                    background: rgba(0,0,0,0.7); 
+                    background: rgba(0,0,0,0.5); 
                     display: flex; 
                     justify-content: center; 
                     align-items: center; 
                     z-index: 1000; 
+                    backdrop-filter: blur(2px);
                 }
                 .modal-content { 
-                    background: #2a2a2a; 
-                    color: #fff;
-                    padding: 20px; 
-                    border-radius: 8px; 
-                    width: 400px; 
+                    background: white; 
+                    color: var(--text-dark);
+                    padding: 25px; 
+                    border-radius: 12px; 
+                    width: 450px; 
                     max-width: 90%; 
                     position: relative;
-                    box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+                    box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+                    border: 1px solid #eee;
                 }
                 .close-btn { 
                     position: absolute; 
-                    top: 10px; 
-                    right: 10px; 
+                    top: 15px; 
+                    right: 15px; 
                     background: none; 
                     border: none; 
-                    color: #fff; 
+                    color: #aaa; 
                     font-size: 1.2em; 
                     cursor: pointer; 
+                    transition: color 0.2s;
                 }
-                .modal-actions { margin-top: 20px; display: flex; justify-content: flex-end; }
+                .close-btn:hover { color: var(--primary-red); }
+                .modal-actions { margin-top: 25px; display: flex; justify-content: flex-end; gap: 10px; }
             `}</style>
         </div>
     );

@@ -159,8 +159,9 @@ const ManagerDashboard = () => {
                                     const date = new Date(lesson.start_time);
                                     return (
                                         <div key={lesson.lesson_id} className="lesson-card-item" style={{
-                                            background: '#333', padding: '15px', borderRadius: '8px', marginBottom: '15px',
-                                            display: 'flex', justifyContent: 'space-between', alignItems: 'center'
+                                            background: 'white', padding: '20px', borderRadius: '12px', marginBottom: '20px',
+                                            display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                                            boxShadow: '0 2px 8px rgba(0,0,0,0.08)', border: '1px solid #eee'
                                         }}>
                                             <div className="lesson-info">
                                                 <h4 style={{ margin: '0 0 5px 0', color: '#4CAF50' }}>
@@ -242,33 +243,33 @@ const ManagerDashboard = () => {
                         ) : (
                             <div className="events-list">
                                 {managerEvents.map(event => (
-                                    <div key={event.event_id} className="event-card">
-                                        <h4>{event.event_name} <span style={{ fontSize: '0.8em', fontWeight: 'normal' }}>({event.event_type})</span></h4>
-                                        <p><strong>Date:</strong> {new Date(event.start_time).toLocaleString()}</p>
-                                        <p><strong>Venue:</strong> {event.venue_name}</p>
-                                        <p><strong>Description:</strong> {event.description}</p>
-                                        <div className="manager-booking-sections" style={{ marginTop: '15px', display: 'flex', gap: '20px' }}>
-                                            <div style={{ flex: 1, background: '#333', padding: '10px', borderRadius: '4px' }}>
-                                                <h5>Eligible Students</h5>
+                                    <div key={event.event_id} className="event-card" style={{ background: 'white', padding: '20px', borderRadius: '12px', marginBottom: '20px', boxShadow: '0 2px 8px rgba(0,0,0,0.08)' }}>
+                                        <h4 style={{ margin: '0 0 10px 0', fontSize: '1.2em' }}>{event.event_name} <span style={{ fontSize: '0.8em', fontWeight: 'normal', color: '#666', backgroundColor: '#f0f0f0', padding: '2px 8px', borderRadius: '12px' }}>({event.event_type})</span></h4>
+                                        <p style={{ color: '#555' }}><strong>Date:</strong> {new Date(event.start_time).toLocaleString()}</p>
+                                        <p style={{ color: '#555' }}><strong>Venue:</strong> {event.venue_name}</p>
+                                        <p style={{ color: '#555' }}><strong>Description:</strong> {event.description}</p>
+                                        <div className="manager-booking-sections" style={{ marginTop: '20px', display: 'flex', gap: '20px', flexWrap: 'wrap' }}>
+                                            <div style={{ flex: 1, background: '#f9f9f9', padding: '15px', borderRadius: '8px', minWidth: '250px', border: '1px solid #eee' }}>
+                                                <h5 style={{ marginTop: 0, color: '#444' }}>Eligible Students</h5>
                                                 {event.eligible_students.length === 0 ? <p style={{ fontSize: '0.9em', color: '#aaa' }}>None</p> : (
-                                                    <ul style={{ listStyle: 'none', padding: 0 }}>
+                                                    <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
                                                         {event.eligible_students.map((s: any) => (
-                                                            <li key={s.user_id} style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '5px' }}>
-                                                                <span>{s.first_name} ({s.current_level_name})</span>
-                                                                <button onClick={() => handleBookStudent(event.event_id, s.user_id)} style={{ background: '#4CAF50', color: 'white', border: 'none', borderRadius: '3px', padding: '2px 8px', cursor: 'pointer' }}>Book</button>
+                                                            <li key={s.user_id} style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', alignItems: 'center', background: 'white', padding: '8px', borderRadius: '6px' }}>
+                                                                <span>{s.first_name} <span style={{ fontSize: '0.85em', color: '#888' }}>({s.current_level_name})</span></span>
+                                                                <button className="book-btn" onClick={() => handleBookStudent(event.event_id, s.user_id)} style={{ padding: '6px 12px', fontSize: '0.9em' }}>Book</button>
                                                             </li>
                                                         ))}
                                                     </ul>
                                                 )}
                                             </div>
-                                            <div style={{ flex: 1, background: '#444', padding: '10px', borderRadius: '4px' }}>
-                                                <h5>Booked Students</h5>
+                                            <div style={{ flex: 1, background: '#fff0f0', padding: '15px', borderRadius: '8px', minWidth: '250px', border: '1px solid #ffdcdc' }}>
+                                                <h5 style={{ marginTop: 0, color: '#d32f2f' }}>Booked Students</h5>
                                                 {event.booked_students.length === 0 ? <p style={{ fontSize: '0.9em', color: '#aaa' }}>None</p> : (
-                                                    <ul style={{ listStyle: 'none', padding: 0 }}>
+                                                    <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
                                                         {event.booked_students.map((s: any) => (
-                                                            <li key={s.user_id} style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '5px' }}>
+                                                            <li key={s.user_id} style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', alignItems: 'center', background: 'white', padding: '8px', borderRadius: '6px' }}>
                                                                 <span>{s.first_name}</span>
-                                                                <button onClick={() => handleCancelBooking(s.booking_id)} style={{ background: '#FF5252', color: 'white', border: 'none', borderRadius: '3px', padding: '2px 8px', cursor: 'pointer' }}>Cancel</button>
+                                                                <button onClick={() => handleCancelBooking(s.booking_id)} style={{ background: 'white', color: '#ff4444', border: '1px solid #ff4444', borderRadius: '4px', padding: '4px 8px', cursor: 'pointer', fontSize: '0.9em' }}>Cancel</button>
                                                             </li>
                                                         ))}
                                                     </ul>

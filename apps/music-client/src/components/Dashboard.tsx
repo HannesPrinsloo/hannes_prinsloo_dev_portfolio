@@ -4,6 +4,7 @@ import '../App.css';
 import AdminDashboard from './AdminDashboard.tsx'
 import TeacherDashboard from './TeacherDashboard.tsx';
 import ManagerDashboard from './ManagerDashboard.tsx';
+import ProfileHeader from './ProfileHeader.tsx';
 
 // Define a type for a user
 //NEW Not necessary as the UserData and its type definition live in the zustand store CAN DELETE
@@ -19,14 +20,14 @@ const API_URL = import.meta.env.VITE_API_URL;
 
 const Dashboard = () => {
     //New: Changed userData from local state to Zustand to make the full user profile 
-        //acessible to the entire app 👇 commented out local state hook below
+    //acessible to the entire app 👇 commented out local state hook below
     // const [userData, setUserData] = useState<UserData | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
     const { user, profile, setProfile, logout } = useAuthStore();
 
-    
+
 
     const handleLogout = async () => {
         try {
@@ -34,7 +35,7 @@ const Dashboard = () => {
                 method: 'POST',
                 credentials: 'include',
             });
-            
+
             if (response.ok) {
                 logout();
                 if (user) {
@@ -98,32 +99,38 @@ const Dashboard = () => {
         return <div className="dashboard-error">User data could not be loaded. Please try again.</div>;
     }
 
-    const roleName = profile.role_id === 1 
+    const roleName = profile.role_id === 1
         ? "Admin"
         : profile.role_id === 2
             ? "Teacher"
-            :profile.role_id === 3
+            : profile.role_id === 3
                 ? "Manager"
                 : "Student";
-    
+
     const getDashboardAccordingToRole = () => {
         switch (profile.role_id) {
             case 1:
-                return <AdminDashboard/>;
+                return <AdminDashboard />;
             case 2:
-                return <TeacherDashboard/>;
+                return <TeacherDashboard />;
             case 3:
-                return <ManagerDashboard/>;
+                return <ManagerDashboard />;
         }
     }
-    
+
     return (
         <div>
-            <h1>Hello, {profile.first_name + " " + profile.last_name}! This is your dashboard</h1>
-            <h3>Role: {roleName}</h3>
-            <p>User ID: {profile.user_id}</p>
+            <ProfileHeader
+                profile={profile}
+                role={roleName}
+                onLogout={handleLogout}
+            />
             {getDashboardAccordingToRole()}<br></br>
-            <button onClick={handleLogout}>Log Out</button>
+
+            {/* Mobile Logout Button (Bottom) - Desktop has it in the header */}
+            <div className="mobile-only-logout">
+                <button className="btn-secondary" onClick={handleLogout} style={{ width: '100%', maxWidth: '200px', margin: '20px auto', display: 'block' }}>Log Out</button>
+            </div>
         </div>
     );
 }

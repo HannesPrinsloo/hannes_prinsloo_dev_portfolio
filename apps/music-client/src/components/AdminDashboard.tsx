@@ -11,6 +11,7 @@ import {
 import AddUserModal from './AddUserModal';
 import BillingAccordion from './BillingAccordion';
 import FamilyRegistrationModal from './FamilyRegistrationModal';
+import BottomNav from './BottomNav';
 
 // ...
 
@@ -334,6 +335,13 @@ const AdminDashboard = () => {
         const teacherOptions = allUsers.filter(u => u.role_id === 2);
         return (
             <div className="card">
+                <div className="user-info">
+                    {user?.email} (ID: {user?.user_id})
+                    <button onClick={() => {
+                        useAuthStore.getState().logout();
+                        window.location.reload();
+                    }} className="btn-secondary" style={{ marginLeft: '10px' }}>Logout</button>
+                </div>
                 <table className="user-list-table">
                     <thead>
                         <tr>
@@ -356,7 +364,7 @@ const AdminDashboard = () => {
                                 {mainTab === 'Students' && (
                                     <td>
                                         <select
-                                            style={{ padding: '5px', backgroundColor: '#333', color: 'white', border: '1px solid #555' }}
+                                            style={{ padding: '6px', backgroundColor: 'white', color: 'var(--text-dark)', border: '1px solid #ccc', borderRadius: '4px' }}
                                             value={u.teachers?.[0]?.id || ''}
                                             onChange={(e) => handleTeacherAssignmentChange(u.user_id, e.target.value, u.teacher_names || '')}
                                         >
@@ -436,9 +444,10 @@ const AdminDashboard = () => {
                             key={teacher.user_id}
                             onClick={() => setSelectedTeacher(teacher)}
                             style={{
-                                backgroundColor: selectedTeacher?.user_id === teacher.user_id ? '#3a3a3a' : 'transparent',
-                                borderLeft: selectedTeacher?.user_id === teacher.user_id ? '4px solid #646cff' : 'none',
-                                cursor: 'pointer'
+                                backgroundColor: selectedTeacher?.user_id === teacher.user_id ? '#fff0f0' : 'transparent',
+                                borderLeft: selectedTeacher?.user_id === teacher.user_id ? '4px solid var(--primary-red)' : '4px solid transparent',
+                                cursor: 'pointer',
+                                transition: 'all 0.2s'
                             }}
                         >
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
@@ -491,8 +500,9 @@ const AdminDashboard = () => {
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                             <h3>{selectedTeacher.first_name} {selectedTeacher.last_name} - Detail View</h3>
                             <button
+                                className="btn-secondary"
                                 onClick={() => setSelectedTeacher(null)}
-                                style={{ padding: '5px 10px', height: 'fit-content', backgroundColor: '#444' }}
+                                style={{ height: 'fit-content' }}
                             >
                                 Close View
                             </button>
@@ -591,7 +601,7 @@ const AdminDashboard = () => {
                 ))}
             </div>
 
-            <h3 style={{ marginTop: '40px', borderTop: '1px solid #333', paddingTop: '20px' }}>Past Events</h3>
+            <h3 style={{ marginTop: '40px', borderTop: '1px solid #eee', paddingTop: '20px', color: '#888' }}>Past Events</h3>
             <div className="events-list">
                 {pastEvents.length === 0 && <p style={{ color: '#aaa' }}>No past events found.</p>}
                 {pastEvents.map(event => (
@@ -766,6 +776,8 @@ const AdminDashboard = () => {
                     </div>
                 </div>
             )}
+
+
         </div>
     );
 
@@ -816,6 +828,11 @@ const AdminDashboard = () => {
                 isOpen={isFamilyModalOpen}
                 onClose={() => setIsFamilyModalOpen(false)}
                 onSuccess={getAllData}
+            />
+            <BottomNav
+                activeTab={mainTab}
+                setActiveTab={setMainTab}
+                role="admin"
             />
         </div>
     );
