@@ -39,7 +39,7 @@ export const createLesson = async (req: Request, res: Response) => {
 
 export const deleteLesson = async (req: Request, res: Response) => {
     try {
-        const lessonId = parseInt(req.params.id);
+        const lessonId = parseInt(req.params.id as string);
         if (isNaN(lessonId)) {
             return res.status(400).json({ error: 'Invalid lesson ID' });
         }
@@ -66,7 +66,7 @@ export const deleteLessonSeries = async (req: Request, res: Response) => {
 
         const dateStr = (fromDate as string) || new Date().toISOString();
 
-        const count = await lessonService.deleteLessonSeries(groupId, dateStr);
+        const count = await lessonService.deleteLessonSeries(groupId as string, dateStr);
         res.json({ message: `Deleted ${count} lessons from the series.` });
     } catch (err: any) {
         console.error('Error deleting lesson series:', err.message);
@@ -76,7 +76,7 @@ export const deleteLessonSeries = async (req: Request, res: Response) => {
 
 export const getTeacherSchedule = async (req: Request, res: Response) => {
     try {
-        const teacherId = parseInt(req.params.teacherId);
+        const teacherId = parseInt(req.params.teacherId as string);
         if (isNaN(teacherId)) {
             return res.status(400).json({ error: 'Invalid teacher ID' });
         }

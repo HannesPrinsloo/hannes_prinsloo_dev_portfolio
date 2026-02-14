@@ -14,7 +14,7 @@ export const getUsers = async (req: Request, res: Response) => {
 // Controller for single user
 export const getUser = async (req: Request, res: Response) => {
     try {
-        const id = parseInt(req.params.id);
+        const id = parseInt(req.params.id as string);
 
         // Call the service logic
         const user = await userService.getUserById(id);
@@ -51,7 +51,7 @@ export const createUserController = async (req: Request, res: Response) => {
 
 export const deleteUserController = async (req: Request, res: Response) => {
     try {
-        const id = parseInt(req.params.id);
+        const id = parseInt(req.params.id as string);
         const deleteManager = req.query.deleteManager === 'true';
 
         const success = await userService.deleteUser(id, { deleteManager });
@@ -80,7 +80,7 @@ export const deleteUserController = async (req: Request, res: Response) => {
 
 export const updateUserController = async (req: Request, res: Response) => {
     try {
-        const id = parseInt(req.params.id);
+        const id = parseInt(req.params.id as string);
         // Map password_hash from body to 'password' for the service if present
         const { password_hash, ...rest } = req.body;
         const userData = { ...rest, ...(password_hash ? { password: password_hash } : {}) };

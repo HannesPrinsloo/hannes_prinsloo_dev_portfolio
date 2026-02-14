@@ -25,7 +25,7 @@ export const markAttendance = async (req: Request, res: Response) => {
 
 export const getLessonAttendance = async (req: Request, res: Response) => {
     try {
-        const lessonId = parseInt(req.params.lessonId);
+        const lessonId = parseInt(req.params.lessonId as string);
         if (isNaN(lessonId)) {
             return res.status(400).json({ error: 'Invalid lesson ID' });
         }

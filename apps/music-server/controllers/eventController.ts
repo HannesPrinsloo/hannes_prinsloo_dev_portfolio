@@ -36,7 +36,7 @@ export const getEvents = async (req: Request, res: Response) => {
 // Delete Event
 export const deleteEvent = async (req: Request, res: Response) => {
     try {
-        const eventId = parseInt(req.params.eventId);
+        const eventId = parseInt(req.params.eventId as string);
         if (isNaN(eventId)) {
             return res.status(400).json({ error: "Invalid event ID" });
         }
@@ -51,7 +51,7 @@ export const deleteEvent = async (req: Request, res: Response) => {
 // Get Eligible Students for an Event
 export const getEligibleStudents = async (req: Request, res: Response) => {
     try {
-        const eventId = parseInt(req.params.eventId);
+        const eventId = parseInt(req.params.eventId as string);
         if (isNaN(eventId)) {
             return res.status(400).json({ error: "Invalid event ID" });
         }
@@ -91,7 +91,7 @@ export const bookStudent = async (req: Request, res: Response) => {
 // Get Booked Students (Admin View)
 export const getBookedStudents = async (req: Request, res: Response) => {
     try {
-        const eventId = parseInt(req.params.eventId);
+        const eventId = parseInt(req.params.eventId as string);
         if (isNaN(eventId)) {
             return res.status(400).json({ error: "Invalid event ID" });
         }
@@ -107,7 +107,7 @@ export const getBookedStudents = async (req: Request, res: Response) => {
 // Cancel Booking
 export const cancelBooking = async (req: Request, res: Response) => {
     try {
-        const bookingId = parseInt(req.params.bookingId);
+        const bookingId = parseInt(req.params.bookingId as string);
         if (isNaN(bookingId)) {
             return res.status(400).json({ error: "Invalid booking ID" });
         }

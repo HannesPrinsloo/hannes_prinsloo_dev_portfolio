@@ -3,7 +3,7 @@ import * as rosterService from '../services/rosterService';
 
 export const getMyRoster = async (req: Request, res: Response) => {
     try {
-        const teacherId = parseInt(req.params.teacherId);
+        const teacherId = parseInt(req.params.teacherId as string);
 
         if (isNaN(teacherId)) {
             return res.status(400).json({ error: 'Invalid teacher ID provided' });
