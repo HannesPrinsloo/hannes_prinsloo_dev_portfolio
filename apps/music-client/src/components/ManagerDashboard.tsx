@@ -11,6 +11,7 @@ import {
     type RosterEntry
 } from '../services/api';
 import BillingAccordion from './BillingAccordion';
+import BottomNav from './BottomNav';
 import '../App.css';
 
 const ManagerDashboard = () => {
@@ -281,6 +282,7 @@ const ManagerDashboard = () => {
                     </div>
                 )}
             </div>
+            <BottomNav activeTab={activeTab} setActiveTab={setActiveTab} role="manager" />
         </div>
     );
 };

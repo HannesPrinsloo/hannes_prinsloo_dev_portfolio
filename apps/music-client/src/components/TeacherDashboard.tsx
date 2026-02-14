@@ -3,6 +3,7 @@ import { useAuthStore } from '../../store/authStore';
 import { fetchTeacherRoster, fetchLevels, assignStudentLevel, getTeacherSchedule, markAttendance, fetchTeacherEvents, bookStudentForEvent, type RosterEntry, type Level, type Lesson } from '../services/api';
 import WeeklySchedule from './WeeklySchedule';
 import BillingAccordion from './BillingAccordion';
+import BottomNav from './BottomNav';
 import '../App.css';
 
 const TeacherDashboard: React.FC = () => {
@@ -270,6 +271,7 @@ const TeacherDashboard: React.FC = () => {
                     </div>
                 )}
             </div>
+            <BottomNav activeTab={activeTab} setActiveTab={setActiveTab} role="teacher" />
         </div>
     );
 };
