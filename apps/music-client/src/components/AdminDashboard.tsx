@@ -336,7 +336,7 @@ const AdminDashboard = () => {
         return (
             <div className="card">
                 <div className="user-info">
-                    {user?.email} (ID: {user?.user_id})
+                    {profile?.email || 'Admin'} (ID: {user?.user_id})
                     <button onClick={() => {
                         useAuthStore.getState().logout();
                         window.location.reload();
