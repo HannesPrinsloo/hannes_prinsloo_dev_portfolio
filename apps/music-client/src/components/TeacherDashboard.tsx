@@ -13,7 +13,7 @@ const TeacherDashboard: React.FC = () => {
     const [error, setError] = useState<string | null>(null);
 
     const [levels, setLevels] = useState<Level[]>([]);
-    const [loadingLevels, setLoadingLevels] = useState(false);
+
 
     const [schedule, setSchedule] = useState<Lesson[]>([]);
     const [loadingSchedule, setLoadingSchedule] = useState(false);
@@ -35,14 +35,11 @@ const TeacherDashboard: React.FC = () => {
     };
 
     const loadLevels = async () => {
-        setLoadingLevels(true);
         try {
             const data = await fetchLevels();
             setLevels(data);
         } catch (err) {
             console.error("Error loading levels:", err);
-        } finally {
-            setLoadingLevels(false);
         }
     };
 

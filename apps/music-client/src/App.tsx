@@ -14,16 +14,14 @@ interface User {
 };
 
 const App = () => {
-  const [users, setUsers] = useState<User[]>([]);
   const [authLoading, setAuthLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
 
-  const { isLoggedIn, user, login, logout } = useAuthStore();
+  const { isLoggedIn, login } = useAuthStore();
 
   // Get the API URL from the environment variable
   const API_URL = import.meta.env.VITE_API_URL;
 
- 
+
 
   useEffect(() => {
     const checkAuthStatus = async () => {
@@ -58,15 +56,11 @@ const App = () => {
     </div>;
   }
 
-  if (error) {
-    return <div className="app">
-      Error: {error}.<br/>Make sure the backend server is running and accessible at {API_URL}!
-    </div>;
-  }
+
 
   return (
     <div className="app">
-      {isLoggedIn ? <Dashboard/> : <LoginForm/>}
+      {isLoggedIn ? <Dashboard /> : <LoginForm />}
     </div>
   );
 }

@@ -225,7 +225,8 @@ const ManagerDashboard = () => {
                                     instrument_name: l.instrument_name,
                                     attendance_status: l.attendance_status || (new Date(l.start_time) < new Date() ? 'Pending' : undefined), // Default pending if past and no status
                                     attendance_notes: l.teacher_notes || l.attendance_notes,
-                                    parent_note: l.parent_note
+                                    parent_note: l.parent_note,
+                                    duration_minutes: l.duration_minutes || 60
                                 }))}
                             />
                         )}
