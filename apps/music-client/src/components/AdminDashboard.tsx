@@ -5,7 +5,7 @@ import {
     fetchTeacherRoster, getTeacherSchedule, deleteUser,
     fetchEvents, createEvent, deleteEvent, getEligibleStudentsForEvent, getBookedStudentsForEvent,
     bookStudentForEvent, cancelEventBooking, fetchLevels,
-    type RosterEntry, type Lesson, type EventData, type StudentEligibility, type Level,
+    type RosterEntry, type EventData, type StudentEligibility, type Level,
     assignTeacher // New Import
 } from '../services/api';
 import AddUserModal from './AddUserModal';
