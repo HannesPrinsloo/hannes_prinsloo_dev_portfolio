@@ -450,7 +450,7 @@ const AdminDashboard = () => {
                                 transition: 'all 0.2s'
                             }}
                         >
-                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                            <div className="list-item-content">
                                 <div>
                                     <strong>{teacher.first_name} {teacher.last_name}</strong>
                                     <br />

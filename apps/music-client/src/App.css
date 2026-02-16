@@ -28,7 +28,7 @@ body {
   color: var(--text-dark);
   /* PREVENT HORIZONTAL SCROLL */
   overflow-x: hidden;
-  width: 100%;
+  width: 100vw;
   position: relative;
 }
 
@@ -314,6 +314,9 @@ button {
   overflow-x: hidden;
   display: flex;
   flex-direction: column;
+  /* Mobile Fix */
+  width: 100%;
+  max-width: 100%;
 }
 
 .teacher-detail-panel {
@@ -321,10 +324,15 @@ button {
   overflow-y: auto;
   display: flex;
   flex-direction: column;
+  /* Mobile Fix */
+  width: 100%;
+  max-width: 100%;
 }
 
 .teacher-detail-panel .tabs {
   justify-content: flex-start;
+  flex-wrap: wrap;
+  /* Allow wrapping on small screens */
 }
 
 /* User List Table */
@@ -333,6 +341,22 @@ button {
   border-collapse: collapse;
   margin-top: 20px;
 }
+
+/* Mobile List Item Stacking */
+.list-item-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  width: 100%;
+}
+
+@media (max-width: 480px) {
+  .list-item-content {
+    flex-direction: column;
+    gap: 10px;
+  }
+}
+
 
 .user-list-table th,
 .user-list-table td {
