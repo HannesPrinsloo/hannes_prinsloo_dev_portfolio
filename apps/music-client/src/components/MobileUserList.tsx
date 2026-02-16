@@ -22,13 +22,14 @@ const MobileUserList: React.FC<MobileUserListProps> = ({ users, onUserClick, emp
                                 padding: '16px',
                                 borderBottom: '1px solid #eee',
                                 display: 'flex',
-                                justifyContent: 'space-between',
+                                justifyContent: 'center', /* Center horizontally */
                                 alignItems: 'center',
                                 backgroundColor: 'white',
-                                cursor: 'pointer'
+                                cursor: 'pointer',
+                                position: 'relative' /* For absolute positioning of arrow if needed, or just keep flow */
                             }}
                         >
-                            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', textAlign: 'center', width: '100%' }}>
                                 <span style={{ fontWeight: 600, fontSize: '1rem', color: 'var(--text-dark)' }}>
                                     {user.first_name} {user.last_name}
                                 </span>
@@ -36,8 +37,8 @@ const MobileUserList: React.FC<MobileUserListProps> = ({ users, onUserClick, emp
                                     {user.email}
                                 </span>
                             </div>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                                <span style={{ color: '#ccc' }}>&rsaquo;</span>
+                            <div style={{ position: 'absolute', right: '16px', color: '#ccc' }}>
+                                &rsaquo;
                             </div>
                         </li>
                     ))}

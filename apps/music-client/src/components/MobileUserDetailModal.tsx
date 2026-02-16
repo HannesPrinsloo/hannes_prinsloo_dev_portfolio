@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import type { UserData } from '../types';
+import type { UserData, RosterEntry, AdminLesson } from '../types';
 
 interface MobileUserDetailModalProps {
     isOpen: boolean;
@@ -11,14 +11,27 @@ interface MobileUserDetailModalProps {
     teachers?: { id: number, name: string }[];
     onAssignTeacher?: (userId: number, teacherId: string) => void;
     mainTab: string; // 'Students' | 'Teachers' | 'Managers' | 'Admins'
+    // Optional props for Teacher specific views
+    teacherRoster?: RosterEntry[];
+    teacherSchedule?: AdminLesson[];
 }
 
 const MobileUserDetailModal: React.FC<MobileUserDetailModalProps> = ({
-    isOpen, onClose, user, onEdit, onDelete, teachers, onAssignTeacher, mainTab
+    isOpen, onClose, user, onEdit, onDelete, teachers, onAssignTeacher, mainTab,
+    teacherRoster = [], teacherSchedule = []
 }) => {
-    const [activeTab, setActiveTab] = useState<'info' | 'actions' | 'academic'>('info');
+    const [activeTab, setActiveTab] = useState<'info' | 'actions' | 'academic' | 'roster' | 'attendance'>('info');
 
     if (!isOpen || !user) return null;
+
+    // Helper to calc stats for a student
+    const getStudentStats = (studentId: number) => {
+        const lessons = teacherSchedule.filter(l => Number(l.student_id) === Number(studentId));
+        const present = lessons.filter(l => l.attendance_status === 'Present').length;
+        const absent = lessons.filter(l => l.attendance_status === 'Absent').length;
+        const pending = lessons.filter(l => !l.attendance_status || l.attendance_status === 'Pending').length;
+        return { present, absent, pending };
+    };
 
     return (
         <div style={{
@@ -66,50 +79,82 @@ const MobileUserDetailModal: React.FC<MobileUserDetailModalProps> = ({
                 </h2>
 
                 {/* Styled Tabs */}
-                <div style={{ display: 'flex', gap: '10px', marginBottom: '20px', borderBottom: '1px solid #eee', paddingBottom: '10px' }}>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginBottom: '20px', borderBottom: '1px solid #eee', paddingBottom: '10px' }}>
                     <button
                         onClick={() => setActiveTab('info')}
                         style={{
-                            flex: 1,
-                            padding: '8px',
+                            padding: '6px 12px',
                             background: activeTab === 'info' ? '#2ea44f' : '#f0f0f0',
                             color: activeTab === 'info' ? 'white' : '#333',
                             border: 'none',
-                            borderRadius: '4px',
+                            borderRadius: '16px',
                             cursor: 'pointer',
-                            fontSize: '0.9rem'
+                            fontSize: '0.85rem'
                         }}
                     >
                         Info
                     </button>
+
                     {mainTab === 'Students' && (
                         <button
                             onClick={() => setActiveTab('academic')}
                             style={{
-                                flex: 1,
-                                padding: '8px',
+                                padding: '6px 12px',
                                 background: activeTab === 'academic' ? '#2ea44f' : '#f0f0f0',
                                 color: activeTab === 'academic' ? 'white' : '#333',
                                 border: 'none',
-                                borderRadius: '4px',
+                                borderRadius: '16px',
                                 cursor: 'pointer',
-                                fontSize: '0.9rem'
+                                fontSize: '0.85rem'
                             }}
                         >
                             Academic
                         </button>
                     )}
+
+                    {mainTab === 'Teachers' && (
+                        <>
+                            <button
+                                onClick={() => setActiveTab('roster')}
+                                style={{
+                                    padding: '6px 12px',
+                                    background: activeTab === 'roster' ? '#2ea44f' : '#f0f0f0',
+                                    color: activeTab === 'roster' ? 'white' : '#333',
+                                    border: 'none',
+                                    borderRadius: '16px',
+                                    cursor: 'pointer',
+                                    fontSize: '0.85rem'
+                                }}
+                            >
+                                Roster
+                            </button>
+                            <button
+                                onClick={() => setActiveTab('attendance')}
+                                style={{
+                                    padding: '6px 12px',
+                                    background: activeTab === 'attendance' ? '#2ea44f' : '#f0f0f0',
+                                    color: activeTab === 'attendance' ? 'white' : '#333',
+                                    border: 'none',
+                                    borderRadius: '16px',
+                                    cursor: 'pointer',
+                                    fontSize: '0.85rem'
+                                }}
+                            >
+                                Attendance
+                            </button>
+                        </>
+                    )}
+
                     <button
                         onClick={() => setActiveTab('actions')}
                         style={{
-                            flex: 1,
-                            padding: '8px',
+                            padding: '6px 12px',
                             background: activeTab === 'actions' ? '#2ea44f' : '#f0f0f0',
                             color: activeTab === 'actions' ? 'white' : '#333',
                             border: 'none',
-                            borderRadius: '4px',
+                            borderRadius: '16px',
                             cursor: 'pointer',
-                            fontSize: '0.9rem'
+                            fontSize: '0.85rem'
                         }}
                     >
                         Actions
@@ -128,7 +173,6 @@ const MobileUserDetailModal: React.FC<MobileUserDetailModalProps> = ({
                                 <div style={{ fontSize: '1rem' }}>{user.phone_number || 'N/A'}</div>
                             </div>
 
-                            {/* Only show ID if needed, maybe minimal */}
                             <div>
                                 <label style={{ display: 'block', color: '#888', fontSize: '0.85rem' }}>Role</label>
                                 <div style={{ fontSize: '1rem' }}>{mainTab.slice(0, -1)}</div>
@@ -140,6 +184,70 @@ const MobileUserDetailModal: React.FC<MobileUserDetailModalProps> = ({
                                     {user.is_active ? 'Active' : 'Inactive'}
                                 </div>
                             </div>
+                        </div>
+                    )}
+
+                    {activeTab === 'roster' && mainTab === 'Teachers' && (
+                        <div style={{ display: 'flex', flexDirection: 'column' }}>
+                            {teacherRoster.length === 0 ? (
+                                <p style={{ color: '#888', fontStyle: 'italic' }}>No students assigned.</p>
+                            ) : (
+                                <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
+                                    {teacherRoster.map(student => (
+                                        <li key={student.student_id} style={{ padding: '10px 0', borderBottom: '1px solid #f0f0f0' }}>
+                                            {student.student_first_name} {student.student_last_name}
+                                        </li>
+                                    ))}
+                                </ul>
+                            )}
+                        </div>
+                    )}
+
+                    {activeTab === 'attendance' && mainTab === 'Teachers' && (
+                        <div style={{ display: 'flex', flexDirection: 'column' }}>
+                            {teacherRoster.length === 0 ? (
+                                <p style={{ color: '#888', fontStyle: 'italic' }}>No students assigned.</p>
+                            ) : (
+                                <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
+                                    {teacherRoster.map(student => {
+                                        const stats = getStudentStats(student.student_id);
+                                        return (
+                                            <li key={student.student_id} style={{ padding: '12px 0', borderBottom: '1px solid #f0f0f0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                                <span style={{ fontWeight: 500 }}>{student.student_first_name} {student.student_last_name}</span>
+                                                <div style={{ display: 'flex', gap: '8px' }}>
+                                                    {/* Green: Present */}
+                                                    <span style={{
+                                                        backgroundColor: '#2e7d32', color: 'white',
+                                                        width: '24px', height: '24px', borderRadius: '50%',
+                                                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                                        fontSize: '0.8rem', fontWeight: 'bold'
+                                                    }}>
+                                                        {stats.present}
+                                                    </span>
+                                                    {/* Red: Absent */}
+                                                    <span style={{
+                                                        backgroundColor: '#d32f2f', color: 'white',
+                                                        width: '24px', height: '24px', borderRadius: '50%',
+                                                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                                        fontSize: '0.8rem', fontWeight: 'bold'
+                                                    }}>
+                                                        {stats.absent}
+                                                    </span>
+                                                    {/* Grey: Pending */}
+                                                    <span style={{
+                                                        backgroundColor: '#9e9e9e', color: 'white',
+                                                        width: '24px', height: '24px', borderRadius: '50%',
+                                                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                                        fontSize: '0.8rem', fontWeight: 'bold'
+                                                    }}>
+                                                        {stats.pending}
+                                                    </span>
+                                                </div>
+                                            </li>
+                                        );
+                                    })}
+                                </ul>
+                            )}
                         </div>
                     )}
 

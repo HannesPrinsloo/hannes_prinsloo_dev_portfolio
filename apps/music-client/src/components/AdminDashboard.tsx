@@ -97,6 +97,9 @@ const AdminDashboard = () => {
     const handleMobileUserClick = (user: UserData) => {
         setSelectedMobileUser(user);
         setIsMobileModalOpen(true);
+        if (mainTab === 'Teachers') {
+            setSelectedTeacher(user);
+        }
     };
     const [teacherDetailTab, setTeacherDetailTab] = useState<'roster' | 'attendance'>('roster');
 
@@ -880,6 +883,8 @@ const AdminDashboard = () => {
                 teachers={allUsers.filter(u => u.role_id === 2).map(t => ({ id: t.user_id, name: `${t.first_name} ${t.last_name}` }))}
                 onAssignTeacher={(userId, teacherId) => handleTeacherAssignmentChange(userId, teacherId, '')}
                 mainTab={mainTab}
+                teacherRoster={teacherRoster}
+                teacherSchedule={teacherSchedule}
             />
         </div>
     );
