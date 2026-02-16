@@ -11,33 +11,31 @@ export interface UserData {
     teachers?: { id: number, name: string }[];
 }
 
+teachers ?: { id: number, name: string }[];
+}
+
 export interface RosterEntry {
     student_id: number;
     student_first_name: string;
     student_last_name: string;
-    manager_first_name: string;
-    manager_last_name: string;
+    manager_first_name: string | null;
+    manager_last_name: string | null;
 }
 
-// Need to import Lesson from services/api, but to avoid circular deps with services/api
-// We can define a compatible interface or move Lesson to types.ts as well.
-// For now, let's just define strict structure or use 'any' if Lesson is complex.
-// Better: Duplicate simple fields needed or Refactor api.ts.
-// Actually, let's just use what AdminDashboard used.
-// It extended "Lesson".
-// Let's assume Lesson has basic fields.
-
-// Minimal definition to satisfy the UI needs
+// Minimal definition to satisfy the UI needs, compatible with 'Lesson' from api.ts
 export interface AdminLesson {
     lesson_id: number;
     student_id: number;
-    teacher_id: number;
+    // teacher_id: number; // Removed as it might not be in the basic Lesson fetch
     start_time: string;
     end_time: string;
-    status: string;
-    price: string | number;
-    paid: boolean;
+    // status: string; // Removed, api uses lesson_status
+    lesson_status?: string; // Added to match api.ts
+    // price: string | number; // Removed
+    // paid: boolean; // Removed
     student_name?: string;
+    student_first_name?: string; // Added
+    student_last_name?: string; // Added
     teacher_name?: string;
     // Extended fields
     attendance_status?: string;
@@ -45,5 +43,5 @@ export interface AdminLesson {
     manager_first_name?: string;
     manager_last_name?: string;
     manager_phone?: string;
-    parent_note?: string; // Used in UI
+    parent_note?: string;
 }

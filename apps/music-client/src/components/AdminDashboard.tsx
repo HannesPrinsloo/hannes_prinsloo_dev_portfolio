@@ -17,18 +17,13 @@ import MobileUserDetailModal from './MobileUserDetailModal';
 
 // ...
 
-import type { UserData } from '../types';
+import type { UserData, AdminLesson } from '../types';
 
 // ... inside AdminDashboard ...
 
 // Extended Lesson type to include attendance data
-interface AdminLesson extends Lesson {
-    attendance_status?: string;
-    attendance_notes?: string;
-    manager_first_name?: string;
-    manager_last_name?: string;
-    manager_phone?: string;
-}
+// Removed local interface to use shared type from ../types
+// interface AdminLesson extends Lesson { ... }
 
 const API_URL = import.meta.env.VITE_API_URL;
 
