@@ -1,3 +1,7 @@
+import type { RosterEntry, Lesson } from './services/api';
+
+export type { RosterEntry };
+
 export interface UserData {
     user_id: number;
     first_name: string;
@@ -11,37 +15,20 @@ export interface UserData {
     teachers?: { id: number, name: string }[];
 }
 
-teachers ?: { id: number, name: string }[];
-}
+// AdminLesson extends the base Lesson from API to include UI-specific or extended fields
+export interface AdminLesson extends Lesson {
+    // fields from Lesson are inherited:
+    // lesson_id, start_time, end_time, lesson_status, duration_minutes, 
+    // student_id, student_first_name, student_last_name, instrument_name...
 
-export interface RosterEntry {
-    student_id: number;
-    student_first_name: string;
-    student_last_name: string;
-    manager_first_name: string | null;
-    manager_last_name: string | null;
-}
-
-// Minimal definition to satisfy the UI needs, compatible with 'Lesson' from api.ts
-export interface AdminLesson {
-    lesson_id: number;
-    student_id: number;
-    // teacher_id: number; // Removed as it might not be in the basic Lesson fetch
-    start_time: string;
-    end_time: string;
-    // status: string; // Removed, api uses lesson_status
-    lesson_status?: string; // Added to match api.ts
-    // price: string | number; // Removed
-    // paid: boolean; // Removed
+    // UI specific or potentially flattened fields
     student_name?: string;
-    student_first_name?: string; // Added
-    student_last_name?: string; // Added
     teacher_name?: string;
-    // Extended fields
+
+    // Extended fields for Attendance/Billing context
     attendance_status?: string;
     attendance_notes?: string;
     manager_first_name?: string;
     manager_last_name?: string;
-    manager_phone?: string;
     parent_note?: string;
 }
