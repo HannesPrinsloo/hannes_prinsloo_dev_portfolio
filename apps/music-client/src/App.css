@@ -827,32 +827,12 @@ button {
   .admin-table td,
   .roster-table td,
   .user-list-table td {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    text-align: right;
-    padding: 10px 0;
-    border-bottom: 1px solid #f0f0f0;
+    display: block;
+    text-align: left;
+    padding: 5px 0;
+    border: none;
     font-size: 0.95rem;
   }
-
-  .admin-table td:last-child,
-  .roster-table td:last-child,
-  .user-list-table td:last-child {
-    border-bottom: none;
-  }
-
-  .admin-table td::before,
-  .roster-table td::before,
-  .user-list-table td::before {
-    content: attr(data-label);
-    font-weight: 600;
-    color: #666;
-    text-align: left;
-    margin-right: 15px;
-    flex: 1;
-  }
-
 
 }
 
@@ -989,5 +969,24 @@ button {
   .mobile-only-logout {
     display: block;
     padding-bottom: 20px;
+  }
+}
+
+/* Mobile/Desktop View Toggles - CRITICAL for Admin Dashboard */
+.mobile-view {
+  display: block;
+}
+
+.desktop-view {
+  display: none;
+}
+
+@media (min-width: 768px) {
+  .mobile-view {
+    display: none;
+  }
+
+  .desktop-view {
+    display: block;
   }
 }

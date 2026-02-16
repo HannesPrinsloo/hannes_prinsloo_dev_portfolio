@@ -12,21 +12,12 @@ import AddUserModal from './AddUserModal';
 import BillingAccordion from './BillingAccordion';
 import FamilyRegistrationModal from './FamilyRegistrationModal';
 import BottomNav from './BottomNav';
+import MobileUserList from './MobileUserList';
+import MobileUserDetailModal from './MobileUserDetailModal';
 
 // ...
 
-interface UserData {
-    user_id: number;
-    first_name: string;
-    last_name: string;
-    email: string;
-    role_id: number;
-    phone_number: string;
-    is_active: boolean;
-    // New fields from backend aggregation
-    teacher_names?: string;
-    teachers?: { id: number, name: string }[];
-}
+import type { UserData } from '../types';
 
 // ... inside AdminDashboard ...
 
@@ -98,6 +89,15 @@ const AdminDashboard = () => {
 
     // Teacher Selection state
     const [selectedTeacher, setSelectedTeacher] = useState<UserData | null>(null);
+
+    // Mobile Modal State
+    const [selectedMobileUser, setSelectedMobileUser] = useState<UserData | null>(null);
+    const [isMobileModalOpen, setIsMobileModalOpen] = useState(false);
+
+    const handleMobileUserClick = (user: UserData) => {
+        setSelectedMobileUser(user);
+        setIsMobileModalOpen(true);
+    };
     const [teacherDetailTab, setTeacherDetailTab] = useState<'roster' | 'attendance'>('roster');
 
     // Teacher Detail data
@@ -333,8 +333,22 @@ const AdminDashboard = () => {
 
     const renderGenericListView = (users: UserData[]) => {
         const teacherOptions = allUsers.filter(u => u.role_id === 2);
-        return (
-            <div className="card">
+
+        // Mobile View Structure
+        const mobileView = (
+            <div className="mobile-view">
+                <MobileUserList
+                    users={users}
+                    onUserClick={handleMobileUserClick}
+                    emptyMessage={`No ${mainTab.toLowerCase()} found.`}
+                />
+            </div>
+        );
+
+        // Desktop View Structure
+        const desktopView = (
+            <div className="desktop-view card">
+                {/* User Info Header only on Desktop for now, or maybe duplicated? keeping simple */}
                 <div className="user-info">
                     {profile?.email || 'Admin'} (ID: {user?.user_id})
                     <button onClick={() => {
@@ -357,14 +371,14 @@ const AdminDashboard = () => {
                     <tbody>
                         {users.map(u => (
                             <tr key={u.user_id}>
-                                <td data-label="ID">{u.user_id}</td>
-                                <td data-label="Name">{u.first_name} {u.last_name}</td>
-                                <td data-label="Email">{u.email}</td>
-                                <td data-label="Phone">{u.phone_number}</td>
+                                <td>{u.user_id}</td>
+                                <td>{u.first_name} {u.last_name}</td>
+                                <td>{u.email}</td>
+                                <td>{u.phone_number}</td>
                                 {mainTab === 'Students' && (
-                                    <td data-label="Assigned Teacher">
+                                    <td>
                                         <select
-                                            style={{ padding: '6px', backgroundColor: 'white', color: 'var(--text-dark)', border: '1px solid #ccc', borderRadius: '4px', width: '100%', maxWidth: '200px' }}
+                                            style={{ padding: '6px', backgroundColor: 'white', color: 'var(--text-dark)', border: '1px solid #ccc', borderRadius: '4px' }}
                                             value={u.teachers?.[0]?.id || ''}
                                             onChange={(e) => handleTeacherAssignmentChange(u.user_id, e.target.value, u.teacher_names || '')}
                                         >
@@ -377,9 +391,9 @@ const AdminDashboard = () => {
                                         </select>
                                     </td>
                                 )}
-                                <td data-label="Status">{u.is_active ? 'Active' : 'Inactive'}</td>
-                                <td data-label="Actions">
-                                    <div className="list-item-content" style={{ gap: '5px' }}>
+                                <td>{u.is_active ? 'Active' : 'Inactive'}</td>
+                                <td>
+                                    <div style={{ display: 'flex', gap: '5px' }}>
                                         <button
                                             onClick={(e) => handleEditUser(u, e)}
                                             style={{
@@ -415,6 +429,13 @@ const AdminDashboard = () => {
                 </table>
             </div>
         );
+
+        return (
+            <>
+                {mobileView}
+                {desktopView}
+            </>
+        );
     };
 
     if (loading) return <div className="dashboard-loading">Loading Admin Dashboard...</div>;
@@ -433,131 +454,140 @@ const AdminDashboard = () => {
     };
 
     const renderTeacherView = (teachers: UserData[]) => (
-        <div className="admin-dashboard-container">
-            {/* Left Panel: Teacher List */}
-            <div className="card teacher-list-panel">
-                <h3>Teachers</h3>
-                <p style={{ fontSize: '0.9em', color: '#aaa', margin: '0 0 10px 0' }}>Select a teacher from the list to view details.</p>
-                <ul className="schedule-list">
-                    {teachers.map(teacher => (
-                        <li
-                            key={teacher.user_id}
-                            onClick={() => setSelectedTeacher(teacher)}
-                            style={{
-                                backgroundColor: selectedTeacher?.user_id === teacher.user_id ? '#fff0f0' : 'transparent',
-                                borderLeft: selectedTeacher?.user_id === teacher.user_id ? '4px solid var(--primary-red)' : '4px solid transparent',
-                                cursor: 'pointer',
-                                transition: 'all 0.2s'
-                            }}
-                        >
-                            <div className="list-item-content">
-                                <div>
-                                    <strong>{teacher.first_name} {teacher.last_name}</strong>
-                                    <br />
-                                    <small>{teacher.email}</small>
-                                </div>
-                                <div style={{ display: 'flex', gap: '5px' }}>
-                                    <button
-                                        onClick={(e) => handleEditUser(teacher, e)}
-                                        style={{
-                                            padding: '4px 8px',
-                                            backgroundColor: '#2196F3',
-                                            fontSize: '0.8em',
-                                            border: 'none',
-                                            borderRadius: '4px',
-                                            color: 'white',
-                                            cursor: 'pointer'
-                                        }}
-                                    >
-                                        Edit
-                                    </button>
-                                    <button
-                                        onClick={(e) => handleDeleteUser(teacher.user_id, e)}
-                                        className="delete-btn"
-                                        style={{
-                                            padding: '4px 8px',
-                                            backgroundColor: '#ff4444',
-                                            fontSize: '0.8em',
-                                            border: 'none',
-                                            borderRadius: '4px',
-                                            color: 'white',
-                                            cursor: 'pointer'
-                                        }}
-                                    >
-                                        Delete
-                                    </button>
-                                </div>
-                            </div>
-                        </li>
-                    ))}
-                </ul>
+        <>
+            <div className="mobile-view">
+                <MobileUserList
+                    users={teachers}
+                    onUserClick={handleMobileUserClick}
+                    emptyMessage="No teachers found."
+                />
             </div>
+            <div className="admin-dashboard-container desktop-view">
+                {/* Left Panel: Teacher List */}
+                <div className="card teacher-list-panel">
+                    <h3>Teachers</h3>
+                    <p style={{ fontSize: '0.9em', color: '#aaa', margin: '0 0 10px 0' }}>Select a teacher from the list to view details.</p>
+                    <ul className="schedule-list">
+                        {teachers.map(teacher => (
+                            <li
+                                key={teacher.user_id}
+                                onClick={() => setSelectedTeacher(teacher)}
+                                style={{
+                                    backgroundColor: selectedTeacher?.user_id === teacher.user_id ? '#fff0f0' : 'transparent',
+                                    borderLeft: selectedTeacher?.user_id === teacher.user_id ? '4px solid var(--primary-red)' : '4px solid transparent',
+                                    cursor: 'pointer',
+                                    transition: 'all 0.2s'
+                                }}
+                            >
+                                <div className="list-item-content">
+                                    <div>
+                                        <strong>{teacher.first_name} {teacher.last_name}</strong>
+                                        <br />
+                                        <small>{teacher.email}</small>
+                                    </div>
+                                    <div style={{ display: 'flex', gap: '5px' }}>
+                                        <button
+                                            onClick={(e) => handleEditUser(teacher, e)}
+                                            style={{
+                                                padding: '4px 8px',
+                                                backgroundColor: '#2196F3',
+                                                fontSize: '0.8em',
+                                                border: 'none',
+                                                borderRadius: '4px',
+                                                color: 'white',
+                                                cursor: 'pointer'
+                                            }}
+                                        >
+                                            Edit
+                                        </button>
+                                        <button
+                                            onClick={(e) => handleDeleteUser(teacher.user_id, e)}
+                                            className="delete-btn"
+                                            style={{
+                                                padding: '4px 8px',
+                                                backgroundColor: '#ff4444',
+                                                fontSize: '0.8em',
+                                                border: 'none',
+                                                borderRadius: '4px',
+                                                color: 'white',
+                                                cursor: 'pointer'
+                                            }}
+                                        >
+                                            Delete
+                                        </button>
+                                    </div>
+                                </div>
+                            </li>
+                        ))}
+                    </ul>
+                </div>
 
-            {/* Right Panel: Detail View */}
-            <div className="card teacher-detail-panel">
-                {selectedTeacher ? (
-                    <>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                            <h3>{selectedTeacher.first_name} {selectedTeacher.last_name} - Detail View</h3>
-                            <button
-                                className="btn-secondary"
-                                onClick={() => setSelectedTeacher(null)}
-                                style={{ height: 'fit-content' }}
-                            >
-                                Close View
-                            </button>
-                        </div>
-                        <div className="tabs">
-                            <button
-                                className={teacherDetailTab === 'roster' ? 'active' : ''}
-                                onClick={() => setTeacherDetailTab('roster')}
-                            >
-                                Student Roster
-                            </button>
-                            <button
-                                className={teacherDetailTab === 'attendance' ? 'active' : ''}
-                                onClick={() => setTeacherDetailTab('attendance')}
-                            >
-                                Attendance & Billing
-                            </button>
-                        </div>
+                {/* Right Panel: Detail View */}
+                <div className="card teacher-detail-panel">
+                    {selectedTeacher ? (
+                        <>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                <h3>{selectedTeacher.first_name} {selectedTeacher.last_name} - Detail View</h3>
+                                <button
+                                    className="btn-secondary"
+                                    onClick={() => setSelectedTeacher(null)}
+                                    style={{ height: 'fit-content' }}
+                                >
+                                    Close View
+                                </button>
+                            </div>
+                            <div className="tabs">
+                                <button
+                                    className={teacherDetailTab === 'roster' ? 'active' : ''}
+                                    onClick={() => setTeacherDetailTab('roster')}
+                                >
+                                    Student Roster
+                                </button>
+                                <button
+                                    className={teacherDetailTab === 'attendance' ? 'active' : ''}
+                                    onClick={() => setTeacherDetailTab('attendance')}
+                                >
+                                    Attendance & Billing
+                                </button>
+                            </div>
 
-                        {detailLoading ? (
-                            <p>Loading details...</p>
-                        ) : (
-                            <div className="tab-content">
-                                {teacherDetailTab === 'roster' && (
-                                    <table>
-                                        <thead>
-                                            <tr>
-                                                <th>ID</th><th>Student</th><th>Manager</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            {teacherRoster.map(s => (
-                                                <tr key={s.student_id}>
-                                                    <td>{s.student_id}</td>
-                                                    <td>{s.student_first_name} {s.student_last_name}</td>
-                                                    <td>{s.manager_first_name} {s.manager_last_name}</td>
+                            {detailLoading ? (
+                                <p>Loading details...</p>
+                            ) : (
+                                <div className="tab-content">
+                                    {teacherDetailTab === 'roster' && (
+                                        <table>
+                                            <thead>
+                                                <tr>
+                                                    <th>ID</th><th>Student</th><th>Manager</th>
                                                 </tr>
-                                            ))}
-                                            {teacherRoster.length === 0 && <tr><td colSpan={3}>No students assigned.</td></tr>}
-                                        </tbody>
-                                    </table>
-                                )}
+                                            </thead>
+                                            <tbody>
+                                                {teacherRoster.map(s => (
+                                                    <tr key={s.student_id}>
+                                                        <td>{s.student_id}</td>
+                                                        <td>{s.student_first_name} {s.student_last_name}</td>
+                                                        <td>{s.manager_first_name} {s.manager_last_name}</td>
+                                                    </tr>
+                                                ))}
+                                                {teacherRoster.length === 0 && <tr><td colSpan={3}>No students assigned.</td></tr>}
+                                            </tbody>
+                                        </table>
+                                    )}
 
-                                {teacherDetailTab === 'attendance' && (
-                                    <BillingAccordion
-                                        students={teacherRoster}
-                                        schedule={teacherSchedule.map(l => ({ ...l, parent_note: '' }))}
-                                    />
-                                )}
-                            </div>
-                        )}
-                    </>
-                ) : null}
+                                    {teacherDetailTab === 'attendance' && (
+                                        <BillingAccordion
+                                            students={teacherRoster}
+                                            schedule={teacherSchedule.map(l => ({ ...l, parent_note: '' }))}
+                                        />
+                                    )}
+                                </div>
+                            )}
+                        </>
+                    ) : null}
+                </div>
             </div>
-        </div>
+        </>
     );
 
 
@@ -833,6 +863,23 @@ const AdminDashboard = () => {
                 activeTab={mainTab}
                 setActiveTab={setMainTab}
                 role="admin"
+            />
+
+            <MobileUserDetailModal
+                isOpen={isMobileModalOpen}
+                onClose={() => setIsMobileModalOpen(false)}
+                user={selectedMobileUser}
+                onEdit={(user) => {
+                    setUserToEdit(user);
+                    setIsAddUserOpen(true); // Re-use existing edit modal logic
+                }}
+                onDelete={(userId) => {
+                    handleDeleteUser(userId, {} as any); // Re-use existing delete logic
+                }}
+                // Props for Student actions
+                teachers={allUsers.filter(u => u.role_id === 2).map(t => ({ id: t.user_id, name: `${t.first_name} ${t.last_name}` }))}
+                onAssignTeacher={(userId, teacherId) => handleTeacherAssignmentChange(userId, teacherId, '')}
+                mainTab={mainTab}
             />
         </div>
     );
