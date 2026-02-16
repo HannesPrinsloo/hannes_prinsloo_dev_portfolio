@@ -267,6 +267,12 @@ button {
   resize: vertical;
 }
 
+.schedule-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
 .schedule-list ul {
   list-style: none;
   padding: 0;
@@ -348,6 +354,17 @@ button {
   justify-content: space-between;
   align-items: flex-start;
   width: 100%;
+}
+
+/* Fix for long names/emails causing overflow */
+.list-item-content>div:first-child {
+  flex: 1;
+  min-width: 0;
+  /* Allow shrinking for text wrap */
+  padding-right: 10px;
+  /* Space before buttons */
+  word-break: break-word;
+  overflow-wrap: break-word;
 }
 
 @media (max-width: 480px) {
