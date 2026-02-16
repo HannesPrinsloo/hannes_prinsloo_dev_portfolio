@@ -84,7 +84,7 @@ const MobileUserDetailModal: React.FC<MobileUserDetailModalProps> = ({
                         onClick={() => setActiveTab('info')}
                         style={{
                             padding: '6px 12px',
-                            background: activeTab === 'info' ? '#2ea44f' : '#f0f0f0',
+                            background: activeTab === 'info' ? '#FF5F5E' : '#f0f0f0',
                             color: activeTab === 'info' ? 'white' : '#333',
                             border: 'none',
                             borderRadius: '16px',
@@ -100,7 +100,7 @@ const MobileUserDetailModal: React.FC<MobileUserDetailModalProps> = ({
                             onClick={() => setActiveTab('academic')}
                             style={{
                                 padding: '6px 12px',
-                                background: activeTab === 'academic' ? '#2ea44f' : '#f0f0f0',
+                                background: activeTab === 'academic' ? '#FF5F5E' : '#f0f0f0',
                                 color: activeTab === 'academic' ? 'white' : '#333',
                                 border: 'none',
                                 borderRadius: '16px',
@@ -118,7 +118,7 @@ const MobileUserDetailModal: React.FC<MobileUserDetailModalProps> = ({
                                 onClick={() => setActiveTab('roster')}
                                 style={{
                                     padding: '6px 12px',
-                                    background: activeTab === 'roster' ? '#2ea44f' : '#f0f0f0',
+                                    background: activeTab === 'roster' ? '#FF5F5E' : '#f0f0f0',
                                     color: activeTab === 'roster' ? 'white' : '#333',
                                     border: 'none',
                                     borderRadius: '16px',
@@ -132,7 +132,7 @@ const MobileUserDetailModal: React.FC<MobileUserDetailModalProps> = ({
                                 onClick={() => setActiveTab('attendance')}
                                 style={{
                                     padding: '6px 12px',
-                                    background: activeTab === 'attendance' ? '#2ea44f' : '#f0f0f0',
+                                    background: activeTab === 'attendance' ? '#FF5F5E' : '#f0f0f0',
                                     color: activeTab === 'attendance' ? 'white' : '#333',
                                     border: 'none',
                                     borderRadius: '16px',
@@ -149,7 +149,7 @@ const MobileUserDetailModal: React.FC<MobileUserDetailModalProps> = ({
                         onClick={() => setActiveTab('actions')}
                         style={{
                             padding: '6px 12px',
-                            background: activeTab === 'actions' ? '#2ea44f' : '#f0f0f0',
+                            background: activeTab === 'actions' ? '#FF5F5E' : '#f0f0f0',
                             color: activeTab === 'actions' ? 'white' : '#333',
                             border: 'none',
                             borderRadius: '16px',
@@ -217,28 +217,34 @@ const MobileUserDetailModal: React.FC<MobileUserDetailModalProps> = ({
                                                 <div style={{ display: 'flex', gap: '8px' }}>
                                                     {/* Green: Present */}
                                                     <span style={{
-                                                        backgroundColor: '#2e7d32', color: 'white',
-                                                        width: '24px', height: '24px', borderRadius: '50%',
+                                                        backgroundColor: 'rgba(46, 125, 50, 0.15)', // Softer Green
+                                                        color: '#2e7d32',
+                                                        border: '1px solid #2e7d32',
+                                                        width: '28px', height: '28px', borderRadius: '50%',
                                                         display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                                        fontSize: '0.8rem', fontWeight: 'bold'
+                                                        fontSize: '0.85rem', fontWeight: 'bold'
                                                     }}>
                                                         {stats.present}
                                                     </span>
                                                     {/* Red: Absent */}
                                                     <span style={{
-                                                        backgroundColor: '#d32f2f', color: 'white',
-                                                        width: '24px', height: '24px', borderRadius: '50%',
+                                                        backgroundColor: 'rgba(211, 47, 47, 0.15)', // Softer Red
+                                                        color: '#d32f2f',
+                                                        border: '1px solid #d32f2f',
+                                                        width: '28px', height: '28px', borderRadius: '50%',
                                                         display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                                        fontSize: '0.8rem', fontWeight: 'bold'
+                                                        fontSize: '0.85rem', fontWeight: 'bold'
                                                     }}>
                                                         {stats.absent}
                                                     </span>
                                                     {/* Grey: Pending */}
                                                     <span style={{
-                                                        backgroundColor: '#9e9e9e', color: 'white',
-                                                        width: '24px', height: '24px', borderRadius: '50%',
+                                                        backgroundColor: 'rgba(158, 158, 158, 0.15)', // Softer Grey
+                                                        color: '#757575',
+                                                        border: '1px solid #9e9e9e',
+                                                        width: '28px', height: '28px', borderRadius: '50%',
                                                         display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                                        fontSize: '0.8rem', fontWeight: 'bold'
+                                                        fontSize: '0.85rem', fontWeight: 'bold'
                                                     }}>
                                                         {stats.pending}
                                                     </span>
