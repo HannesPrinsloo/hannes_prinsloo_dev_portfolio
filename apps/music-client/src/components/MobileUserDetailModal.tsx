@@ -34,27 +34,41 @@ const MobileUserDetailModal: React.FC<MobileUserDetailModalProps> = ({
     };
 
     return (
-        <div style={{
-            position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
-            backgroundColor: 'rgba(0,0,0,0.7)',
-            display: 'flex', justifyContent: 'center', alignItems: 'center',
-            zIndex: 10001 // Higher than BottomNav (9999)
-        }} onClick={onClose}>
+        <div
+            className="mobile-modal-overlay"
+            style={{
+                position: 'fixed',
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                backgroundColor: 'rgba(0,0,0,0.5)', // Changed from 0.7
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                zIndex: 1000, // Changed from 10001
+                backdropFilter: 'blur(2px)', // Added
+                padding: '20px', // Added
+            }}
+            onClick={onClose}
+        >
             <div
-                className="card"
+                className="mobile-modal-content"
                 onClick={e => e.stopPropagation()}
                 style={{
-                    width: '90%',
-                    maxWidth: '400px',
                     backgroundColor: 'white',
-                    color: 'var(--text-dark)',
+                    color: 'var(--text-dark)', // Kept from original
+                    width: '100%', // Changed from 90%
+                    maxWidth: '400px',
+                    borderRadius: '12px', // Changed from 8px
+                    padding: '20px',
                     maxHeight: '85vh',
                     display: 'flex',
                     flexDirection: 'column',
-                    padding: '20px',
-                    borderRadius: '8px',
                     position: 'relative',
-                    overflow: 'hidden' // Container itself hidden, inner content scrolls
+                    boxShadow: '0 4px 20px rgba(0,0,0,0.15)', // Added
+                    overflow: 'hidden', // Kept from original
+                    outline: 'none', // Remove blue focus ring
                 }}
             >
                 <button
@@ -68,7 +82,9 @@ const MobileUserDetailModal: React.FC<MobileUserDetailModalProps> = ({
                         fontSize: '1.5rem',
                         cursor: 'pointer',
                         color: '#666',
-                        zIndex: 10
+                        zIndex: 10,
+                        outline: 'none', // Remove focus ring from close button too just in case
+                        WebkitTapHighlightColor: 'transparent'
                     }}
                 >
                     &times;
@@ -79,89 +95,63 @@ const MobileUserDetailModal: React.FC<MobileUserDetailModalProps> = ({
                 </h2>
 
                 {/* Styled Tabs */}
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginBottom: '20px', borderBottom: '1px solid #eee', paddingBottom: '10px' }}>
-                    <button
-                        onClick={() => setActiveTab('info')}
-                        style={{
-                            padding: '6px 12px',
-                            background: activeTab === 'info' ? '#FF5F5E' : '#f0f0f0',
-                            color: activeTab === 'info' ? 'white' : '#333',
-                            border: 'none',
-                            borderRadius: '16px',
-                            cursor: 'pointer',
-                            fontSize: '0.85rem'
-                        }}
-                    >
-                        Info
-                    </button>
-
-                    {mainTab === 'Students' && (
-                        <button
-                            onClick={() => setActiveTab('academic')}
-                            style={{
-                                padding: '6px 12px',
-                                background: activeTab === 'academic' ? '#FF5F5E' : '#f0f0f0',
-                                color: activeTab === 'academic' ? 'white' : '#333',
-                                border: 'none',
-                                borderRadius: '16px',
-                                cursor: 'pointer',
-                                fontSize: '0.85rem'
-                            }}
-                        >
-                            Academic
-                        </button>
-                    )}
-
-                    {mainTab === 'Teachers' && (
-                        <>
+                <div style={{
+                    display: 'flex',
+                    flexWrap: 'nowrap', // Force single line
+                    overflowX: 'auto', // Allow scrolling if needed
+                    gap: '8px',
+                    marginBottom: '20px',
+                    borderBottom: '1px solid #eee',
+                    paddingBottom: '10px',
+                    scrollbarWidth: 'none', // Firefox
+                    msOverflowStyle: 'none', // IE/Edge
+                    WebkitOverflowScrolling: 'touch' // Smooth scrolling on iOS
+                }}>
+                    <style>
+                        {`
+                            /* Hide scrollbar for Chrome/Safari/Opera */
+                            .tab-container::-webkit-scrollbar {
+                                display: none;
+                            }
+                        `}
+                    </style>
+                    {[
+                        { id: 'info', label: 'Info', show: true },
+                        { id: 'academic', label: 'Academic', show: mainTab === 'Students' },
+                        { id: 'roster', label: 'Roster', show: mainTab === 'Teachers' },
+                        { id: 'attendance', label: 'Attendance', show: mainTab === 'Teachers' },
+                        { id: 'actions', label: 'Actions', show: true }
+                    ].map(tab => {
+                        if (!tab.show) return null;
+                        const isActive = activeTab === tab.id;
+                        return (
                             <button
-                                onClick={() => setActiveTab('roster')}
+                                key={tab.id}
+                                onClick={() => setActiveTab(tab.id as any)} // Cast safely
                                 style={{
                                     padding: '6px 12px',
-                                    background: activeTab === 'roster' ? '#FF5F5E' : '#f0f0f0',
-                                    color: activeTab === 'roster' ? 'white' : '#333',
+                                    background: isActive ? '#FF5F5E' : '#f0f0f0',
+                                    color: isActive ? 'white' : '#333',
                                     border: 'none',
                                     borderRadius: '16px',
                                     cursor: 'pointer',
-                                    fontSize: '0.85rem'
+                                    fontSize: '0.85rem',
+                                    // Smooth transitions & remove defaults
+                                    transition: 'background-color 0.2s ease, color 0.2s ease',
+                                    outline: 'none',
+                                    WebkitTapHighlightColor: 'transparent',
+                                    userSelect: 'none',
+                                    whiteSpace: 'nowrap', // Prevent text wrapping
+                                    flexShrink: 0 // Prevent button squishing
                                 }}
                             >
-                                Roster
+                                {tab.label}
                             </button>
-                            <button
-                                onClick={() => setActiveTab('attendance')}
-                                style={{
-                                    padding: '6px 12px',
-                                    background: activeTab === 'attendance' ? '#FF5F5E' : '#f0f0f0',
-                                    color: activeTab === 'attendance' ? 'white' : '#333',
-                                    border: 'none',
-                                    borderRadius: '16px',
-                                    cursor: 'pointer',
-                                    fontSize: '0.85rem'
-                                }}
-                            >
-                                Attendance
-                            </button>
-                        </>
-                    )}
-
-                    <button
-                        onClick={() => setActiveTab('actions')}
-                        style={{
-                            padding: '6px 12px',
-                            background: activeTab === 'actions' ? '#FF5F5E' : '#f0f0f0',
-                            color: activeTab === 'actions' ? 'white' : '#333',
-                            border: 'none',
-                            borderRadius: '16px',
-                            cursor: 'pointer',
-                            fontSize: '0.85rem'
-                        }}
-                    >
-                        Actions
-                    </button>
+                        );
+                    })}
                 </div>
 
-                <div className="tab-content" style={{ overflowY: 'auto', flex: 1 }}>
+                <div className="tab-content" style={{ overflowY: 'auto', flex: 1, minHeight: '300px' }}>
                     {activeTab === 'info' && (
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
                             <div>

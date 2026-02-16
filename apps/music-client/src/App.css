@@ -989,4 +989,35 @@ button {
   .desktop-view {
     display: block;
   }
+
+  /* Mobile Modal Animations */
+  @keyframes mobileModalFadeIn {
+    from {
+      opacity: 0;
+    }
+
+    to {
+      opacity: 1;
+    }
+  }
+
+  @keyframes mobileModalSlideUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px) scale(0.95);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+
+  .mobile-modal-overlay {
+    animation: mobileModalFadeIn 0.2s ease-out forwards;
+  }
+
+  .mobile-modal-content {
+    animation: mobileModalSlideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
 }
