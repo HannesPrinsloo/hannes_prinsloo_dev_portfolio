@@ -357,14 +357,14 @@ const AdminDashboard = () => {
                     <tbody>
                         {users.map(u => (
                             <tr key={u.user_id}>
-                                <td>{u.user_id}</td>
-                                <td>{u.first_name} {u.last_name}</td>
-                                <td>{u.email}</td>
-                                <td>{u.phone_number}</td>
+                                <td data-label="ID">{u.user_id}</td>
+                                <td data-label="Name">{u.first_name} {u.last_name}</td>
+                                <td data-label="Email">{u.email}</td>
+                                <td data-label="Phone">{u.phone_number}</td>
                                 {mainTab === 'Students' && (
-                                    <td>
+                                    <td data-label="Assigned Teacher">
                                         <select
-                                            style={{ padding: '6px', backgroundColor: 'white', color: 'var(--text-dark)', border: '1px solid #ccc', borderRadius: '4px' }}
+                                            style={{ padding: '6px', backgroundColor: 'white', color: 'var(--text-dark)', border: '1px solid #ccc', borderRadius: '4px', width: '100%', maxWidth: '200px' }}
                                             value={u.teachers?.[0]?.id || ''}
                                             onChange={(e) => handleTeacherAssignmentChange(u.user_id, e.target.value, u.teacher_names || '')}
                                         >
@@ -377,9 +377,9 @@ const AdminDashboard = () => {
                                         </select>
                                     </td>
                                 )}
-                                <td>{u.is_active ? 'Active' : 'Inactive'}</td>
-                                <td>
-                                    <div style={{ display: 'flex', gap: '5px' }}>
+                                <td data-label="Status">{u.is_active ? 'Active' : 'Inactive'}</td>
+                                <td data-label="Actions">
+                                    <div className="list-item-content" style={{ gap: '5px' }}>
                                         <button
                                             onClick={(e) => handleEditUser(u, e)}
                                             style={{
