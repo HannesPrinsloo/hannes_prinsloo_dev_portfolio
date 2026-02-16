@@ -521,7 +521,7 @@ const AdminDashboard = () => {
                 </div>
 
                 {/* Right Panel: Detail View */}
-                <div className="card teacher-detail-panel">
+                <div className={`teacher-detail-panel ${selectedTeacher ? 'card' : ''}`} style={!selectedTeacher ? { boxShadow: 'none', background: 'transparent' } : {}}>
                     {selectedTeacher ? (
                         <>
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -582,7 +582,11 @@ const AdminDashboard = () => {
                                 </div>
                             )}
                         </>
-                    ) : null}
+                    ) : (
+                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', color: '#888', textAlign: 'center', padding: '40px', border: '2px dashed #eee', borderRadius: '12px' }}>
+                            <p>Select a teacher from the list to view details.</p>
+                        </div>
+                    )}
                 </div>
             </div>
         </>

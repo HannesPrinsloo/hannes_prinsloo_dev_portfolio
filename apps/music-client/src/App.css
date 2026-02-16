@@ -597,10 +597,10 @@ button {
   width: 100%;
   border-collapse: separate;
   border-spacing: 0;
-  background-color: white;
-  border-radius: 8px;
-  overflow: hidden;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  background-color: transparent;
+  /* Changed from white to transparent to allow split cards */
+  box-shadow: none;
+  /* Removed shadow */
   margin-top: 20px;
 }
 
@@ -1019,5 +1019,42 @@ button {
 
   .mobile-modal-content {
     animation: mobileModalSlideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+}
+
+/* Restore Desktop Split View for Admin Dashboard */
+@media (min-width: 768px) {
+  .admin-dashboard-container.desktop-view {
+    display: flex !important;
+    align-items: flex-start;
+    gap: 20px;
+    background-color: transparent;
+    box-shadow: none;
+  }
+
+  /* Make sure Panels don't inherit full width */
+  .teacher-list-panel {
+    flex: 1;
+    min-width: 300px;
+    /* Prevent crushing */
+  }
+
+  .teacher-detail-panel {
+    flex: 2;
+    /* Give more space to details */
+    margin-top: 0;
+    /* Override default card margin if any */
+    animation: fadeIn 0.3s ease;
+  }
+}
+
+/* Helper animation if not already defined */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
   }
 }
