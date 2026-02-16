@@ -26,6 +26,10 @@ body {
   min-height: 100vh;
   background-color: var(--bg-light);
   color: var(--text-dark);
+  /* PREVENT HORIZONTAL SCROLL */
+  overflow-x: hidden;
+  width: 100%;
+  position: relative;
 }
 
 .logo {
@@ -291,6 +295,9 @@ button {
   max-width: 1200px;
   margin: 0 auto;
   text-align: left;
+  /* Prevent container from forcing width */
+  box-sizing: border-box;
+  overflow-x: hidden;
 }
 
 @media (min-width: 768px) {
@@ -630,7 +637,8 @@ button {
   border-top: 1px solid #ddd;
   justify-content: space-around;
   align-items: center;
-  z-index: 1000;
+  z-index: 9999;
+  /* Ensure it stays on top */
   padding-bottom: env(safe-area-inset-bottom);
 }
 
