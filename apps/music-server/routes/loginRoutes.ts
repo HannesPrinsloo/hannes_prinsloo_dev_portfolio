@@ -33,7 +33,8 @@ router.post('/', validateRequest(userLoginSchema), async (req, res) => {
             res.cookie('authToken', token, {
                 httpOnly: true,
                 secure: isProd, // Render requires Secure for SameSite=None
-                sameSite: isProd ? 'none' : 'lax', // 'none' needed for cross-site (Vercel->Render)
+                sameSite: 'lax', // Lax is perfect for subdomain sharing (api. -> www.)
+                domain: isProd ? '.hannesprinsloo.dev' : undefined,
                 maxAge: 24 * 60 * 60 * 1000,
             });
 
