@@ -21,8 +21,17 @@ export default {
             },
             borderWidth: {
                 3: '3px',
+            },
+        },
+        keyframes: {
+            'paper-slam': {
+                '0%': { opacity: '0', transform: 'scale(1.5) rotate(-5deg)' },
+                '100%': { opacity: '1', transform: 'scale(1) rotate(0deg)' },
             }
         },
+        animation: {
+            'paper-slam': 'paper-slam 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards',
+        }
     },
     plugins: [],
 }

@@ -1,17 +1,20 @@
 import { useState } from 'react'
-// Note: useState import kept for future toggle functionality, though currently unused in visual-only pass.
+import BackstoryModal from './components/BackstoryModal'
 
 function App() {
     const [audioMode, setAudioMode] = useState(false);
+    const [showBackstory, setShowBackstory] = useState(false);
 
     return (
         <div className="min-h-screen bg-paper text-ink p-4 md:p-8 font-mono">
+
+            <BackstoryModal isOpen={showBackstory} onClose={() => setShowBackstory(false)} />
 
             {/* Navigation / Header */}
             <nav className="fixed top-0 left-0 right-0 z-50 p-4 pointer-events-none">
                 <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
                     {/* Logo / Brand */}
-                    <div className="pointer-events-auto bg-paper border-2 border-ink shadow-neo px-4 py-2 font-sans font-bold text-xl uppercase tracking-tighter hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all cursor-pointer">
+                    <div className="pointer-events-auto bg-paper border-2 border-ink shadow-neo px-4 py-2 font-sans font-medium text-xl uppercase tracking-tighter hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all cursor-pointer">
                         <a href="#home">Hannes Prinsloo</a>
                     </div>
 
@@ -44,19 +47,26 @@ function App() {
                 <section id="home" className="mb-32 relative scroll-mt-48">
                     <div className="absolute -left-10 -top-10 w-20 h-20 border-l-4 border-t-4 border-ink opacity-20 hidden md:block"></div>
 
-                    <h1 className="text-6xl md:text-8xl font-black uppercase leading-[0.85] mb-8 tracking-tighter mix-blend-multiply">
+                    <h1 className="text-6xl md:text-8xl font-medium leading-[0.85] mb-8 tracking-tighter mix-blend-multiply">
                         Full Stack <br />
-                        <span className="text-transparent" style={{ WebkitTextStroke: '2px #1A1A1A' }}>Developer</span>
+                        <span>Developer</span>
                     </h1>
 
                     <p className="text-lg md:text-xl max-w-2xl leading-relaxed border-l-4 border-acid pl-6 italic">
                         I am a self-taught Full Stack Developer and freelancer, currently studying for a Computer Science degree. I am also a professional gigging musician and music teacher looking to begin a fully fledged career in tech.
                     </p>
+
+                    <button
+                        onClick={() => setShowBackstory(true)}
+                        className="inline-block mt-8 bg-paper text-ink px-6 py-3 font-medium uppercase border-2 border-ink shadow-neo hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all"
+                    >
+                        My Background: Artist to Engineer
+                    </button>
                 </section>
 
                 {/* Expertise Section */}
                 <section id="expertise" className="mb-32 scroll-mt-32">
-                    <h2 className="text-4xl font-black uppercase mb-12 flex items-center gap-4">
+                    <h2 className="text-4xl font-medium mb-12 flex items-center gap-4">
                         <span className="w-8 h-8 bg-acid border-2 border-ink block"></span>
                         My Expertise
                     </h2>
@@ -64,7 +74,7 @@ function App() {
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                         {/* Card 1: The Stack */}
                         <div className="border-2 border-ink p-6 bg-white shadow-neo hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all">
-                            <h3 className="text-xl font-bold uppercase mb-4 border-b-2 border-ink pb-2">Full Stack Architecture</h3>
+                            <h3 className="text-xl font-bold mb-4 border-b-2 border-ink pb-2">Full Stack <br />Architecture</h3>
                             <p className="text-sm mb-6 leading-relaxed">
                                 Specializing in the <span className="font-bold bg-yellow-200 px-1">React / TypeScript</span> ecosystem.
                                 Experience in building full stack applications with React, Zustand, Node.js, Express, and PostgreSQL.
@@ -78,7 +88,7 @@ function App() {
 
                         {/* Card 2: CS & Foundations */}
                         <div className="border-2 border-ink p-6 bg-white shadow-neo hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all">
-                            <h3 className="text-xl font-bold uppercase mb-4 border-b-2 border-ink pb-2">Computer Science <br />& Foundations</h3>
+                            <h3 className="text-xl font-bold mb-4 border-b-2 border-ink pb-2">Computer Science <br />& Foundations</h3>
                             <p className="text-sm mb-6 leading-relaxed">
                                 Strong grounding in Computer Science fundamentals.
                                 Experience with <span className="font-bold">C</span>, <span className="font-bold">C++</span>, <span className="font-bold">SQL (PostgreSQL)</span>, <span className="font-bold">JavaScript</span>, <span className="font-bold">TypeScript</span> and <span className="font-bold">Data Structures & Algorithms</span>.
@@ -92,7 +102,7 @@ function App() {
 
                         {/* Card 3: Freelance & CMS */}
                         <div className="border-2 border-ink p-6 bg-white shadow-neo hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all">
-                            <h3 className="text-xl font-bold uppercase mb-4 border-b-2 border-ink pb-2">Freelance <br />& CMS</h3>
+                            <h3 className="text-xl font-bold mb-4 border-b-2 border-ink pb-2">Freelance <br />& CMS</h3>
                             <p className="text-sm mb-6 leading-relaxed">
                                 Extensive experience delivering custom solutions.
                                 Expert in <span className="font-bold">WordPress</span> customisation and building custom JS features for Elementor Pro.
@@ -107,7 +117,7 @@ function App() {
 
                     {/* Certifications List */}
                     <div className="mt-12 border-2 border-ink p-6 bg-white shadow-neo">
-                        <h3 className="text-xl font-bold uppercase mb-6 flex items-center gap-2">
+                        <h3 className="text-xl font-bold mb-6 flex items-center gap-2">
                             <div className="w-4 h-4 rounded-full bg-ink"></div>
                             Certifications
                         </h3>
@@ -115,7 +125,7 @@ function App() {
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                             {/* University of Michigan */}
                             <div>
-                                <h4 className="font-bold border-b border-ink mb-3 pb-1">University of Michigan (Coursera)</h4>
+                                <h4 className="font-medium border-b border-ink mb-3 pb-1">University of Michigan (Coursera)</h4>
                                 <ul className="list-none space-y-2 text-sm">
                                     <li className="flex items-start gap-2 group/link">
                                         <span className="text-acid font-bold">»</span>
@@ -155,7 +165,7 @@ function App() {
 
                             {/* freeCodeCamp */}
                             <div>
-                                <h4 className="font-bold border-b border-ink mb-3 pb-1">freeCodeCamp</h4>
+                                <h4 className="font-medium border-b border-ink mb-3 pb-1">freeCodeCamp</h4>
                                 <ul className="list-none space-y-2 text-sm">
                                     <li className="flex items-start gap-2 group/link">
                                         <span className="text-acid font-bold">»</span>
