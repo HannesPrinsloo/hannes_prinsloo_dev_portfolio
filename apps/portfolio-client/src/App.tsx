@@ -347,7 +347,7 @@ function App() {
 
                 {/* Experience Section */}
                 <section id="experience" className="mb-32 scroll-mt-32">
-                    <h2 className="text-4xl font-black uppercase mb-12 flex items-center gap-4">
+                    <h2 className="text-4xl font-medium mb-12 flex items-center gap-4">
                         <span className="w-8 h-8 bg-acid border-2 border-ink block"></span>
                         Experience
                     </h2>
@@ -355,7 +355,7 @@ function App() {
                         {/* Timeline Item 1 */}
                         <div className="relative group">
                             <div className="absolute -left-[43px] top-1 w-5 h-5 bg-paper rounded-full border-4 border-ink group-hover:bg-acid transition-colors"></div>
-                            <h3 className="text-xl font-bold uppercase">Freelance Web Developer</h3>
+                            <h3 className="text-xl font-bold mb-4 border-b-2 border-ink pb-2">Freelance Web Developer</h3>
                             <span className="text-sm font-mono text-gray-500 mb-4 block bg-gray-200 inline-block px-2">2023 - Present</span>
                             <p className="max-w-2xl leading-relaxed text-sm">
                                 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit.
@@ -365,7 +365,7 @@ function App() {
                         {/* Timeline Item 2 */}
                         <div className="relative group">
                             <div className="absolute -left-[43px] top-1 w-5 h-5 bg-paper rounded-full border-4 border-ink group-hover:bg-acid transition-colors"></div>
-                            <h3 className="text-xl font-bold uppercase">Professional Musician</h3>
+                            <h3 className="text-xl font-bold mb-4 border-b-2 border-ink pb-2">Professional Musician</h3>
                             <span className="text-sm font-mono text-gray-500 mb-4 block bg-gray-200 inline-block px-2">2013 - Present</span>
                             <p className="max-w-2xl leading-relaxed text-sm">
                                 Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Developing discipline, creativity, and the ability to perform under pressure.
@@ -373,7 +373,7 @@ function App() {
                         </div>
                         <div className="relative group">
                             <div className="absolute -left-[43px] top-1 w-5 h-5 bg-paper rounded-full border-4 border-ink group-hover:bg-acid transition-colors"></div>
-                            <h3 className="text-xl font-bold uppercase">Something or other</h3>
+                            <h3 className="text-xl font-bold mb-4 border-b-2 border-ink pb-2">Something or other</h3>
                             <span className="text-sm font-mono text-gray-500 mb-4 block bg-gray-200 inline-block px-2">2013 - Present</span>
                             <p className="max-w-2xl leading-relaxed text-sm">
                                 Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Developing discipline, creativity, and the ability to perform under pressure.
