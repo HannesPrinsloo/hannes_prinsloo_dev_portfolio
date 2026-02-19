@@ -270,7 +270,7 @@ function App() {
                         Technical Arsenal
                     </h4>
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                        {['TypeScript', 'React', 'Next.js', 'Node.js', 'Express', 'Supabase', 'PostgreSQL', 'Tailwind', 'Docker', 'Git', 'Vercel', 'Render'].map((tool, i) => (
+                        {['TypeScript', 'React', 'Zustand', 'Node.js', 'Express', 'PostgreSQL', 'WordPress', 'Tailwind', 'Git', 'Vercel', 'Render', 'Vite'].map((tool, i) => (
                             <div key={tool} className="border-2 border-ink p-4 hover:shadow-neo hover:bg-white transition-all cursor-default">
                                 <div className="text-xs text-gray-400 mb-1">0{i + 1}</div>
                                 <div className="font-bold uppercase">{tool}</div>
