@@ -6,6 +6,7 @@
 
 :root {
     font-family: 'Space Grotesk', system-ui, sans-serif;
+    scroll-behavior: smooth;
 }
 
 body {

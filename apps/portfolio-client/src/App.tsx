@@ -9,10 +9,19 @@ function App() {
 
             {/* Navigation / Header */}
             <nav className="fixed top-0 left-0 right-0 z-50 p-4 pointer-events-none">
-                <div className="max-w-7xl mx-auto flex justify-between items-start">
+                <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
                     {/* Logo / Brand */}
                     <div className="pointer-events-auto bg-paper border-2 border-ink shadow-neo px-4 py-2 font-sans font-bold text-xl uppercase tracking-tighter hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all cursor-pointer">
-                        Hannes Prinsloo
+                        <a href="#home">Hannes Prinsloo</a>
+                    </div>
+
+                    {/* Nav Links */}
+                    <div className="pointer-events-auto bg-paper border-2 border-ink shadow-neo px-6 py-2 hidden md:flex gap-8 font-bold uppercase text-sm tracking-widest">
+                        <a href="#home" className="hover:text-acid transition-colors">Home</a>
+                        <a href="#expertise" className="hover:text-acid transition-colors">Expertise</a>
+                        <a href="#work" className="hover:text-acid transition-colors">Work</a>
+                        <a href="#experience" className="hover:text-acid transition-colors">Experience</a>
+                        <a href="#contact" className="hover:text-acid transition-colors">Contact</a>
                     </div>
 
                     {/* Director's Cut Toggle */}
@@ -32,7 +41,7 @@ function App() {
             <main className="max-w-5xl mx-auto mt-32 md:mt-48 pb-20">
 
                 {/* Hero Section */}
-                <section className="mb-32 relative">
+                <section id="home" className="mb-32 relative scroll-mt-48">
                     <div className="absolute -left-10 -top-10 w-20 h-20 border-l-4 border-t-4 border-ink opacity-20 hidden md:block"></div>
 
                     <h1 className="text-6xl md:text-8xl font-black uppercase leading-[0.85] mb-8 tracking-tighter mix-blend-multiply">
@@ -46,7 +55,7 @@ function App() {
                 </section>
 
                 {/* Expertise Section */}
-                <section className="mb-32">
+                <section id="expertise" className="mb-32 scroll-mt-32">
                     <h2 className="text-4xl font-black uppercase mb-12 flex items-center gap-4">
                         <span className="w-8 h-8 bg-acid border-2 border-ink block"></span>
                         My Expertise
@@ -187,18 +196,18 @@ function App() {
                     </div>
                 </section>
 
-                {/* Featured Project: The Music School App */}
-                <section className="mb-32">
+                {/* Projects */}
+                <section id="work" className="mb-32 scroll-mt-32">
                     <div className="flex items-center gap-4 mb-8">
                         <div className="h-1 bg-ink flex-grow"></div>
                         <h2 className="text-2xl font-bold uppercase bg-ink text-paper px-4 py-1 rotate-2">
-                            Featured Projects
+                            Projects
                         </h2>
                         <div className="h-1 bg-ink flex-grow"></div>
                     </div>
 
-                    {/* Cassette Tape / Module Card */}
-                    <div className="border-2 border-ink shadow-neo bg-white p-2 relative group hover:bg-acid transition-colors duration-0">
+                    {/* Cassette Tape / Module Card - Music School Manager */}
+                    <div className="border-2 border-ink shadow-neo bg-white p-2 relative group hover:bg-acid transition-colors duration-0 mb-12">
                         {/* The "Label" */}
                         <div className="border border-ink p-6 md:p-10 flex flex-col md:flex-row gap-10 bg-paper group-hover:bg-white transition-colors h-full">
 
@@ -261,6 +270,106 @@ function App() {
                             <div className="w-full h-[1px] bg-ink transform rotate-45"></div>
                         </div>
                     </div>
+
+                    {/* Placeholder Project Card */}
+                    <div className="border-2 border-ink shadow-neo bg-white p-2 relative group hover:bg-acid transition-colors duration-0">
+                        {/* The "Label" */}
+                        <div className="border border-ink p-6 md:p-10 flex flex-col md:flex-row gap-10 bg-paper group-hover:bg-white transition-colors h-full">
+
+                            {/* Visual Side */}
+                            <div className="w-full md:w-1/2 aspect-video border-2 border-ink bg-gray-200 relative overflow-hidden grayscale group-hover:grayscale-0 transition-all duration-300">
+                                {/* Abstract Lines / Screenprint Effect */}
+                                <div className="absolute inset-0 bg-[linear-gradient(45deg,#1A1A1A_1px,transparent_1px)] bg-[length:10px_10px] opacity-10"></div>
+                                <div className="absolute inset-0 flex items-center justify-center p-8">
+                                    <div className="w-full h-full border-2 border-dashed border-ink flex items-center justify-center">
+                                        <span className="font-sans font-bold text-4xl opacity-20 transform -rotate-12">COMING SOON</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Info Side */}
+                            <div className="w-full md:w-1/2 flex flex-col justify-between">
+                                <div>
+                                    <div className="flex justify-between items-start mb-4">
+                                        <h3 className="text-3xl font-black uppercase leading-none">Another Cool<br />Project</h3>
+                                        <span className="border border-ink px-2 py-1 text-xs font-bold bg-acid">v1.0</span>
+                                    </div>
+                                    <p className="text-sm mb-6 border-l-2 border-ink pl-4">
+                                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam.
+                                    </p>
+
+                                    {/* Tech Tags */}
+                                    <div className="flex flex-wrap gap-2 mb-8">
+                                        {['React', 'TypeScript', 'Tailwind', '...'].map(tech => (
+                                            <span key={tech} className="text-xs font-bold uppercase border border-ink px-2 py-1 hover:bg-ink hover:text-paper cursor-default transition-colors">
+                                                {tech}
+                                            </span>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                {/* Action Button */}
+                                <a
+                                    href="#"
+                                    className="block w-full bg-ink text-paper text-center font-bold uppercase py-4 border-2 border-transparent hover:bg-paper hover:text-ink hover:border-ink hover:shadow-neo transition-all active:translate-x-1 active:translate-y-1 active:shadow-none opacity-80 cursor-not-allowed"
+                                >
+                                    Work in Progress
+                                </a>
+                            </div>
+                        </div>
+
+                        {/* Decor: Screws */}
+                        <div className="absolute top-2 left-2 w-2 h-2 rounded-full border border-ink bg-gray-300 flex items-center justify-center">
+                            <div className="w-full h-[1px] bg-ink transform rotate-45"></div>
+                        </div>
+                        <div className="absolute top-2 right-2 w-2 h-2 rounded-full border border-ink bg-gray-300 flex items-center justify-center">
+                            <div className="w-full h-[1px] bg-ink transform rotate-45"></div>
+                        </div>
+                        <div className="absolute bottom-2 left-2 w-2 h-2 rounded-full border border-ink bg-gray-300 flex items-center justify-center">
+                            <div className="w-full h-[1px] bg-ink transform rotate-45"></div>
+                        </div>
+                        <div className="absolute bottom-2 right-2 w-2 h-2 rounded-full border border-ink bg-gray-300 flex items-center justify-center">
+                            <div className="w-full h-[1px] bg-ink transform rotate-45"></div>
+                        </div>
+                    </div>
+                </section>
+
+
+                {/* Experience Section */}
+                <section id="experience" className="mb-32 scroll-mt-32">
+                    <h2 className="text-4xl font-black uppercase mb-12 flex items-center gap-4">
+                        <span className="w-8 h-8 bg-acid border-2 border-ink block"></span>
+                        Experience
+                    </h2>
+                    <div className="border-l-4 border-ink pl-8 space-y-12 relative">
+                        {/* Timeline Item 1 */}
+                        <div className="relative group">
+                            <div className="absolute -left-[43px] top-1 w-5 h-5 bg-paper rounded-full border-4 border-ink group-hover:bg-acid transition-colors"></div>
+                            <h3 className="text-xl font-bold uppercase">Freelance Web Developer</h3>
+                            <span className="text-sm font-mono text-gray-500 mb-4 block bg-gray-200 inline-block px-2">2023 - Present</span>
+                            <p className="max-w-2xl leading-relaxed text-sm">
+                                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit.
+                            </p>
+                        </div>
+
+                        {/* Timeline Item 2 */}
+                        <div className="relative group">
+                            <div className="absolute -left-[43px] top-1 w-5 h-5 bg-paper rounded-full border-4 border-ink group-hover:bg-acid transition-colors"></div>
+                            <h3 className="text-xl font-bold uppercase">Professional Musician</h3>
+                            <span className="text-sm font-mono text-gray-500 mb-4 block bg-gray-200 inline-block px-2">2013 - Present</span>
+                            <p className="max-w-2xl leading-relaxed text-sm">
+                                Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Developing discipline, creativity, and the ability to perform under pressure.
+                            </p>
+                        </div>
+                        <div className="relative group">
+                            <div className="absolute -left-[43px] top-1 w-5 h-5 bg-paper rounded-full border-4 border-ink group-hover:bg-acid transition-colors"></div>
+                            <h3 className="text-xl font-bold uppercase">Something or other</h3>
+                            <span className="text-sm font-mono text-gray-500 mb-4 block bg-gray-200 inline-block px-2">2013 - Present</span>
+                            <p className="max-w-2xl leading-relaxed text-sm">
+                                Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Developing discipline, creativity, and the ability to perform under pressure.
+                            </p>
+                        </div>
+                    </div>
                 </section>
 
                 {/* Tech Stack Grid */}
@@ -280,7 +389,7 @@ function App() {
                 </section>
 
                 {/* Footer */}
-                <footer className="mt-32 pt-10 border-t-4 border-ink flex flex-col md:flex-row justify-between items-start md:items-end gap-8">
+                <footer id="contact" className="mt-32 pt-10 border-t-4 border-ink flex flex-col md:flex-row justify-between items-start md:items-end gap-8 scroll-mt-32">
                     <div>
                         <div className="text-6xl font-black text-transparent" style={{ WebkitTextStroke: '1px #1A1A1A' }}>HP_DEV</div>
                     </div>
