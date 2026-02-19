@@ -389,7 +389,7 @@ function App() {
                         Technical Arsenal
                     </h4>
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                        {['TypeScript', 'React', 'Zustand', 'Node.js', 'Express', 'PostgreSQL', 'WordPress', 'Tailwind', 'Git', 'Vercel', 'Render', 'Vite'].map((tool, i) => (
+                        {['TypeScript', 'React', 'Redux', 'Zustand', 'Node.js', 'Express', 'PostgreSQL', 'WordPress', 'Elementor Pro', 'HTML', 'CSS', 'Tailwind', 'Vite', 'Git', 'Vercel', 'Render', 'Supabase', 'Figma', 'Designer-Speak'].map((tool, i) => (
                             <div key={tool} className="border-2 border-ink p-4 hover:shadow-neo hover:bg-white transition-all cursor-default">
                                 <div className="text-xs text-gray-400 mb-1">0{i + 1}</div>
                                 <div className="font-bold uppercase">{tool}</div>
@@ -406,7 +406,7 @@ function App() {
 
                     <div className="flex gap-4">
                         <a href="mailto:johannespprinsloo@gmail.com" className="bg-acid border-2 border-ink px-6 py-3 font-bold uppercase hover:shadow-neo hover:-translate-y-1 transition-all">
-                            Contact Protocol
+                            Send me a mail
                         </a>
                     </div>
                 </footer>
