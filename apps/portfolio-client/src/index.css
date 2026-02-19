@@ -5,7 +5,7 @@
 @tailwind utilities;
 
 :root {
-    font-family: 'Space Grotesk', system-ui, sans-serif;
+    font-family: 'roc-grotesk', system-ui, sans-serif;
     scroll-behavior: smooth;
 }
 

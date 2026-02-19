@@ -16,7 +16,7 @@ export default {
                 'neo-sm': '2px 2px 0px 0px #1A1A1A',
             },
             fontFamily: {
-                sans: ['Inter', 'sans-serif'],
+                sans: ['"roc-grotesk"', 'sans-serif'],
                 mono: ['"Fira Code"', 'monospace'],
             },
             borderWidth: {
