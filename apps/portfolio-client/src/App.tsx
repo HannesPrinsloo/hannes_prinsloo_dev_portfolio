@@ -69,7 +69,7 @@ function App() {
 
                         {/* Card 2: CS & Foundations */}
                         <div className="border-2 border-ink p-6 bg-white shadow-neo hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all">
-                            <h3 className="text-xl font-bold uppercase mb-4 border-b-2 border-ink pb-2">CS & Foundations</h3>
+                            <h3 className="text-xl font-bold uppercase mb-4 border-b-2 border-ink pb-2">Computer Science <br />& Foundations</h3>
                             <p className="text-sm mb-6 leading-relaxed">
                                 Strong grounding in Computer Science fundamentals.
                                 Experience with <span className="font-bold">C</span>, <span className="font-bold">C++</span>, <span className="font-bold">SQL (PostgreSQL)</span>, <span className="font-bold">JavaScript</span>, <span className="font-bold">TypeScript</span> and <span className="font-bold">Data Structures & Algorithms</span>.
@@ -83,7 +83,7 @@ function App() {
 
                         {/* Card 3: Freelance & CMS */}
                         <div className="border-2 border-ink p-6 bg-white shadow-neo hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all">
-                            <h3 className="text-xl font-bold uppercase mb-4 border-b-2 border-ink pb-2">Freelance & CMS</h3>
+                            <h3 className="text-xl font-bold uppercase mb-4 border-b-2 border-ink pb-2">Freelance <br />& CMS</h3>
                             <p className="text-sm mb-6 leading-relaxed">
                                 Extensive experience delivering custom solutions.
                                 Expert in <span className="font-bold">WordPress</span> customisation and building custom JS features for Elementor Pro.
@@ -108,14 +108,38 @@ function App() {
                             <div>
                                 <h4 className="font-bold border-b border-ink mb-3 pb-1">University of Michigan (Coursera)</h4>
                                 <ul className="list-none space-y-2 text-sm">
-                                    <li className="flex items-start gap-2">
-                                        <span className="text-acid font-bold">»</span> Interactivity with JavaScript
+                                    <li className="flex items-start gap-2 group/link">
+                                        <span className="text-acid font-bold">»</span>
+                                        <a
+                                            href="https://coursera.org/share/076eec0f1de2136d9806fd99763d8c83"
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="hover:bg-acid hover:text-ink transition-colors decoration-2 underline-offset-2"
+                                        >
+                                            Interactivity with JavaScript
+                                        </a>
                                     </li>
-                                    <li className="flex items-start gap-2">
-                                        <span className="text-acid font-bold">»</span> Introduction to CSS3
+                                    <li className="flex items-start gap-2 group/link">
+                                        <span className="text-acid font-bold">»</span>
+                                        <a
+                                            href="https://coursera.org/share/bd82982683be5bfbd25d4f4d2bacca0f"
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="hover:bg-acid hover:text-ink transition-colors decoration-2 underline-offset-2"
+                                        >
+                                            Introduction to CSS3
+                                        </a>
                                     </li>
-                                    <li className="flex items-start gap-2">
-                                        <span className="text-acid font-bold">»</span> Introduction to HTML5
+                                    <li className="flex items-start gap-2 group/link">
+                                        <span className="text-acid font-bold">»</span>
+                                        <a
+                                            href="https://coursera.org/share/a6daf21511a46339492d40238f7dbbd9"
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="hover:bg-acid hover:text-ink transition-colors decoration-2 underline-offset-2"
+                                        >
+                                            Introduction to HTML5
+                                        </a>
                                     </li>
                                 </ul>
                             </div>
