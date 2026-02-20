@@ -4,21 +4,13 @@ import BackstoryModal from './components/BackstoryModal'
 function App() {
     const [audioMode, setAudioMode] = useState(false);
     const [showBackstory, setShowBackstory] = useState(false);
-    const [isDarkMode, setIsDarkMode] = useState(() => {
-        if (typeof window !== 'undefined') {
-            return localStorage.getItem('theme') === 'dark' ||
-                (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches);
-        }
-        return false;
-    });
+    const [isDarkMode, setIsDarkMode] = useState(false);
 
     useEffect(() => {
         if (isDarkMode) {
             document.documentElement.classList.add('dark');
-            localStorage.setItem('theme', 'dark');
         } else {
             document.documentElement.classList.remove('dark');
-            localStorage.setItem('theme', 'light');
         }
     }, [isDarkMode]);
 
@@ -45,8 +37,16 @@ function App() {
                                 className={`border-2 border-ink shadow-neo px-3 py-2 flex items-center justify-center hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all group ${isDarkMode ? 'bg-ink text-paper border-paper' : 'bg-paper text-ink'}`}
                                 aria-label="Toggle Dark Mode"
                             >
-                                <span className="font-bold text-sm">
-                                    {isDarkMode ? 'DRK' : 'LGT'}
+                                <span className="flex items-center justify-center w-5 h-5">
+                                    {isDarkMode ? (
+                                        <svg viewBox="0 0 20 20" className="w-full h-full">
+                                            <path fill="var(--color-acid)" d="M15.15,17.04c-2.46-1.31-4.17-3.86-4.27-6.84-.1-2.98,1.43-5.64,3.79-7.12.3-.19.23-.65-.12-.74-.74-.19-1.52-.28-2.32-.26-4.56.16-8.11,4.08-7.76,8.67.31,4.19,3.86,7.47,8.06,7.45.9,0,1.76-.15,2.56-.42.34-.11.38-.58.06-.75Z" />
+                                        </svg>
+                                    ) : (
+                                        <svg viewBox="0 0 20 20" className="w-full h-full">
+                                            <path fill="var(--color-ink)" d="M13.23,1.53l-.82,5.35,4.97-2.14c.2-.09.37.17.22.32l-3.81,3.84,5.28,1.19c.21.05.2.35-.01.39l-5.34.87,3.57,4.07c.14.16-.04.4-.24.31l-4.83-2.44.5,5.39c.02.22-.27.3-.37.11l-2.48-4.81-2.76,4.66c-.11.19-.4.08-.36-.13l.82-5.35-4.97,2.14c-.2.09-.37-.17-.22-.32l3.81-3.84-5.28-1.19c-.21-.05-.2-.35.01-.39l5.34-.87-3.57-4.07c-.14-.16.04-.4.24-.31l4.83,2.44-.5-5.39c-.02-.22.27-.3.37-.11l2.48,4.81,2.76-4.66c.11-.19.4-.08.36.13Z" />
+                                        </svg>
+                                    )}
                                 </span>
                             </button>
                             {/* Audio toggle on mobile is hidden for now or we can stack it. Let's stack it. */}
@@ -81,9 +81,19 @@ function App() {
                             className="bg-paper border-2 border-ink shadow-neo px-4 py-2 flex items-center gap-3 justify-between hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all group"
                         >
                             <span className="text-sm font-bold uppercase tracking-widest text-ink">
-                                DARK MODE
+                                THEME
                             </span>
-                            <div className={`w-4 h-4 border-2 border-ink rounded-full flex-shrink-0 transition-colors ${isDarkMode ? 'bg-[#1A1A1A] border-white' : 'bg-transparent'}`}></div>
+                            <span className="flex items-center justify-center w-5 h-5">
+                                {isDarkMode ? (
+                                    <svg viewBox="0 0 20 20" className="w-full h-full">
+                                        <path fill="#CCFF00" d="M15.15,17.04c-2.46-1.31-4.17-3.86-4.27-6.84-.1-2.98,1.43-5.64,3.79-7.12.3-.19.23-.65-.12-.74-.74-.19-1.52-.28-2.32-.26-4.56.16-8.11,4.08-7.76,8.67.31,4.19,3.86,7.47,8.06,7.45.9,0,1.76-.15,2.56-.42.34-.11.38-.58.06-.75Z" />
+                                    </svg>
+                                ) : (
+                                    <svg viewBox="0 0 20 20" className="w-full h-full">
+                                        <path fill="var(--color-ink)" d="M13.23,1.53l-.82,5.35,4.97-2.14c.2-.09.37.17.22.32l-3.81,3.84,5.28,1.19c.21.05.2.35-.01.39l-5.34.87,3.57,4.07c.14.16-.04.4-.24.31l-4.83-2.44.5,5.39c.02.22-.27.3-.37.11l-2.48-4.81-2.76,4.66c-.11.19-.4.08-.36-.13l.82-5.35-4.97,2.14c-.2.09-.37-.17-.22-.32l3.81-3.84-5.28-1.19c-.21-.05-.2-.35.01-.39l5.34-.87-3.57-4.07c-.14-.16.04-.4.24-.31l4.83,2.44-.5-5.39c-.02-.22.27-.3.37-.11l2.48,4.81,2.76-4.66c.11-.19.4-.08.36.13Z" />
+                                    </svg>
+                                )}
+                            </span>
                         </button>
                     </div>
                 </div>
@@ -122,27 +132,25 @@ function App() {
 
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                         {/* Card 1: The Stack */}
-                        <div className="border-2 border-ink p-6 bg-surface shadow-neo hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all">
+                        <div className="border-2 border-ink p-6 bg-surface shadow-neo hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all flex flex-col h-full">
                             <h3 className="text-xl font-bold mb-4 border-b-2 border-ink pb-2">Full Stack <br />Architecture</h3>
                             <p className="text-sm mb-6 leading-relaxed">
-                                Specializing in the <span className="font-bold bg-acid text-black px-1">React / TypeScript</span> ecosystem.
-                                Experience in building full stack applications with React, Zustand, Node.js, Express, and PostgreSQL.
+                                Building end-to-end applications with a focus on the modern React ecosystem. Capable of developing both interactive user interfaces and the backend services that support them.
                             </p>
-                            <div className="flex flex-wrap gap-2">
-                                {['React', 'Zustand', 'JavaScript/TypeScript', 'Node.js', 'PostgreSQL', 'Express'].map(t => (
+                            <div className="flex flex-wrap gap-2 mt-auto">
+                                {['React', 'Zustand', 'JavaScript/TypeScript', 'Tailwind', 'Node.js', 'PostgreSQL', 'Express'].map(t => (
                                     <span key={t} className="text-xs font-bold border border-ink px-1 bg-surface-muted">{t}</span>
                                 ))}
                             </div>
                         </div>
 
                         {/* Card 2: CS & Foundations */}
-                        <div className="border-2 border-ink p-6 bg-surface shadow-neo hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all">
+                        <div className="border-2 border-ink p-6 bg-surface shadow-neo hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all flex flex-col h-full">
                             <h3 className="text-xl font-bold mb-4 border-b-2 border-ink pb-2">Computer Science <br />& Foundations</h3>
                             <p className="text-sm mb-6 leading-relaxed">
-                                Strong grounding in Computer Science fundamentals.
-                                Experience with <span className="font-bold">C</span>, <span className="font-bold">C++</span>, <span className="font-bold">SQL (PostgreSQL)</span>, <span className="font-bold">JavaScript</span>, <span className="font-bold">TypeScript</span> and <span className="font-bold">Data Structures & Algorithms</span>.
+                                Combining a practical grasp of modern web technologies with a solid foundation in core computing principles and database management.
                             </p>
-                            <div className="flex flex-wrap gap-2">
+                            <div className="flex flex-wrap gap-2 mt-auto">
                                 {['JavaScript/TypeScript', 'C/C++', 'SQL (PostgreSQL)', 'Data Structures and  Algorithms'].map(t => (
                                     <span key={t} className="text-xs font-bold border border-ink px-1 bg-surface-muted">{t}</span>
                                 ))}
@@ -150,13 +158,12 @@ function App() {
                         </div>
 
                         {/* Card 3: Freelance & CMS */}
-                        <div className="border-2 border-ink p-6 bg-surface shadow-neo hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all">
+                        <div className="border-2 border-ink p-6 bg-surface shadow-neo hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all flex flex-col h-full">
                             <h3 className="text-xl font-bold mb-4 border-b-2 border-ink pb-2">Freelance <br />& CMS</h3>
                             <p className="text-sm mb-6 leading-relaxed">
-                                Extensive experience delivering custom solutions.
-                                Expert in <span className="font-bold">WordPress</span> customisation and building custom JS features for Elementor Pro.
+                                Delivering functional, user-friendly websites for freelance clients while working closely with designers. Experienced in configuring CMS platforms and enhancing core functionality through targeted custom JS and CSS.
                             </p>
-                            <div className="flex flex-wrap gap-2">
+                            <div className="flex flex-wrap gap-2 mt-auto">
                                 {['WordPress', 'Elementor Pro', 'Custom CSS/JS', 'Client Relations'].map(t => (
                                     <span key={t} className="text-xs font-bold border border-ink px-1 bg-surface-muted">{t}</span>
                                 ))}

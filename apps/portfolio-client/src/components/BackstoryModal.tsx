@@ -66,7 +66,7 @@ const BackstoryModal: React.FC<BackstoryModalProps> = ({ isOpen, onClose }) => {
                     </div>
 
                     {/* Ruled Paper Body with Typewriter Text */}
-                    <div className="flex-1 overflow-y-auto pr-4 font-mono text-sm md:text-base leading-relaxed relative bg-[linear-gradient(transparent_96%,#E5E5E5_96%)] bg-[size:100%_2rem]">
+                    <div className="flex-1 overflow-y-auto pr-4 font-mono text-sm md:text-base leading-relaxed relative bg-[linear-gradient(transparent_96%,var(--color-surface-muted)_96%)] bg-[size:100%_2rem]">
                         <p className="whitespace-pre-wrap">
                             {displayedText}
                             <span className={`inline-block w-2.5 h-5 bg-acid align-middle ml-1 ${isTyping ? 'animate-pulse' : 'opacity-0'}`}></span>

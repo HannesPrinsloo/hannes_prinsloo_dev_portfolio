@@ -18,13 +18,13 @@
 }
 
 .dark {
-    /* Dark Mode (Terminal/Cyberpunk) */
-    --color-paper: #121212;
-    --color-ink: #EAEAEA;
+    /* Dark Mode (Flipped Light Mode) */
+    --color-paper: #1A1A1A;
+    --color-ink: #f4f4f0;
     --color-acid: #CCFF00;
-    --color-shadow: #CCFF00;
-    --color-surface: #1E1E1E;
-    --color-surface-muted: #2A2A2A;
+    --color-shadow: #f4f4f0;
+    --color-surface: #000000;
+    --color-surface-muted: #333333;
 }
 
 .dark .mix-blend-multiply {
