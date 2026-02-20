@@ -7,6 +7,28 @@
 :root {
     font-family: 'roc-grotesk', system-ui, sans-serif;
     scroll-behavior: smooth;
+
+    /* Light Mode */
+    --color-paper: #f4f4f0;
+    --color-ink: #1A1A1A;
+    --color-acid: #CCFF00;
+    --color-shadow: #1A1A1A;
+    --color-surface: #ffffff;
+    --color-surface-muted: #e5e5e5;
+}
+
+.dark {
+    /* Dark Mode (Terminal/Cyberpunk) */
+    --color-paper: #121212;
+    --color-ink: #EAEAEA;
+    --color-acid: #CCFF00;
+    --color-shadow: #CCFF00;
+    --color-surface: #1E1E1E;
+    --color-surface-muted: #2A2A2A;
+}
+
+.dark .mix-blend-multiply {
+    mix-blend-mode: normal !important;
 }
 
 body {

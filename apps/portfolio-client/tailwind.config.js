@@ -1,5 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 export default {
+    darkMode: 'class',
     content: [
         "./index.html",
         "./src/**/*.{js,ts,jsx,tsx}",
@@ -7,13 +8,15 @@ export default {
     theme: {
         extend: {
             colors: {
-                paper: '#f4f4f0',
-                ink: '#1A1A1A',
-                acid: '#CCFF00',
+                paper: 'var(--color-paper)',
+                ink: 'var(--color-ink)',
+                acid: 'var(--color-acid)',
+                surface: 'var(--color-surface)',
+                'surface-muted': 'var(--color-surface-muted)',
             },
             boxShadow: {
-                neo: '4px 4px 0px 0px #1A1A1A',
-                'neo-sm': '2px 2px 0px 0px #1A1A1A',
+                neo: '4px 4px 0px 0px var(--color-shadow)',
+                'neo-sm': '2px 2px 0px 0px var(--color-shadow)',
             },
             fontFamily: {
                 sans: ['"roc-grotesk"', 'sans-serif'],
