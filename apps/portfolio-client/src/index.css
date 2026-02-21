@@ -76,6 +76,12 @@ body {
     @apply bg-paper text-ink min-h-screen font-mono selection:bg-acid selection:text-[#1A1A1A];
 }
 
+.bg-halftone {
+    background-image: radial-gradient(var(--color-ink) 25%, transparent 25%);
+    background-size: 4px 4px;
+    background-position: 0 0;
+}
+
 h1,
 h2,
 h3,

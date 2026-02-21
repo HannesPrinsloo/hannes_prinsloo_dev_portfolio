@@ -12,7 +12,7 @@ export const audioSprite = new Howl({
         tech_stack: [60500, 15000],
         backstory: [75500, 15000],
     },
-    preload: true,
+    preload: false,
     onload: () => console.log('Howler: Audio sprite loaded successfully'),
     onloaderror: (_id, error) => console.error('Howler: Error loading audio', error),
     onplayerror: (_id, error) => {
@@ -21,4 +21,12 @@ export const audioSprite = new Howl({
             console.log('Howler: Autoplay unlocked!');
         });
     }
+});
+export const backgroundMusic = new Howl({
+    src: ['/assets/Deurmekaar_in_Durbanville_Web_Optimised .mp3'],
+    loop: true,
+    volume: 1, // This is the default volume. You can adjust this value later!
+    preload: false,
+    onload: () => console.log('Howler: Background music loaded successfully'),
+    onloaderror: (_id, error) => console.error('Howler: Error loading background music', error),
 });

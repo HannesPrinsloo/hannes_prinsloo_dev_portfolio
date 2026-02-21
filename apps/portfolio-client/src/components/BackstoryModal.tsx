@@ -1,15 +1,63 @@
-import React, { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useTypewriter } from '../hooks/useTypewriter';
 import { useAudioStore } from '../store/useAudioStore';
+import { DotLottieReact } from '@lottiefiles/dotlottie-react';
 
 interface BackstoryModalProps {
     isOpen: boolean;
     onClose: () => void;
+    isDarkMode?: boolean;
 }
 
-const BackstoryModal: React.FC<BackstoryModalProps> = ({ isOpen, onClose }) => {
+const BackstoryModal: React.FC<BackstoryModalProps> = ({ isOpen, onClose, isDarkMode }) => {
     const playSegment = useAudioStore(state => state.playSegment);
     const fadeAndPause = useAudioStore(state => state.fadeAndPause);
+
+    const [shouldLoadLottie, setShouldLoadLottie] = useState(false);
+    const [showLottie, setShowLottie] = useState(false);
+    const [dotLottieDesktop, setDotLottieDesktop] = useState<any>(null);
+    const [dotLottieMobile, setDotLottieMobile] = useState<any>(null);
+
+    // Lottie delayed loading logic
+    useEffect(() => {
+        let loadTimer: ReturnType<typeof setTimeout>;
+        let showTimer: ReturnType<typeof setTimeout>;
+        let playTimer: ReturnType<typeof setTimeout>;
+
+        if (isOpen) {
+            loadTimer = setTimeout(() => {
+                setShouldLoadLottie(true);
+            }, 100);
+
+            showTimer = setTimeout(() => {
+                setShowLottie(true);
+            }, 1500);
+
+            // Wait 2 seconds before asking the lottie to play, so typewriter finishes smoothly
+            playTimer = setTimeout(() => {
+                if (dotLottieDesktop) {
+                    dotLottieDesktop.setLoop(3);
+                    dotLottieDesktop.play();
+                }
+                if (dotLottieMobile) {
+                    dotLottieMobile.setLoop(3);
+                    dotLottieMobile.play();
+                }
+            }, 5000);
+
+        } else {
+            setShouldLoadLottie(false);
+            setShowLottie(false);
+            if (dotLottieDesktop) dotLottieDesktop.stop();
+            if (dotLottieMobile) dotLottieMobile.stop();
+        }
+
+        return () => {
+            clearTimeout(loadTimer);
+            clearTimeout(showTimer);
+            clearTimeout(playTimer);
+        };
+    }, [isOpen, dotLottieDesktop, dotLottieMobile]);
 
     // Lock body scroll when modal is open and trigger audio
     useEffect(() => {
@@ -64,14 +112,29 @@ For over a decade, I gigged hard. I shared stages with Valiant Swart, The Black 
                 <div className="pl-16 md:pl-24 relative z-10 flex flex-col h-full min-h-0">
 
                     {/* Header */}
-                    <div className="border-b-4 border-ink pb-4 mb-6">
-                        <h2 className="text-2xl md:text-3xl font-bold uppercase leading-none mb-2">
-                            My Background: <br /> Artist to Engineer
-                        </h2>
-                        <div className="font-mono text-sm flex gap-3 text-gray-500">
-                            <span className="line-through decoration-2 decoration-ink text-ink opacity-50">2026-02-19</span>
-                            <span className="text-ink font-bold">{currentDate}</span>
+                    <div className="border-b-4 border-ink pb-4 mb-6 relative">
+                        <div className="md:pr-32">
+                            <h2 className="text-2xl md:text-3xl font-bold uppercase leading-none mb-2">
+                                My Background: <br /> Artist to Engineer
+                            </h2>
+                            <div className="font-mono text-sm flex gap-3 text-gray-500">
+                                <span className="line-through decoration-2 decoration-ink text-ink opacity-50">2026-02-19</span>
+                                <span className="text-ink font-bold">{currentDate}</span>
+                            </div>
                         </div>
+
+                        {/* Lottie Container - Desktop */}
+                        {shouldLoadLottie && (
+                            <div className={`absolute top-0 right-0 hidden md:block w-50 h-50 -translate-y-2 transition-opacity duration-1000 ${showLottie ? 'opacity-100' : 'opacity-0'}`}>
+                                <DotLottieReact
+                                    src={isDarkMode ? '/assets/modal-animation-dark.lottie' : '/assets/modal-animation-light.lottie'}
+                                    loop={false}
+                                    autoplay={false}
+                                    dotLottieRefCallback={setDotLottieDesktop}
+                                    className="w-full h-full object-contain"
+                                />
+                            </div>
+                        )}
                     </div>
 
                     {/* Ruled Paper Body with Typewriter Text */}
@@ -80,6 +143,19 @@ For over a decade, I gigged hard. I shared stages with Valiant Swart, The Black 
                             {displayedText}
                             <span className={`inline-block w-2.5 h-5 bg-acid align-middle ml-1 ${isTyping ? 'animate-pulse' : 'opacity-0'}`}></span>
                         </p>
+
+                        {/* Lottie Container - Mobile */}
+                        {/* {shouldLoadLottie && (
+                            <div className={`block md:hidden w-full h-50 mt-8 mb-4 transition-opacity duration-1000 ${showLottie ? 'opacity-100' : 'opacity-0'}`}>
+                                <DotLottieReact
+                                    src={isDarkMode ? '/assets/modal-animation-dark.lottie' : '/assets/modal-animation-light.lottie'}
+                                    loop={false}
+                                    autoplay={false}
+                                    dotLottieRefCallback={setDotLottieMobile}
+                                    className="w-full h-full object-contain"
+                                />
+                            </div>
+                        )} */}
                     </div>
 
                     {/* Footer / Close */}

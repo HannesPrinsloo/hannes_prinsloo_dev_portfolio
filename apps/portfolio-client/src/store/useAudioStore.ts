@@ -1,10 +1,14 @@
 import { create } from 'zustand';
-import { audioSprite } from '../utils/audioPlayer';
+import { audioSprite, backgroundMusic } from '../utils/audioPlayer';
+import { Howler } from 'howler';
 
 interface AudioState {
     isAudioEnabled: boolean;
+    isAudioLoading: boolean;
     currentlyPlaying: string | null;
+    masterVolume: number;
     toggleAudioEnabled: () => void;
+    setMasterVolume: (volume: number) => void;
     playSegment: (id: string) => void;
     stop: () => void;
     fadeAndPause: () => void;
@@ -12,7 +16,16 @@ interface AudioState {
 
 export const useAudioStore = create<AudioState>((set, get) => ({
     isAudioEnabled: false,
+    isAudioLoading: false,
     currentlyPlaying: null,
+    masterVolume: 1.0,
+
+    setMasterVolume: (volume: number) => {
+        // Clamp between 0 and 1
+        const clampedVolume = Math.max(0, Math.min(1, volume));
+        Howler.volume(clampedVolume);
+        set({ masterVolume: clampedVolume });
+    },
 
     toggleAudioEnabled: () => {
         set((state) => {
@@ -22,12 +35,38 @@ export const useAudioStore = create<AudioState>((set, get) => ({
             // If immediately disabled, stop any playing audio
             if (!isEnabled) {
                 audioSprite.stop();
+
+                // Fade out background music gracefully over 1 second, then stop
+                backgroundMusic.fade(backgroundMusic.volume(), 0, 1000);
+                setTimeout(() => {
+                    backgroundMusic.stop();
+                    backgroundMusic.volume(0.15); // Reset back to default volume after stopping
+                }, 1000);
+
                 return { isAudioEnabled: isEnabled, currentlyPlaying: null };
             }
 
-            // If enabling, this is often the user gesture that can "unlock" Howler's audio context
+            // Start by loading ONLY the critical voice sprite
             if (audioSprite.state() === 'unloaded') {
+                set({ isAudioLoading: true });
                 audioSprite.load();
+
+                // Wait for the voiceover to load before pulling the heavy background track
+                audioSprite.once('load', () => {
+                    set({ isAudioLoading: false });
+                    backgroundMusic.load();
+                    backgroundMusic.volume(0);
+                    backgroundMusic.play();
+                    backgroundMusic.fade(0, 0.15, 2000);
+                });
+            } else if (audioSprite.state() === 'loaded') {
+                // If it's already loaded
+                if (backgroundMusic.state() === 'unloaded') {
+                    backgroundMusic.load();
+                }
+                backgroundMusic.volume(0);
+                backgroundMusic.play();
+                backgroundMusic.fade(0, 0.15, 2000);
             }
 
             return { isAudioEnabled: isEnabled };
@@ -64,6 +103,11 @@ export const useAudioStore = create<AudioState>((set, get) => ({
 
     stop: () => {
         audioSprite.stop();
+        backgroundMusic.fade(backgroundMusic.volume(), 0, 1000);
+        setTimeout(() => {
+            backgroundMusic.stop();
+            backgroundMusic.volume(0.15);
+        }, 1000);
         set({ currentlyPlaying: null });
         console.log('AudioStore: Stopped all audio');
     },

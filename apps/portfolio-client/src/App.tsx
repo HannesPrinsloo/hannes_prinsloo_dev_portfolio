@@ -5,9 +5,12 @@ import { DotLottieReact } from '@lottiefiles/dotlottie-react'
 import BackstoryModal from './components/BackstoryModal'
 
 function App() {
-    // Audio State & Tracking
     const isAudioEnabled = useAudioStore((state) => state.isAudioEnabled);
+    const isAudioLoading = useAudioStore((state) => state.isAudioLoading);
     const toggleAudioEnabled = useAudioStore((state) => state.toggleAudioEnabled);
+    const masterVolume = useAudioStore((state) => state.masterVolume);
+    const setMasterVolume = useAudioStore((state) => state.setMasterVolume);
+
     useAudioScrollTracker();
 
     const [showBackstory, setShowBackstory] = useState(false);
@@ -69,7 +72,7 @@ function App() {
     return (
         <div className="min-h-screen bg-paper text-ink p-4 md:p-8 font-mono">
 
-            <BackstoryModal isOpen={showBackstory} onClose={() => setShowBackstory(false)} />
+            <BackstoryModal isOpen={showBackstory} onClose={() => setShowBackstory(false)} isDarkMode={isDarkMode} />
 
             {/* Navigation / Header */}
             <nav ref={navRef} className="fixed top-0 left-0 right-0 z-50 p-4 pointer-events-none">
@@ -105,11 +108,15 @@ function App() {
                                 aria-label="Toggle Theme"
                             >
                                 <span className="flex items-center justify-center w-5 h-5">
-                                    {themeClickCount >= 4 ? (
+                                    {themeClickCount === 3 ? (
                                         <span className="text-xl leading-none">🦄</span>
-                                    ) : isDarkMode ? (
+                                    ) : (isDarkMode) ? (
                                         <svg viewBox="0 0 20 20" className="w-full h-full">
                                             <path fill="var(--color-acid)" d="M13.23,1.53l-.82,5.35,4.97-2.14c.2-.09.37.17.22.32l-3.81,3.84,5.28,1.19c.21.05.2.35-.01.39l-5.34.87,3.57,4.07c.14.16-.04.4-.24.31l-4.83-2.44.5,5.39c.02.22-.27.3-.37.11l-2.48-4.81-2.76,4.66c-.11.19-.4.08-.36-.13l.82-5.35-4.97,2.14c-.2.09-.37-.17-.22-.32l3.81-3.84-5.28-1.19c-.21-.05-.2-.35.01-.39l5.34-.87-3.57-4.07c-.14-.16.04-.4.24-.31l4.83,2.44-.5-5.39c-.02-.22.27-.3.37-.11l2.48,4.81,2.76-4.66c.11-.19.4-.08.36.13Z" />
+                                        </svg>
+                                    ) : (themeClickCount >= 4) ? (
+                                        <svg viewBox="0 0 20 20" className="w-full h-full">
+                                            <path fill="var(--color-ink)" d="M13.23,1.53l-.82,5.35,4.97-2.14c.2-.09.37.17.22.32l-3.81,3.84,5.28,1.19c.21.05.2.35-.01.39l-5.34.87,3.57,4.07c.14.16-.04.4-.24.31l-4.83-2.44.5,5.39c.02.22-.27.3-.37.11l-2.48-4.81-2.76,4.66c-.11.19-.4.08-.36-.13l.82-5.35-4.97,2.14c-.2.09-.37-.17-.22-.32l3.81-3.84-5.28-1.19c-.21-.05-.2-.35.01-.39l5.34-.87-3.57-4.07c-.14-.16.04-.4.24-.31l4.83,2.44-.5-5.39c-.02-.22.27-.3.37-.11l2.48,4.81,2.76-4.66c.11-.19.4-.08.36.13Z" />
                                         </svg>
                                     ) : (
                                         <svg viewBox="0 0 20 20" className="w-full h-full">
@@ -127,21 +134,41 @@ function App() {
                         <a href="#expertise" className="hover:text-acid transition-colors">Expertise</a>
                         <a href="#work" className="hover:text-acid transition-colors">Work</a>
                         <a href="#experience" className="hover:text-acid transition-colors">Experience</a>
-                        <a href="#contact" className="hover:text-acid transition-colors">Contact</a>
+                        <a href="#contact_footer" className="hover:text-acid transition-colors">Contact</a>
                     </div>
 
                     {/* Toggles Container (Desktop) */}
-                    <div className="hidden md:flex flex-col gap-2 items-end pointer-events-auto">
+                    <div className="hidden md:flex flex-col gap-2 items-end pointer-events-auto w-48 z-10">
                         {/* Audio Tour / Director's Cut Toggle */}
-                        <button
-                            onClick={toggleAudioEnabled}
-                            className="bg-paper border-2 border-ink shadow-neo px-4 py-2 flex items-center gap-3 justify-between hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all group"
-                        >
-                            <span className="text-sm font-bold uppercase tracking-widest text-ink">
-                                AUDIO TOUR
-                            </span>
-                            <div className={`w-4 h-4 border-2 border-ink rounded-full flex-shrink-0 transition-colors ${isAudioEnabled ? (isDarkMode ? 'bg-acid' : 'bg-ink') : 'bg-transparent'}`}></div>
-                        </button>
+                        <div className={`flex flex-col items-end w-full relative transition-all ${isAudioEnabled ? 'shadow-neo' : 'shadow-neo hover:translate-x-1 hover:translate-y-1 hover:shadow-none'}`}>
+                            <button
+                                onClick={toggleAudioEnabled}
+                                className={`w-full bg-paper border-2 px-4 py-2 flex items-center gap-3 justify-between transition-none ${isAudioLoading ? 'border-acid animate-pulse' : 'border-ink'} relative z-20`}
+                                disabled={isAudioLoading}
+                            >
+                                <span className="text-sm font-bold uppercase tracking-widest text-ink">
+                                    {isAudioLoading ? 'LOADING...' : 'AUDIO TOUR'}
+                                </span>
+                                <div className={`w-4 h-4 border-2 border-ink rounded-full flex-shrink-0 transition-colors ${isAudioEnabled ? (isDarkMode ? 'bg-acid' : 'bg-ink') : 'bg-transparent'}`}></div>
+                            </button>
+
+                            {/* Neo-brutalist Volume Slider Dropdown */}
+                            <div className={`w-full overflow-hidden transition-all duration-300 origin-top flex flex-col items-center bg-surface-muted border-ink ${isAudioEnabled ? 'max-h-20 border-x-2 border-b-2 mt-[-2px]' : 'max-h-0 border-0'}`}>
+                                <div className="w-full p-3 flex items-center gap-3">
+                                    <span className="text-xs font-bold uppercase tracking-widest text-ink/70">VOL</span>
+                                    <input
+                                        type="range"
+                                        min="0"
+                                        max="1"
+                                        step="0.01"
+                                        value={masterVolume}
+                                        onChange={(e) => setMasterVolume(parseFloat(e.target.value))}
+                                        className="w-full appearance-none h-4 bg-halftone border-2 border-ink cursor-pointer outline-none [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-6 [&::-webkit-slider-thumb]:bg-acid [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-solid [&::-webkit-slider-thumb]:border-ink [&::-webkit-slider-thumb]:rounded-none"
+                                        title="Master Volume"
+                                    />
+                                </div>
+                            </div>
+                        </div>
 
                         {/* Dark Mode Toggle */}
                         <button
@@ -152,11 +179,15 @@ function App() {
                                 THEME
                             </span>
                             <span className="flex items-center justify-center w-5 h-5">
-                                {themeClickCount >= 4 ? (
+                                {themeClickCount === 3 ? (
                                     <span className="text-xl leading-none">🦄</span>
-                                ) : isDarkMode ? (
+                                ) : (isDarkMode) ? (
                                     <svg viewBox="0 0 20 20" className="w-full h-full">
                                         <path fill="var(--color-acid)" d="M13.23,1.53l-.82,5.35,4.97-2.14c.2-.09.37.17.22.32l-3.81,3.84,5.28,1.19c.21.05.2.35-.01.39l-5.34.87,3.57,4.07c.14.16-.04.4-.24.31l-4.83-2.44.5,5.39c.02.22-.27.3-.37.11l-2.48-4.81-2.76,4.66c-.11.19-.4.08-.36-.13l.82-5.35-4.97,2.14c-.2.09-.37-.17-.22-.32l3.81-3.84-5.28-1.19c-.21-.05-.2-.35.01-.39l5.34-.87-3.57-4.07c-.14-.16.04-.4.24-.31l4.83,2.44-.5-5.39c-.02-.22.27-.3.37-.11l2.48,4.81,2.76-4.66c.11-.19.4-.08.36.13Z" />
+                                    </svg>
+                                ) : (themeClickCount >= 4) ? (
+                                    <svg viewBox="0 0 20 20" className="w-full h-full">
+                                        <path fill="var(--color-ink)" d="M13.23,1.53l-.82,5.35,4.97-2.14c.2-.09.37.17.22.32l-3.81,3.84,5.28,1.19c.21.05.2.35-.01.39l-5.34.87,3.57,4.07c.14.16-.04.4-.24.31l-4.83-2.44.5,5.39c.02.22-.27.3-.37.11l-2.48-4.81-2.76,4.66c-.11.19-.4.08-.36-.13l.82-5.35-4.97,2.14c-.2.09-.37-.17-.22-.32l3.81-3.84-5.28-1.19c-.21-.05-.2-.35.01-.39l5.34-.87-3.57-4.07c-.14-.16.04-.4.24-.31l4.83,2.44-.5-5.39c-.02-.22.27-.3.37-.11l2.48,4.81,2.76-4.66c.11-.19.4-.08.36.13Z" />
                                     </svg>
                                 ) : (
                                     <svg viewBox="0 0 20 20" className="w-full h-full">
@@ -173,17 +204,38 @@ function App() {
                     <div className="p-6 flex flex-col gap-6">
 
                         {/* Audio Tour Toggle (Mobile) */}
-                        <div className="border-b-4 border-ink pb-6">
-                            <button
-                                onClick={toggleAudioEnabled}
-                                className="w-full bg-paper border-2 border-ink shadow-neo px-4 py-3 flex items-center justify-between hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all group active:translate-x-1 active:translate-y-1 active:shadow-none"
-                            >
-                                <span className="text-base font-bold uppercase tracking-widest text-ink">
-                                    AUDIO TOUR
-                                </span>
-                                <div className={`w-5 h-5 border-2 border-ink rounded-full flex-shrink-0 transition-colors ${isAudioEnabled ? (isDarkMode ? 'bg-acid' : 'bg-ink') : 'bg-transparent'}`}></div>
-                            </button>
-                            <p className="text-xs mt-2 opacity-70 font-sans leading-tight">
+                        <div className="border-b-4 border-ink pb-6 flex flex-col w-full relative">
+                            <div className={`w-full relative transition-all ${isAudioEnabled ? 'shadow-neo' : 'shadow-neo hover:translate-x-1 hover:translate-y-1 hover:shadow-none active:translate-x-1 active:translate-y-1 active:shadow-none'}`}>
+                                <button
+                                    onClick={toggleAudioEnabled}
+                                    className={`w-full bg-paper border-2 px-4 py-3 flex items-center justify-between transition-none ${isAudioLoading ? 'border-acid animate-pulse' : 'border-ink'} relative z-20`}
+                                    disabled={isAudioLoading}
+                                >
+                                    <span className="text-base font-bold uppercase tracking-widest text-ink">
+                                        {isAudioLoading ? 'LOADING...' : 'AUDIO TOUR'}
+                                    </span>
+                                    <div className={`w-5 h-5 border-2 border-ink rounded-full flex-shrink-0 transition-colors ${isAudioEnabled ? (isDarkMode ? 'bg-acid' : 'bg-ink') : 'bg-transparent'}`}></div>
+                                </button>
+
+                                {/* Neo-brutalist Volume Slider Dropdown (Mobile) */}
+                                <div className={`w-full overflow-hidden transition-all duration-300 origin-top flex flex-col items-center bg-surface-muted ${isAudioEnabled ? 'max-h-20 border-x-2 border-b-2 border-ink mt-[-2px]' : 'max-h-0 border-0'}`}>
+                                    <div className="w-full p-4 flex items-center gap-3">
+                                        <span className="text-sm font-bold uppercase tracking-widest text-ink/70">VOL</span>
+                                        <input
+                                            type="range"
+                                            min="0"
+                                            max="1"
+                                            step="0.01"
+                                            value={masterVolume}
+                                            onChange={(e) => setMasterVolume(parseFloat(e.target.value))}
+                                            className="w-full appearance-none h-5 bg-halftone border-2 border-ink cursor-pointer outline-none [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-5 [&::-webkit-slider-thumb]:h-7 [&::-webkit-slider-thumb]:bg-acid [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-solid [&::-webkit-slider-thumb]:border-ink [&::-webkit-slider-thumb]:rounded-none"
+                                            title="Master Volume"
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+
+                            <p className="text-xs mt-4 opacity-70 font-sans leading-tight">
                                 Enable a guided audio experience based on where you scroll.
                             </p>
                         </div>
