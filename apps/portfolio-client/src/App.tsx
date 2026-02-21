@@ -14,6 +14,7 @@ function App() {
     const [isDarkMode, setIsDarkMode] = useState(false);
     const [themeClickCount, setThemeClickCount] = useState(0);
     const [dotLottie, setDotLottie] = useState<any>(null);
+    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
     // Explicitly command the pre-mounted Lottie instance to play when the 4th click hits
     useEffect(() => {
@@ -68,6 +69,21 @@ function App() {
 
                         {/* Mobile Toggles (Visible only on mobile) */}
                         <div className="md:hidden flex flex-col gap-2 items-end pointer-events-auto">
+                            {/* Burger Menu Toggle */}
+                            <button
+                                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                                className="border-2 border-ink shadow-neo px-3 py-2 flex items-center justify-center hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all group bg-paper text-ink"
+                                aria-label="Toggle Mobile Menu"
+                            >
+                                <span className="flex items-center justify-center w-5 h-5 relative">
+                                    {/* Animated Burger/X Icon */}
+                                    <span className={`absolute h-0.5 w-full bg-current transition-all duration-300 ${isMobileMenuOpen ? 'rotate-45 0' : '-translate-y-1.5'}`}></span>
+                                    <span className={`absolute h-0.5 w-full bg-current transition-all duration-300 ${isMobileMenuOpen ? 'opacity-0' : 'opacity-100'}`}></span>
+                                    <span className={`absolute h-0.5 w-full bg-current transition-all duration-300 ${isMobileMenuOpen ? '-rotate-45 0' : 'translate-y-1.5'}`}></span>
+                                </span>
+                            </button>
+
+                            {/* Theme Toggle */}
                             <button
                                 onClick={handleThemeToggle}
                                 className="border-2 border-ink shadow-neo px-3 py-2 flex items-center justify-center hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all group bg-paper text-ink"
@@ -87,7 +103,6 @@ function App() {
                                     )}
                                 </span>
                             </button>
-                            {/* Audio toggle on mobile is hidden for now or we can stack it. Let's stack it. */}
                         </div>
                     </div>
 
@@ -135,6 +150,37 @@ function App() {
                                 )}
                             </span>
                         </button>
+                    </div>
+                </div>
+
+                {/* Mobile Menu Overlay */}
+                <div className={`md:hidden pointer-events-auto absolute top-full left-4 right-4 mt-2 bg-paper border-4 border-ink shadow-[8px_8px_0px_0px_var(--color-ink)] transition-all duration-300 origin-top flex flex-col overflow-hidden ${isMobileMenuOpen ? 'scale-y-100 opacity-100' : 'scale-y-0 opacity-0'}`}>
+                    <div className="p-6 flex flex-col gap-6">
+
+                        {/* Audio Tour Toggle (Mobile) */}
+                        <div className="border-b-4 border-ink pb-6">
+                            <button
+                                onClick={toggleAudioEnabled}
+                                className="w-full bg-paper border-2 border-ink shadow-neo px-4 py-3 flex items-center justify-between hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all group active:translate-x-1 active:translate-y-1 active:shadow-none"
+                            >
+                                <span className="text-base font-bold uppercase tracking-widest text-ink">
+                                    AUDIO TOUR
+                                </span>
+                                <div className={`w-5 h-5 border-2 border-ink rounded-full flex-shrink-0 transition-colors ${isAudioEnabled ? (isDarkMode ? 'bg-acid' : 'bg-ink') : 'bg-transparent'}`}></div>
+                            </button>
+                            <p className="text-xs mt-2 opacity-70 font-sans leading-tight">
+                                Enable a guided audio experience based on where you scroll.
+                            </p>
+                        </div>
+
+                        {/* Navigation Links (Mobile) */}
+                        <div className="flex flex-col gap-4 font-bold uppercase tracking-widest text-xl">
+                            <a href="#home" onClick={() => setIsMobileMenuOpen(false)} className="hover:text-acid hover:pl-2 transition-all border-b-2 border-ink/20 pb-2">Home</a>
+                            <a href="#expertise" onClick={() => setIsMobileMenuOpen(false)} className="hover:text-acid hover:pl-2 transition-all border-b-2 border-ink/20 pb-2">Expertise</a>
+                            <a href="#work" onClick={() => setIsMobileMenuOpen(false)} className="hover:text-acid hover:pl-2 transition-all border-b-2 border-ink/20 pb-2">Work</a>
+                            <a href="#experience" onClick={() => setIsMobileMenuOpen(false)} className="hover:text-acid hover:pl-2 transition-all border-b-2 border-ink/20 pb-2">Experience</a>
+                            <a href="#contact" onClick={() => setIsMobileMenuOpen(false)} className="hover:text-acid hover:pl-2 transition-all pb-2">Contact</a>
+                        </div>
                     </div>
                 </div>
             </nav>
@@ -529,17 +575,37 @@ function App() {
                 </section>
 
                 {/* Footer */}
-                <footer id="footer_contact" className="mt-32 pt-10 border-t-4 border-ink flex flex-col md:flex-row justify-between items-start md:items-end gap-8 scroll-mt-32">
-                    <div>
-                        <div className="text-6xl font-black text-transparent" style={{ WebkitTextStroke: '1px var(--color-ink)' }}>HP_DEV</div>
+                <footer id="footer_contact" className="mt-32 pt-10 border-t-4 border-ink flex flex-col md:flex-row justify-between items-start md:items-end gap-12 md:gap-8 scroll-mt-32">
+                    {/* Brand */}
+                    <div className="flex-shrink-0">
+                        <div className="text-6xl md:text-8xl font-black text-transparent leading-none" style={{ WebkitTextStroke: '2px var(--color-ink)' }}>HP_DEV</div>
                     </div>
 
-                    <div className="flex gap-4">
-                        <p className="text-sm">Number: 079 765 9596</p>
-                        <p className="text-sm">Email: johannespprinsloo@gmail.com</p>
-                        <a href="mailto:johannespprinsloo@gmail.com" className="bg-paper text-ink border-2 border-ink px-6 py-3 font-bold uppercase hover:shadow-neo hover:-translate-y-1 transition-all shadow-neo hover:translate-x-1 hover:translate-y-1 hover:shadow-none">
+                    {/* Contact Info & Button Stacked Vertically */}
+                    <div className="flex flex-col items-start md:items-end gap-6 w-full md:w-auto font-mono text-ink">
+
+                        {/* Action Button (Original Style) */}
+                        <a
+                            href="mailto:johannespprinsloo@gmail.com"
+                            className="w-full md:w-auto bg-paper text-ink border-2 border-ink px-6 py-4 font-bold uppercase hover:shadow-neo hover:-translate-y-1 transition-all shadow-neo hover:translate-x-1 hover:translate-y-1 hover:shadow-none text-center"
+                        >
                             Send me a mail
                         </a>
+
+                        {/* Text Group */}
+                        <div className="flex flex-col md:flex-row gap-6 md:gap-8 text-sm text-left">
+                            <div className="flex flex-col">
+                                <span className="mb-1 uppercase tracking-widest opacity-80 font-bold">Number:</span>
+                                <span className="leading-snug">
+                                    079 765 9596
+                                </span>
+                            </div>
+                            <div className="flex flex-col">
+                                <span className="mb-1 uppercase tracking-widest opacity-80 font-bold">Email:</span>
+                                <span>johannespprinsloo@gmail.com</span>
+                            </div>
+                        </div>
+
                     </div>
                 </footer>
 
