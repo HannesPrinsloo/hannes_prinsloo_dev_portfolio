@@ -1,9 +1,15 @@
 import { useState, useEffect } from 'react'
+import { useAudioStore } from './store/useAudioStore'
+import { useAudioScrollTracker } from './hooks/useAudioScrollTracker'
 import { DotLottieReact } from '@lottiefiles/dotlottie-react'
 import BackstoryModal from './components/BackstoryModal'
 
 function App() {
-    const [audioMode, setAudioMode] = useState(false);
+    // Audio State & Tracking
+    const isAudioEnabled = useAudioStore((state) => state.isAudioEnabled);
+    const toggleAudioEnabled = useAudioStore((state) => state.toggleAudioEnabled);
+    useAudioScrollTracker();
+
     const [showBackstory, setShowBackstory] = useState(false);
     const [isDarkMode, setIsDarkMode] = useState(false);
     const [themeClickCount, setThemeClickCount] = useState(0);
@@ -98,13 +104,13 @@ function App() {
                     <div className="hidden md:flex flex-col gap-2 items-end pointer-events-auto">
                         {/* Audio Tour / Director's Cut Toggle */}
                         <button
-                            onClick={() => setAudioMode(!audioMode)}
+                            onClick={toggleAudioEnabled}
                             className="bg-paper border-2 border-ink shadow-neo px-4 py-2 flex items-center gap-3 justify-between hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all group"
                         >
                             <span className="text-sm font-bold uppercase tracking-widest text-ink">
                                 AUDIO TOUR
                             </span>
-                            <div className={`w-4 h-4 border-2 border-ink rounded-full flex-shrink-0 transition-colors ${audioMode ? (isDarkMode ? 'bg-acid' : 'bg-ink') : 'bg-transparent'}`}></div>
+                            <div className={`w-4 h-4 border-2 border-ink rounded-full flex-shrink-0 transition-colors ${isAudioEnabled ? (isDarkMode ? 'bg-acid' : 'bg-ink') : 'bg-transparent'}`}></div>
                         </button>
 
                         {/* Dark Mode Toggle */}
@@ -507,7 +513,7 @@ function App() {
                 </section>
 
                 {/* Tech Stack Grid */}
-                <section>
+                <section id="tech_stack">
                     <h4 className="font-bold uppercase tracking-widest text-sm mb-6 flex items-center gap-2">
                         <span className="w-4 h-4 bg-acid border border-ink inline-block"></span>
                         Technical Arsenal
@@ -523,12 +529,14 @@ function App() {
                 </section>
 
                 {/* Footer */}
-                <footer id="contact" className="mt-32 pt-10 border-t-4 border-ink flex flex-col md:flex-row justify-between items-start md:items-end gap-8 scroll-mt-32">
+                <footer id="footer_contact" className="mt-32 pt-10 border-t-4 border-ink flex flex-col md:flex-row justify-between items-start md:items-end gap-8 scroll-mt-32">
                     <div>
                         <div className="text-6xl font-black text-transparent" style={{ WebkitTextStroke: '1px var(--color-ink)' }}>HP_DEV</div>
                     </div>
 
                     <div className="flex gap-4">
+                        <p className="text-sm">Number: 079 765 9596</p>
+                        <p className="text-sm">Email: johannespprinsloo@gmail.com</p>
                         <a href="mailto:johannespprinsloo@gmail.com" className="bg-paper text-ink border-2 border-ink px-6 py-3 font-bold uppercase hover:shadow-neo hover:-translate-y-1 transition-all shadow-neo hover:translate-x-1 hover:translate-y-1 hover:shadow-none">
                             Send me a mail
                         </a>
