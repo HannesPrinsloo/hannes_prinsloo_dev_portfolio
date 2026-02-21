@@ -1,5 +1,11 @@
 import { useState, useEffect } from 'react'
+import Lottie from 'lottie-react'
 import BackstoryModal from './components/BackstoryModal'
+
+// TODO: Import your final asset files here once they are ready, e.g.:
+// import funModeAnimation from './assets/fun-animation.json';
+// import darkIllustration from './assets/hero-dark.png';
+// import lightIllustration from './assets/hero-light.png';
 
 function App() {
     const [audioMode, setAudioMode] = useState(false);
@@ -122,21 +128,47 @@ function App() {
                 <section id="home" className="mb-32 relative scroll-mt-48">
                     <div className="absolute -left-10 -top-10 w-20 h-20 border-l-4 border-t-4 border-ink opacity-20 hidden md:block"></div>
 
-                    <h1 className="text-6xl md:text-8xl font-medium leading-[0.85] mb-8 tracking-tighter mix-blend-multiply dark:mix-blend-normal">
-                        Full Stack <br />
-                        <span>Developer</span>
-                    </h1>
+                    <div className="grid grid-cols-12 gap-8 md:gap-12 items-center">
+                        {/* Left Column: Text Content */}
+                        <div className="col-span-12 md:col-span-7">
+                            <h1 className="text-6xl md:text-8xl font-medium leading-[0.85] mb-8 tracking-tighter mix-blend-multiply dark:mix-blend-normal fun:mix-blend-normal">
+                                Full Stack <br />
+                                <span>Developer</span>
+                            </h1>
 
-                    <p className="text-lg md:text-xl max-w-2xl leading-relaxed border-l-4 border-acid pl-6 italic">
-                        I am a self-taught Full Stack Developer and freelancer, currently studying for a Computer Science degree. I am also a professional gigging musician and music teacher looking to begin a fully fledged career in tech.
-                    </p>
+                            <p className="text-lg md:text-xl max-w-2xl leading-relaxed border-l-4 border-acid pl-6 italic mb-8">
+                                I am a self-taught Full Stack Developer and freelancer, currently studying for a Computer Science degree. I am also a professional gigging musician and music teacher looking to begin a fully fledged career in tech.
+                            </p>
 
-                    <button
-                        onClick={() => setShowBackstory(true)}
-                        className="inline-block mt-8 bg-paper text-ink px-6 py-3 font-medium uppercase border-2 border-ink shadow-neo hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all"
-                    >
-                        My Background: Artist to Engineer
-                    </button>
+                            <button
+                                onClick={() => setShowBackstory(true)}
+                                className="inline-block bg-paper text-ink px-6 py-3 font-medium uppercase border-2 border-ink shadow-neo hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all"
+                            >
+                                My Background: Artist to Engineer
+                            </button>
+                        </div>
+
+                        {/* Right Column: Dynamic Illustration Placeholder */}
+                        <div className="col-span-12 md:col-span-5 w-full flex justify-center">
+                            <div className="w-full max-w-sm aspect-[4/5] flex items-center justify-center relative overflow-hidden">
+
+                                {themeClickCount >= 4 ? (
+                                    // Fun Mode: Render Lottie Animation
+                                    // <Lottie animationData={funModeAnimation} loop={true} className="w-full h-full object-contain" />
+                                    <div className="text-center z-10">
+                                        <span className="text-8xl leading-none block mb-4">🦄</span>
+                                        <span className="font-bold uppercase tracking-widest text-ink bg-paper px-2 py-1">Fun Mode Lottie</span>
+                                    </div>
+                                ) : isDarkMode ? (
+                                    // Dark Mode Illustration
+                                    <img src="/assets/hero-dark.webp" alt="Dark Mode Hero" className="w-full h-full object-contain" />
+                                ) : (
+                                    // Light Mode Illustration
+                                    <img src="/assets/hero-light.webp" alt="Light Mode Hero" className="w-full h-full object-contain" />
+                                )}
+                            </div>
+                        </div>
+                    </div>
                 </section>
 
                 {/* Expertise Section */}

@@ -19,7 +19,9 @@ const BackstoryModal: React.FC<BackstoryModalProps> = ({ isOpen, onClose }) => {
         };
     }, [isOpen]);
 
-    const storyText = ` Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.`;
+    const storyText = ` I started playing in bands at 16. My first gig was at a Carletonville biker bar, singing Metallica with a 16-year-old voice that had just broken. We sucked, and I was too nervous to play my guitar properly, but I was hooked. After high school, despite being dux learner and head boy, I chose this crazy dream over the safe route, promising myself I'd change course at 30 if music didn't pan out.
+
+For over a decade, I gigged hard. I shared stages with Valiant Swart, The Black Cat Bones, Pedro Barbosa, and hundreds of local musos. Coming from a working-class background, I funded the dream myself, working terrible hours as a bartender, restaurant manager, and logistics manager. Eventually, I realized the only real money was in corporate gigs—which was never the goal. In early 2023, with 30 fast approaching, I kept my promise and pivoted to my other lifelong passion: software development.`;
 
     // Only start typing when open
     const { displayedText, isTyping } = useTypewriter(isOpen ? storyText : '', 15, 500);

@@ -65,7 +65,7 @@
 }
 
 .fun body {
-    background-image: linear-gradient(90deg, #ff2400, #e81d1d, #e8b71d, #e3e81d, #1de840, #1ddde8, #2b1de8, #dd00f3, #ff2400);
+    background-image: linear-gradient(90deg, #ffd4b1, #ffa4a4, #ffedb1, #fdff7c, #80ff95, #8af9ff, #a0ffe7, #ff9cba, #ffc6bd);
     background-size: 800% 800%;
     animation: rainbow-pan 3s ease infinite;
     background-color: #dd00f3;
