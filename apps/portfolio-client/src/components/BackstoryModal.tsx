@@ -16,7 +16,7 @@ const BackstoryModal: React.FC<BackstoryModalProps> = ({ isOpen, onClose, isDark
     const [shouldLoadLottie, setShouldLoadLottie] = useState(false);
     const [showLottie, setShowLottie] = useState(false);
     const [dotLottieDesktop, setDotLottieDesktop] = useState<any>(null);
-    const [dotLottieMobile, setDotLottieMobile] = useState<any>(null);
+    // const [dotLottieMobile, setDotLottieMobile] = useState<any>(null);
 
     // Lottie delayed loading logic
     useEffect(() => {
@@ -39,17 +39,17 @@ const BackstoryModal: React.FC<BackstoryModalProps> = ({ isOpen, onClose, isDark
                     dotLottieDesktop.setLoop(3);
                     dotLottieDesktop.play();
                 }
-                if (dotLottieMobile) {
-                    dotLottieMobile.setLoop(3);
-                    dotLottieMobile.play();
-                }
+                // if (dotLottieMobile) {
+                //     dotLottieMobile.setLoop(3);
+                //     dotLottieMobile.play();
+                // }
             }, 5000);
 
         } else {
             setShouldLoadLottie(false);
             setShowLottie(false);
             if (dotLottieDesktop) dotLottieDesktop.stop();
-            if (dotLottieMobile) dotLottieMobile.stop();
+            // if (dotLottieMobile) dotLottieMobile.stop();
         }
 
         return () => {
@@ -57,7 +57,7 @@ const BackstoryModal: React.FC<BackstoryModalProps> = ({ isOpen, onClose, isDark
             clearTimeout(showTimer);
             clearTimeout(playTimer);
         };
-    }, [isOpen, dotLottieDesktop, dotLottieMobile]);
+    }, [isOpen, dotLottieDesktop]); //removed dotLottieMobile because of its exclusion, for now, from mobile
 
     // Lock body scroll when modal is open and trigger audio
     useEffect(() => {
