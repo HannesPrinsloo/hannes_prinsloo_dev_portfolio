@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import Lottie from 'lottie-react'
+// import Lottie from 'lottie-react'
 import BackstoryModal from './components/BackstoryModal'
 
 // TODO: Import your final asset files here once they are ready, e.g.:
