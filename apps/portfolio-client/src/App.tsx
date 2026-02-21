@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useAudioStore } from './store/useAudioStore'
 import { useAudioScrollTracker } from './hooks/useAudioScrollTracker'
 import { DotLottieReact } from '@lottiefiles/dotlottie-react'
@@ -15,6 +15,21 @@ function App() {
     const [themeClickCount, setThemeClickCount] = useState(0);
     const [dotLottie, setDotLottie] = useState<any>(null);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+    const navRef = useRef<HTMLElement>(null);
+
+    // Close mobile menu when clicking outside of the nav element
+    useEffect(() => {
+        function handleClickOutside(event: MouseEvent) {
+            if (isMobileMenuOpen && navRef.current && !navRef.current.contains(event.target as Node)) {
+                setIsMobileMenuOpen(false);
+            }
+        }
+
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, [isMobileMenuOpen]);
 
     // Explicitly command the pre-mounted Lottie instance to play when the 4th click hits
     useEffect(() => {
@@ -57,7 +72,7 @@ function App() {
             <BackstoryModal isOpen={showBackstory} onClose={() => setShowBackstory(false)} />
 
             {/* Navigation / Header */}
-            <nav className="fixed top-0 left-0 right-0 z-50 p-4 pointer-events-none">
+            <nav ref={navRef} className="fixed top-0 left-0 right-0 z-50 p-4 pointer-events-none">
                 <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
 
                     {/* Top Row for Mobile (Brand + Toggles) */}
