@@ -1,17 +1,29 @@
 import { useState, useEffect } from 'react'
-// import Lottie from 'lottie-react'
+import { DotLottieReact } from '@lottiefiles/dotlottie-react'
 import BackstoryModal from './components/BackstoryModal'
-
-// TODO: Import your final asset files here once they are ready, e.g.:
-// import funModeAnimation from './assets/fun-animation.json';
-// import darkIllustration from './assets/hero-dark.png';
-// import lightIllustration from './assets/hero-light.png';
 
 function App() {
     const [audioMode, setAudioMode] = useState(false);
     const [showBackstory, setShowBackstory] = useState(false);
     const [isDarkMode, setIsDarkMode] = useState(false);
     const [themeClickCount, setThemeClickCount] = useState(0);
+    const [dotLottie, setDotLottie] = useState<any>(null);
+
+    // Explicitly command the pre-mounted Lottie instance to play when the 4th click hits
+    useEffect(() => {
+        if (dotLottie && themeClickCount >= 4) {
+            dotLottie.play();
+        } else if (dotLottie) {
+            dotLottie.stop();
+        }
+    }, [dotLottie, themeClickCount]);
+
+    // Preload the massive Lottie file into the browser cache when the user is 1 click away
+    useEffect(() => {
+        if (themeClickCount === 3) {
+            fetch('/assets/fun-mode-animation.lottie').catch(err => console.error("Prefetch failed:", err));
+        }
+    }, [themeClickCount]);
 
     const handleThemeToggle = () => {
         if (themeClickCount >= 4) {
@@ -60,11 +72,11 @@ function App() {
                                         <span className="text-xl leading-none">🦄</span>
                                     ) : isDarkMode ? (
                                         <svg viewBox="0 0 20 20" className="w-full h-full">
-                                            <path fill="var(--color-acid)" d="M15.15,17.04c-2.46-1.31-4.17-3.86-4.27-6.84-.1-2.98,1.43-5.64,3.79-7.12.3-.19.23-.65-.12-.74-.74-.19-1.52-.28-2.32-.26-4.56.16-8.11,4.08-7.76,8.67.31,4.19,3.86,7.47,8.06,7.45.9,0,1.76-.15,2.56-.42.34-.11.38-.58.06-.75Z" />
+                                            <path fill="var(--color-ink)" d="M13.23,1.53l-.82,5.35,4.97-2.14c.2-.09.37.17.22.32l-3.81,3.84,5.28,1.19c.21.05.2.35-.01.39l-5.34.87,3.57,4.07c.14.16-.04.4-.24.31l-4.83-2.44.5,5.39c.02.22-.27.3-.37.11l-2.48-4.81-2.76,4.66c-.11.19-.4.08-.36-.13l.82-5.35-4.97,2.14c-.2.09-.37-.17-.22-.32l3.81-3.84-5.28-1.19c-.21-.05-.2-.35.01-.39l5.34-.87-3.57-4.07c-.14-.16.04-.4.24-.31l4.83,2.44-.5-5.39c-.02-.22.27-.3.37-.11l2.48,4.81,2.76-4.66c.11-.19.4-.08.36.13Z" />
                                         </svg>
                                     ) : (
                                         <svg viewBox="0 0 20 20" className="w-full h-full">
-                                            <path fill="var(--color-ink)" d="M13.23,1.53l-.82,5.35,4.97-2.14c.2-.09.37.17.22.32l-3.81,3.84,5.28,1.19c.21.05.2.35-.01.39l-5.34.87,3.57,4.07c.14.16-.04.4-.24.31l-4.83-2.44.5,5.39c.02.22-.27.3-.37.11l-2.48-4.81-2.76,4.66c-.11.19-.4.08-.36-.13l.82-5.35-4.97,2.14c-.2.09-.37-.17-.22-.32l3.81-3.84-5.28-1.19c-.21-.05-.2-.35.01-.39l5.34-.87-3.57-4.07c-.14-.16.04-.4.24-.31l4.83,2.44-.5-5.39c-.02-.22.27-.3.37-.11l2.48,4.81,2.76-4.66c.11-.19.4-.08.36.13Z" />
+                                            <path fill="var(--color-acid)" d="M15.15,17.04c-2.46-1.31-4.17-3.86-4.27-6.84-.1-2.98,1.43-5.64,3.79-7.12.3-.19.23-.65-.12-.74-.74-.19-1.52-.28-2.32-.26-4.56.16-8.11,4.08-7.76,8.67.31,4.19,3.86,7.47,8.06,7.45.9,0,1.76-.15,2.56-.42.34-.11.38-.58.06-.75Z" />
                                         </svg>
                                     )}
                                 </span>
@@ -152,19 +164,27 @@ function App() {
                         <div className="col-span-12 md:col-span-5 w-full flex justify-center">
                             <div className="w-full max-w-sm aspect-[4/5] flex items-center justify-center relative overflow-hidden">
 
-                                {themeClickCount >= 4 ? (
-                                    // Fun Mode: Render Lottie Animation
-                                    // <Lottie animationData={funModeAnimation} loop={true} className="w-full h-full object-contain" />
-                                    <div className="text-center z-10">
-                                        <span className="text-8xl leading-none block mb-4">🦄</span>
-                                        <span className="font-bold uppercase tracking-widest text-ink bg-paper px-2 py-1">Fun Mode Lottie</span>
+                                {/* Light Mode Illustration */}
+                                {!isDarkMode && themeClickCount < 4 && (
+                                    <img key="light" src="/assets/hero-light.webp" alt="Light Mode Hero" className="absolute inset-0 w-full h-full object-contain animate-fade-in" />
+                                )}
+
+                                {/* Dark Mode Illustration */}
+                                {isDarkMode && themeClickCount < 4 && (
+                                    <img key="dark" src="/assets/hero-dark.webp" alt="Dark Mode Hero" className="absolute inset-0 w-full h-full object-contain animate-fade-in" />
+                                )}
+
+                                {/* Fun Mode: Pre-mount invisible on 3, show and animate on 4+ */}
+                                {themeClickCount >= 3 && (
+                                    <div className={`absolute inset-0 w-full h-full transition-opacity duration-300 ${themeClickCount >= 4 ? 'opacity-100 z-10 animate-fade-in' : 'opacity-0 -z-10 pointer-events-none'}`}>
+                                        <DotLottieReact
+                                            src="/assets/fun-mode-animation.lottie"
+                                            loop
+                                            autoplay={false}
+                                            dotLottieRefCallback={setDotLottie}
+                                            className="w-full h-full object-contain"
+                                        />
                                     </div>
-                                ) : isDarkMode ? (
-                                    // Dark Mode Illustration
-                                    <img src="/assets/hero-dark.webp" alt="Dark Mode Hero" className="w-full h-full object-contain" />
-                                ) : (
-                                    // Light Mode Illustration
-                                    <img src="/assets/hero-light.webp" alt="Light Mode Hero" className="w-full h-full object-contain" />
                                 )}
                             </div>
                         </div>
