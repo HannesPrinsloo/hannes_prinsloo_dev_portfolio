@@ -34,7 +34,7 @@ function App() {
                         <div className="md:hidden flex flex-col gap-2 items-end pointer-events-auto">
                             <button
                                 onClick={() => setIsDarkMode(!isDarkMode)}
-                                className={`border-2 border-ink shadow-neo px-3 py-2 flex items-center justify-center hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all group ${isDarkMode ? 'bg-ink text-paper border-paper' : 'bg-paper text-ink'}`}
+                                className="border-2 border-ink shadow-neo px-3 py-2 flex items-center justify-center hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all group bg-paper text-ink"
                                 aria-label="Toggle Dark Mode"
                             >
                                 <span className="flex items-center justify-center w-5 h-5">
