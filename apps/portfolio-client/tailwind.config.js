@@ -13,6 +13,7 @@ export default {
                 acid: 'var(--color-acid)',
                 surface: 'var(--color-surface)',
                 'surface-muted': 'var(--color-surface-muted)',
+                selection: 'var(--color-selection-text)',
             },
             boxShadow: {
                 neo: '4px 4px 0px 0px var(--color-shadow)',

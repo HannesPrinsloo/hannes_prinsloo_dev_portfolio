@@ -5,14 +5,26 @@ function App() {
     const [audioMode, setAudioMode] = useState(false);
     const [showBackstory, setShowBackstory] = useState(false);
     const [isDarkMode, setIsDarkMode] = useState(false);
+    const [themeClickCount, setThemeClickCount] = useState(0);
+
+    const handleThemeToggle = () => {
+        if (themeClickCount >= 4) {
+            setThemeClickCount(0);
+            setIsDarkMode(false);
+        } else {
+            setThemeClickCount(prev => prev + 1);
+            setIsDarkMode(!isDarkMode);
+        }
+    };
 
     useEffect(() => {
-        if (isDarkMode) {
+        document.documentElement.classList.remove('dark', 'fun');
+        if (themeClickCount >= 4) {
+            document.documentElement.classList.add('fun');
+        } else if (isDarkMode) {
             document.documentElement.classList.add('dark');
-        } else {
-            document.documentElement.classList.remove('dark');
         }
-    }, [isDarkMode]);
+    }, [isDarkMode, themeClickCount]);
 
     return (
         <div className="min-h-screen bg-paper text-ink p-4 md:p-8 font-mono">
@@ -33,12 +45,14 @@ function App() {
                         {/* Mobile Toggles (Visible only on mobile) */}
                         <div className="md:hidden flex flex-col gap-2 items-end pointer-events-auto">
                             <button
-                                onClick={() => setIsDarkMode(!isDarkMode)}
+                                onClick={handleThemeToggle}
                                 className="border-2 border-ink shadow-neo px-3 py-2 flex items-center justify-center hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all group bg-paper text-ink"
-                                aria-label="Toggle Dark Mode"
+                                aria-label="Toggle Theme"
                             >
                                 <span className="flex items-center justify-center w-5 h-5">
-                                    {isDarkMode ? (
+                                    {themeClickCount >= 4 ? (
+                                        <span className="text-xl leading-none">🦄</span>
+                                    ) : isDarkMode ? (
                                         <svg viewBox="0 0 20 20" className="w-full h-full">
                                             <path fill="var(--color-acid)" d="M15.15,17.04c-2.46-1.31-4.17-3.86-4.27-6.84-.1-2.98,1.43-5.64,3.79-7.12.3-.19.23-.65-.12-.74-.74-.19-1.52-.28-2.32-.26-4.56.16-8.11,4.08-7.76,8.67.31,4.19,3.86,7.47,8.06,7.45.9,0,1.76-.15,2.56-.42.34-.11.38-.58.06-.75Z" />
                                         </svg>
@@ -77,14 +91,16 @@ function App() {
 
                         {/* Dark Mode Toggle */}
                         <button
-                            onClick={() => setIsDarkMode(!isDarkMode)}
+                            onClick={handleThemeToggle}
                             className="bg-paper border-2 border-ink shadow-neo px-4 py-2 flex items-center gap-3 justify-between hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all group"
                         >
                             <span className="text-sm font-bold uppercase tracking-widest text-ink">
                                 THEME
                             </span>
                             <span className="flex items-center justify-center w-5 h-5">
-                                {isDarkMode ? (
+                                {themeClickCount >= 4 ? (
+                                    <span className="text-xl leading-none">🦄</span>
+                                ) : isDarkMode ? (
                                     <svg viewBox="0 0 20 20" className="w-full h-full">
                                         <path fill="#CCFF00" d="M15.15,17.04c-2.46-1.31-4.17-3.86-4.27-6.84-.1-2.98,1.43-5.64,3.79-7.12.3-.19.23-.65-.12-.74-.74-.19-1.52-.28-2.32-.26-4.56.16-8.11,4.08-7.76,8.67.31,4.19,3.86,7.47,8.06,7.45.9,0,1.76-.15,2.56-.42.34-.11.38-.58.06-.75Z" />
                                     </svg>
@@ -410,7 +426,7 @@ function App() {
                     <div className="border-l-4 border-ink pl-8 space-y-12 relative">
                         {/* Timeline Item 1 */}
                         <div className="relative group">
-                            <div className="absolute -left-[43px] top-1 w-5 h-5 bg-paper rounded-full border-4 border-ink group-hover:bg-acid transition-colors"></div>
+                            <div className="absolute -left-[43px] top-1 w-5 h-5 bg-[#f4f4f0] dark:bg-[#1A1A1A] rounded-full border-4 border-ink group-hover:bg-acid transition-colors"></div>
                             <h3 className="text-xl font-bold mb-4 border-b-2 border-ink pb-2">Freelance Web Developer</h3>
                             <span className="text-sm font-mono opacity-70 mb-4 block bg-surface-muted inline-block px-2">2023 - Present</span>
                             <p className="max-w-2xl leading-relaxed text-sm">
@@ -420,7 +436,7 @@ function App() {
 
                         {/* Timeline Item 2 */}
                         <div className="relative group">
-                            <div className="absolute -left-[43px] top-1 w-5 h-5 bg-paper rounded-full border-4 border-ink group-hover:bg-acid transition-colors"></div>
+                            <div className="absolute -left-[43px] top-1 w-5 h-5 bg-[#f4f4f0] dark:bg-[#1A1A1A] rounded-full border-4 border-ink group-hover:bg-acid transition-colors"></div>
                             <h3 className="text-xl font-bold mb-4 border-b-2 border-ink pb-2">Professional Musician</h3>
                             <span className="text-sm font-mono opacity-70 mb-4 block bg-surface-muted inline-block px-2">2013 - Present</span>
                             <p className="max-w-2xl leading-relaxed text-sm">
@@ -428,7 +444,7 @@ function App() {
                             </p>
                         </div>
                         <div className="relative group">
-                            <div className="absolute -left-[43px] top-1 w-5 h-5 bg-paper rounded-full border-4 border-ink group-hover:bg-acid transition-colors"></div>
+                            <div className="absolute -left-[43px] top-1 w-5 h-5 bg-[#f4f4f0] dark:bg-[#1A1A1A] rounded-full border-4 border-ink group-hover:bg-acid transition-colors"></div>
                             <h3 className="text-xl font-bold mb-4 border-b-2 border-ink pb-2">Something or other</h3>
                             <span className="text-sm font-mono opacity-70 mb-4 block bg-surface-muted inline-block px-2">2013 - Present</span>
                             <p className="max-w-2xl leading-relaxed text-sm">

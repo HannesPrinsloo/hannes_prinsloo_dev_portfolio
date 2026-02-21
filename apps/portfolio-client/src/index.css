@@ -15,6 +15,8 @@
     --color-shadow: #1A1A1A;
     --color-surface: #ffffff;
     --color-surface-muted: #e5e5e5;
+    --color-selection-text: #1A1A1A;
+    /* Force black selection text */
 }
 
 .dark {
@@ -25,14 +27,53 @@
     --color-shadow: #f4f4f0;
     --color-surface: #000000;
     --color-surface-muted: #333333;
+    --color-selection-text: #1A1A1A;
+    /* Force black selection text */
 }
 
-.dark .mix-blend-multiply {
+.dark .mix-blend-multiply,
+.fun .mix-blend-multiply {
     mix-blend-mode: normal !important;
 }
 
+@keyframes rainbow-pan {
+    0% {
+        background-position: 0% 50%
+    }
+
+    50% {
+        background-position: 100% 50%
+    }
+
+    100% {
+        background-position: 0% 50%
+    }
+}
+
+.fun {
+    /* Fun Mode (Rainbow override) */
+    --color-paper: rgba(0, 0, 0, 0.4);
+    /* Translucent dark background for readable cards/nav */
+
+    /* Force high contrast for readability */
+    --color-ink: #ffffff;
+    --color-acid: #000000;
+    --color-shadow: #000000;
+    --color-surface: rgba(0, 0, 0, 0.7);
+    --color-surface-muted: rgba(0, 0, 0, 0.4);
+    --color-selection-text: #ffffff;
+}
+
+.fun body {
+    background-image: linear-gradient(90deg, #ff2400, #e81d1d, #e8b71d, #e3e81d, #1de840, #1ddde8, #2b1de8, #dd00f3, #ff2400);
+    background-size: 800% 800%;
+    animation: rainbow-pan 3s ease infinite;
+    background-color: #dd00f3;
+    /* Fallback */
+}
+
 body {
-    @apply bg-paper text-ink min-h-screen font-mono selection:bg-acid selection:text-ink;
+    @apply bg-paper text-ink min-h-screen font-mono selection:bg-acid selection:text-[#1A1A1A];
 }
 
 h1,
