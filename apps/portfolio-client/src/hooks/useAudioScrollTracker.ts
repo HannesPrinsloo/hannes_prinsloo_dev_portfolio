@@ -4,10 +4,10 @@ import { useAudioStore } from '../store/useAudioStore';
 export function useAudioScrollTracker() {
     const scrollTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
     const activeSectionRef = useRef<string | null>(null);
-    const { playSegment, fadeAndPause, isAudioEnabled, currentlyPlaying } = useAudioStore();
+    const { playSegment, fadeAndPause, isAudioEnabled, currentlyPlaying, isAudioPaused } = useAudioStore();
 
     useEffect(() => {
-        if (!isAudioEnabled) {
+        if (!isAudioEnabled || isAudioPaused) {
             return;
         }
 
@@ -32,13 +32,21 @@ export function useAudioScrollTracker() {
         window.addEventListener('scroll', handleScroll, { passive: true });
 
         const observer = new IntersectionObserver((entries) => {
+            // Disable scroll tracker completely on mobile (tailwind md breakpoint is 768px)
+            if (window.innerWidth < 768) return;
+
             // Find the most intersecting entry if multiple, or just rely on the firing order
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
                     const sectionId = entry.target.id;
 
-                    let spriteId = null;
-                    if (sectionId === 'home') spriteId = 'intro';
+                    let spriteId: string | null = null;
+                    if (sectionId === 'home') {
+                        const hour = new Date().getHours();
+                        if (hour < 12) spriteId = 'intro_morning';
+                        else if (hour < 18) spriteId = 'intro_afternoon';
+                        else spriteId = 'intro_evening';
+                    }
                     if (sectionId === 'expertise') spriteId = 'expertise';
                     if (sectionId === 'work') spriteId = 'projects';
                     if (sectionId === 'tech_stack') spriteId = 'tech_stack';
@@ -70,5 +78,5 @@ export function useAudioScrollTracker() {
             if (scrollTimeoutRef.current) clearTimeout(scrollTimeoutRef.current);
             clearTimeout(initialTimeout);
         };
-    }, [isAudioEnabled, fadeAndPause, playSegment, currentlyPlaying]);
+    }, [isAudioEnabled, isAudioPaused, fadeAndPause, playSegment, currentlyPlaying]);
 }

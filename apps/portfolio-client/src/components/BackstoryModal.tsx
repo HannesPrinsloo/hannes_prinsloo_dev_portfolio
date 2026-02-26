@@ -1,24 +1,25 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { useTypewriter } from '../hooks/useTypewriter';
 import { useAudioStore } from '../store/useAudioStore';
-import { DotLottieReact } from '@lottiefiles/dotlottie-react';
+// import { DotLottieReact } from '@lottiefiles/dotlottie-react';
 
 interface BackstoryModalProps {
     isOpen: boolean;
     onClose: () => void;
-    isDarkMode?: boolean;
+    // isDarkMode?: boolean;
 }
 
-const BackstoryModal: React.FC<BackstoryModalProps> = ({ isOpen, onClose, isDarkMode }) => {
+const BackstoryModal: React.FC<BackstoryModalProps> = ({ isOpen, onClose /*, isDarkMode*/ }) => {
     const playSegment = useAudioStore(state => state.playSegment);
     const fadeAndPause = useAudioStore(state => state.fadeAndPause);
 
-    const [shouldLoadLottie, setShouldLoadLottie] = useState(false);
-    const [showLottie, setShowLottie] = useState(false);
-    const [dotLottieDesktop, setDotLottieDesktop] = useState<any>(null);
+    // const [shouldLoadLottie, setShouldLoadLottie] = useState(false);
+    // const [showLottie, setShowLottie] = useState(false);
+    // const [dotLottieDesktop, setDotLottieDesktop] = useState<any>(null);
     // const [dotLottieMobile, setDotLottieMobile] = useState<any>(null);
 
     // Lottie delayed loading logic
+    /*
     useEffect(() => {
         let loadTimer: ReturnType<typeof setTimeout>;
         let showTimer: ReturnType<typeof setTimeout>;
@@ -58,6 +59,7 @@ const BackstoryModal: React.FC<BackstoryModalProps> = ({ isOpen, onClose, isDark
             clearTimeout(playTimer);
         };
     }, [isOpen, dotLottieDesktop]); //removed dotLottieMobile because of its exclusion, for now, from mobile
+    */
 
     // Lock body scroll when modal is open and trigger audio
     useEffect(() => {
@@ -74,9 +76,13 @@ const BackstoryModal: React.FC<BackstoryModalProps> = ({ isOpen, onClose, isDark
         };
     }, [isOpen, playSegment, fadeAndPause]);
 
-    const storyText = ` I started playing in bands at 16. My first gig was at a Carletonville biker bar, singing Metallica with a 16-year-old voice that had just broken. We sucked, and I was too nervous to play my guitar properly, but I was hooked. After high school, despite being dux learner and head boy, I chose this crazy dream over the safe route, promising myself I'd change course at 30 if music didn't pan out.
+    const storyText = ` I started playing in bands at 16. My first gig was at a Carletonville biker bar, singing Metallica with a 16-year-old voice that had just broken. We sucked, and I was too nervous to play my guitar properly, but I was hooked. 
+    
+After high school, despite being dux learner and head boy, I chose this crazy dream over the safe route, promising myself I'd change course at 30 in the (let's be honest) likely event that the music didn't pan out.
 
-For over a decade, I gigged hard. I shared stages with Valiant Swart, The Black Cat Bones, Pedro Barbosa, and hundreds of local musos. Coming from a working-class background, I funded the dream myself, working terrible hours as a bartender, restaurant manager, and logistics manager. Eventually, I realized the only real money was in corporate gigs — which was never the goal. In early 2023, with 30 fast approaching, I kept my promise and pivoted to my other lifelong passion: software development.`;
+For over a decade, I gigged all over South Africa. I shared stages with Valiant Swart, The South African Blues Society, The Black Cat Bones, Pedro Barbosa, and hundreds of other local musos. 
+
+Coming from a working-class background, I funded the dream myself, working terrible hours as a bartender, restaurant manager, and warehouse manager. Eventually, I realized that the only real money for me in the music industry was probably in corporate gigs and functions - the kind of gigs that paid the bills, and they were fun enough, but never the dream. It was a gamble, but it was all worth it to give my music the shot it deserved. In early 2023, at 28, I saw 30 fast approaching and made the decision. I kept the promise I made to my 18-year-old self and pivoted to my other lifelong passion - software development.`;
 
     // Only start typing when open
     const { displayedText, isTyping } = useTypewriter(isOpen ? storyText : '', 15, 500);
@@ -124,7 +130,7 @@ For over a decade, I gigged hard. I shared stages with Valiant Swart, The Black 
                         </div>
 
                         {/* Lottie Container - Desktop */}
-                        {shouldLoadLottie && (
+                        {/* {shouldLoadLottie && (
                             <div className={`absolute top-0 right-0 hidden md:block w-50 h-50 -translate-y-2 transition-opacity duration-1000 ${showLottie ? 'opacity-100' : 'opacity-0'}`}>
                                 <DotLottieReact
                                     src={isDarkMode ? '/assets/modal-animation-dark.lottie' : '/assets/modal-animation-light.lottie'}
@@ -134,7 +140,7 @@ For over a decade, I gigged hard. I shared stages with Valiant Swart, The Black 
                                     className="w-full h-full object-contain"
                                 />
                             </div>
-                        )}
+                        )} */}
                     </div>
 
                     {/* Ruled Paper Body with Typewriter Text */}

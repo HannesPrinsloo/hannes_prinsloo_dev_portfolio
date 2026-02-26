@@ -20,8 +20,8 @@ export default {
                 'neo-sm': '2px 2px 0px 0px var(--color-shadow)',
             },
             fontFamily: {
-                sans: ['"roc-grotesk"', 'sans-serif'],
-                mono: ['"Fira Code"', 'monospace'],
+                sans: ['var(--heading-font)'],
+                mono: ['var(--body-font)'],
             },
             borderWidth: {
                 3: '3px',
@@ -35,10 +35,15 @@ export default {
                     '0%': { opacity: '0', transform: 'translateY(20px)' },
                     '100%': { opacity: '1', transform: 'translateY(0)' },
                 },
+                'tooltip-fade-in': {
+                    '0%': { opacity: '0', transform: 'translateY(-4px)' },
+                    '100%': { opacity: '1', transform: 'translateY(0)' },
+                },
             },
             animation: {
                 'paper-slam': 'paper-slam 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards',
                 'fade-in': 'fade-in 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+                'tooltip-fade-in': 'tooltip-fade-in 0.15s ease-out forwards',
             }
         },
     },

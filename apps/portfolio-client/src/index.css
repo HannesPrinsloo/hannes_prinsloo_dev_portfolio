@@ -5,10 +5,12 @@
 @tailwind utilities;
 
 :root {
-    font-family: 'roc-grotesk', system-ui, sans-serif;
+    /* font-family: 'roc-grotesk', system-ui, sans-serif; */
     scroll-behavior: smooth;
 
     /* Light Mode */
+    --heading-font: 'roc-grotesk', system-ui, sans-serif;
+    --body-font: 'Fira Code', monospace;
     --color-paper: #f4f4f0;
     --color-ink: #1A1A1A;
     --color-acid: #CCFF00;
@@ -55,9 +57,13 @@
     --color-paper: rgba(0, 0, 0, 0.4);
     /* Translucent dark background for readable cards/nav */
 
+    /* Font change in fun mode */
+    --heading-font: 'Comic Sans MS', system-ui, sans-serif;
+    --body-font: 'Comic Sans MS', system-ui, sans-serif;
+
     /* Force high contrast for readability */
     --color-ink: #ffffff;
-    --color-acid: #000000;
+    --color-acid: #dd00f3;
     --color-shadow: #000000;
     --color-surface: rgba(0, 0, 0, 0.7);
     --color-surface-muted: rgba(0, 0, 0, 0.4);

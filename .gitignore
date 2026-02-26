@@ -38,5 +38,7 @@ pnpm-debug.log*
 ehthumbs.db
 Thumbs.db
 
-# Optional: Ignore backup SQL dumps if you don't want them in repo history
+# Ignores db dumps/backups
 *.sql
+
+/apps/portfolio-client/docs/

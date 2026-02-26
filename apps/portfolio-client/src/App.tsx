@@ -3,6 +3,10 @@ import { useAudioStore } from './store/useAudioStore'
 import { useAudioScrollTracker } from './hooks/useAudioScrollTracker'
 import { DotLottieReact } from '@lottiefiles/dotlottie-react'
 import BackstoryModal from './components/BackstoryModal'
+// import { GameModal } from './components/game/GameModal'
+// import { useGameStore } from './store/useGameStore'
+import { useDelayedTooltip } from './hooks/useDelayedTooltip'
+import { AudioControls } from './components/AudioControls'
 
 function App() {
     const isAudioEnabled = useAudioStore((state) => state.isAudioEnabled);
@@ -10,6 +14,9 @@ function App() {
     const toggleAudioEnabled = useAudioStore((state) => state.toggleAudioEnabled);
     const masterVolume = useAudioStore((state) => state.masterVolume);
     const setMasterVolume = useAudioStore((state) => state.setMasterVolume);
+    // const openGameModal = useGameStore((state) => state.openModal);
+
+    const { isVisible: showAudioTooltip, triggerProps: audioTooltipTriggerProps, tooltipProps: audioTooltipProps } = useDelayedTooltip(300, "audio-tour-tooltip");
 
     useAudioScrollTracker();
 
@@ -19,6 +26,13 @@ function App() {
     const [dotLottie, setDotLottie] = useState<any>(null);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const navRef = useRef<HTMLElement>(null);
+
+    // Audio Footer Interaction States
+    const playSegment = useAudioStore((state) => state.playSegment);
+    const [hasTriggeredFooterAudio, setHasTriggeredFooterAudio] = useState(false);
+    const [showCopyButton, setShowCopyButton] = useState(false);
+    const [copyAnimationFinished, setCopyAnimationFinished] = useState(false);
+    const [copyText, setCopyText] = useState("Copy Number to Clipboard");
 
     // Close mobile menu when clicking outside of the nav element
     useEffect(() => {
@@ -72,7 +86,7 @@ function App() {
     return (
         <div className="min-h-screen bg-paper text-ink p-4 md:p-8 font-mono">
 
-            <BackstoryModal isOpen={showBackstory} onClose={() => setShowBackstory(false)} isDarkMode={isDarkMode} />
+            <BackstoryModal isOpen={showBackstory} onClose={() => setShowBackstory(false)} /* isDarkMode={isDarkMode} */ />
 
             {/* Navigation / Header */}
             <nav ref={navRef} className="fixed top-0 left-0 right-0 z-50 p-4 pointer-events-none">
@@ -134,7 +148,7 @@ function App() {
                         <a href="#expertise" className="hover:text-acid transition-colors">Expertise</a>
                         <a href="#work" className="hover:text-acid transition-colors">Work</a>
                         <a href="#experience" className="hover:text-acid transition-colors">Experience</a>
-                        <a href="#contact_footer" className="hover:text-acid transition-colors">Contact</a>
+                        <a href="#footer_contact" className="hover:text-acid transition-colors">Contact</a>
                     </div>
 
                     {/* Toggles Container (Desktop) */}
@@ -143,6 +157,7 @@ function App() {
                         <div className={`flex flex-col items-end w-full relative transition-all ${isAudioEnabled ? 'shadow-neo' : 'shadow-neo hover:translate-x-1 hover:translate-y-1 hover:shadow-none'}`}>
                             <button
                                 onClick={toggleAudioEnabled}
+                                {...audioTooltipTriggerProps}
                                 className={`w-full bg-paper border-2 px-4 py-2 flex items-center gap-3 justify-between transition-none ${isAudioLoading ? 'border-acid animate-pulse' : 'border-ink'} relative z-20`}
                                 disabled={isAudioLoading}
                             >
@@ -151,6 +166,21 @@ function App() {
                                 </span>
                                 <div className={`w-4 h-4 border-2 border-ink rounded-full flex-shrink-0 transition-colors ${isAudioEnabled ? (isDarkMode ? 'bg-acid' : 'bg-ink') : 'bg-transparent'}`}></div>
                             </button>
+
+                            {/* Tooltip — appears below the button after 1 second of hovering */}
+                            {showAudioTooltip && (
+                                <div
+                                    {...audioTooltipProps}
+                                    className="
+                                        absolute top-full right-0 mt-2 z-30
+                                        bg-paper border-2 border-ink shadow-neo
+                                        px-3 py-2 text-xs font-mono text-ink w-48
+                                        animate-tooltip-fade-in pointer-events-none
+                                    "
+                                >
+                                    Enable a guided audio experience based on where you scroll
+                                </div>
+                            )}
 
                             {/* Neo-brutalist Volume Slider Dropdown */}
                             <div className={`w-full overflow-hidden transition-all duration-300 origin-top flex flex-col items-center bg-surface-muted border-ink ${isAudioEnabled ? 'max-h-20 border-x-2 border-b-2 mt-[-2px]' : 'max-h-0 border-0'}`}>
@@ -200,45 +230,10 @@ function App() {
                 </div>
 
                 {/* Mobile Menu Overlay */}
-                <div className={`md:hidden pointer-events-auto absolute top-full left-4 right-4 mt-2 bg-paper border-4 border-ink shadow-[8px_8px_0px_0px_var(--color-ink)] transition-all duration-300 origin-top flex flex-col overflow-hidden ${isMobileMenuOpen ? 'scale-y-100 opacity-100' : 'scale-y-0 opacity-0'}`}>
+                <div className={`md:hidden absolute top-full left-4 right-4 mt-2 bg-paper border-4 border-ink shadow-[8px_8px_0px_0px_var(--color-ink)] transition-all duration-300 origin-top flex flex-col overflow-hidden ${isMobileMenuOpen ? 'scale-y-100 opacity-100 pointer-events-auto' : 'scale-y-0 opacity-0 pointer-events-none'}`}>
                     <div className="p-6 flex flex-col gap-6">
 
-                        {/* Audio Tour Toggle (Mobile) */}
-                        <div className="border-b-4 border-ink pb-6 flex flex-col w-full relative">
-                            <div className={`w-full relative transition-all ${isAudioEnabled ? 'shadow-neo' : 'shadow-neo hover:translate-x-1 hover:translate-y-1 hover:shadow-none active:translate-x-1 active:translate-y-1 active:shadow-none'}`}>
-                                <button
-                                    onClick={toggleAudioEnabled}
-                                    className={`w-full bg-paper border-2 px-4 py-3 flex items-center justify-between transition-none ${isAudioLoading ? 'border-acid animate-pulse' : 'border-ink'} relative z-20`}
-                                    disabled={isAudioLoading}
-                                >
-                                    <span className="text-base font-bold uppercase tracking-widest text-ink">
-                                        {isAudioLoading ? 'LOADING...' : 'AUDIO TOUR'}
-                                    </span>
-                                    <div className={`w-5 h-5 border-2 border-ink rounded-full flex-shrink-0 transition-colors ${isAudioEnabled ? (isDarkMode ? 'bg-acid' : 'bg-ink') : 'bg-transparent'}`}></div>
-                                </button>
 
-                                {/* Neo-brutalist Volume Slider Dropdown (Mobile) */}
-                                <div className={`w-full overflow-hidden transition-all duration-300 origin-top flex flex-col items-center bg-surface-muted ${isAudioEnabled ? 'max-h-20 border-x-2 border-b-2 border-ink mt-[-2px]' : 'max-h-0 border-0'}`}>
-                                    <div className="w-full p-4 flex items-center gap-3">
-                                        <span className="text-sm font-bold uppercase tracking-widest text-ink/70">VOL</span>
-                                        <input
-                                            type="range"
-                                            min="0"
-                                            max="1"
-                                            step="0.01"
-                                            value={masterVolume}
-                                            onChange={(e) => setMasterVolume(parseFloat(e.target.value))}
-                                            className="w-full appearance-none h-5 bg-halftone border-2 border-ink cursor-pointer outline-none [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-5 [&::-webkit-slider-thumb]:h-7 [&::-webkit-slider-thumb]:bg-acid [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-solid [&::-webkit-slider-thumb]:border-ink [&::-webkit-slider-thumb]:rounded-none"
-                                            title="Master Volume"
-                                        />
-                                    </div>
-                                </div>
-                            </div>
-
-                            <p className="text-xs mt-4 opacity-70 font-sans leading-tight">
-                                Enable a guided audio experience based on where you scroll.
-                            </p>
-                        </div>
 
                         {/* Navigation Links (Mobile) */}
                         <div className="flex flex-col gap-4 font-bold uppercase tracking-widest text-xl">
@@ -246,11 +241,14 @@ function App() {
                             <a href="#expertise" onClick={() => setIsMobileMenuOpen(false)} className="hover:text-acid hover:pl-2 transition-all border-b-2 border-ink/20 pb-2">Expertise</a>
                             <a href="#work" onClick={() => setIsMobileMenuOpen(false)} className="hover:text-acid hover:pl-2 transition-all border-b-2 border-ink/20 pb-2">Work</a>
                             <a href="#experience" onClick={() => setIsMobileMenuOpen(false)} className="hover:text-acid hover:pl-2 transition-all border-b-2 border-ink/20 pb-2">Experience</a>
-                            <a href="#contact" onClick={() => setIsMobileMenuOpen(false)} className="hover:text-acid hover:pl-2 transition-all pb-2">Contact</a>
+                            <a href="#footer_contact" onClick={() => setIsMobileMenuOpen(false)} className="hover:text-acid hover:pl-2 transition-all pb-2">Contact</a>
                         </div>
                     </div>
                 </div>
             </nav>
+
+            {/* <GameModal /> */}
+            <AudioControls disableSkip={showBackstory} />
 
             {/* Main Content Container */}
             <main className="max-w-5xl mx-auto mt-32 md:mt-48 pb-20">
@@ -262,21 +260,45 @@ function App() {
                     <div className="grid grid-cols-12 gap-8 md:gap-12 items-center">
                         {/* Left Column: Text Content */}
                         <div className="col-span-12 md:col-span-7">
-                            <h1 className="text-6xl md:text-8xl font-medium leading-[0.85] mb-8 tracking-tighter mix-blend-multiply dark:mix-blend-normal fun:mix-blend-normal">
-                                Full Stack <br />
-                                <span>Developer</span>
-                            </h1>
+                            {themeClickCount >= 4 ? (
+                                <>
+                                    <h1 className="text-6xl md:text-8xl font-medium leading-[0.85] mb-8 tracking-tighter mix-blend-multiply dark:mix-blend-normal fun:mix-blend-normal">
+                                        Surprise!
+                                    </h1>
 
-                            <p className="text-lg md:text-xl max-w-2xl leading-relaxed border-l-4 border-acid pl-6 italic mb-8">
-                                I am a self-taught Full Stack Developer and freelancer, currently studying for a Computer Science degree. I am also a professional gigging musician and music teacher looking to begin a fully fledged career in tech.
-                            </p>
+                                    <p className="text-lg md:text-xl max-w-2xl leading-relaxed border-l-4 border-acid pl-6 italic mb-8">
+                                        I knew you couldn't resist playing with that button! Flashing lights, unicorn hats, a really cool bald guy and <i>Comic, Sans the comedy</i> (where the designers at?). <br />I hope this makes someone chuckle.<br /> I've wasted so much time on this.
+                                    </p>
+                                </>
+                            ) : (
+                                <>
+                                    <h1 className="text-6xl md:text-8xl font-medium leading-[0.85] mb-8 tracking-tighter mix-blend-multiply dark:mix-blend-normal fun:mix-blend-normal">
+                                        Full Stack <br />
+                                        <span>Developer</span>
+                                    </h1>
 
-                            <button
-                                onClick={() => setShowBackstory(true)}
-                                className="inline-block bg-paper text-ink px-6 py-3 font-medium uppercase border-2 border-ink shadow-neo hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all"
-                            >
-                                My Background: Artist to Engineer
-                            </button>
+                                    <p className="text-lg md:text-xl max-w-2xl leading-relaxed border-l-4 border-acid pl-6 italic mb-8">
+                                        I am a self-taught Full Stack Developer and freelancer, currently studying for a Computer Science degree. I am also a professional gigging musician and music teacher looking to move into a career in tech.
+                                    </p>
+                                </>
+                            )}
+
+                            <div className="flex flex-col sm:flex-row gap-4 mt-8">
+                                <button
+                                    onClick={() => setShowBackstory(true)}
+                                    className="inline-block bg-paper text-ink px-6 py-3 font-medium uppercase border-2 border-ink shadow-neo hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all"
+                                >
+                                    My Background: Artist to Engineer
+                                </button>
+
+                                {/* <button
+                                    onClick={() => openGameModal()}
+                                    className="inline-block bg-acid text-ink px-6 py-3 font-medium uppercase border-2 border-ink shadow-neo hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all flex items-center justify-center gap-2 group"
+                                >
+                                    <span>Play The Journey</span>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="group-hover:translate-x-1 transition-transform"><polygon points="5 3 19 12 5 21 5 3" /></svg>
+                                </button> */}
+                            </div>
                         </div>
 
                         {/* Right Column: Dynamic Illustration Placeholder */}
@@ -358,14 +380,29 @@ function App() {
                         </div>
                     </div>
 
-                    {/* Certifications List */}
+                    {/* Education List */}
                     <div className="mt-12 border-2 border-ink p-6 bg-surface shadow-neo">
                         <h3 className="text-xl font-bold mb-6 flex items-center gap-2">
                             <div className="w-4 h-4 rounded-full bg-ink"></div>
-                            Certifications
+                            Education
                         </h3>
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        {/* Formal Education Highlights */}
+                        <div className="mb-8 pb-8 border-b-2 border-ink border-dashed">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                <div>
+                                    <h4 className="font-medium border-b border-ink mb-3 pb-1">University of South Africa (UNISA)</h4>
+                                    <p className="text-sm">Bachelor of Science in Computing — <span className="font-bold bg-acid px-1">Current</span></p>
+                                </div>
+                                <div>
+                                    <h4 className="font-medium border-b border-ink mb-3 pb-1">Hoërskool Wonderfontein, Carletonville</h4>
+                                    <p className="text-sm">Matriculated — 2012</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Web Dev Certifications */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8 pb-8 border-b-2 border-ink border-dashed">
                             {/* University of Michigan */}
                             <div>
                                 <h4 className="font-medium border-b border-ink mb-3 pb-1">University of Michigan (Coursera)</h4>
@@ -445,6 +482,16 @@ function App() {
                                     </li>
                                 </ul>
                             </div>
+                        </div>
+
+                        {/* CS50 Highlight */}
+                        <div>
+                            <h4 className="font-medium border-b border-ink mb-3 pb-1">Harvard CS50: Introduction to Computer Science</h4>
+                            <p className="text-sm opacity-80 mb-2 italic">Completed Weeks 0 to 5.</p>
+                            <p className="text-sm">
+                                <span className="font-bold opacity-70 uppercase tracking-widest text-[10px] mr-2">Covered:</span>
+                                Scratch, C, Arrays, Algorithms, Memory, Data Structures.
+                            </p>
                         </div>
                     </div>
                 </section>
@@ -632,7 +679,7 @@ function App() {
                         Technical Arsenal
                     </h4>
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                        {['TypeScript', 'React', 'Redux', 'Zustand', 'Node.js', 'Express', 'PostgreSQL', 'WordPress', 'Elementor Pro', 'HTML', 'CSS', 'Tailwind', 'Vite', 'Git', 'Vercel', 'Render', 'Supabase', 'Figma', 'Designer-Speak'].map((tool, i) => (
+                        {['TypeScript', 'React', 'Redux', 'Zustand', 'Node.js', 'Express', 'PostgreSQL', 'WordPress', 'Elementor Pro', 'HTML', 'CSS', 'Tailwind', 'Vite', 'Git', 'Vercel', 'Render', 'Supabase', 'Figma', 'Designer-Speak', 'Client Relations'].map((tool, i) => (
                             <div key={tool} className="border-2 border-ink p-4 hover:shadow-neo hover:bg-surface transition-all cursor-default">
                                 <div className="text-xs opacity-60 mb-1">0{i + 1}</div>
                                 <div className="font-bold uppercase">{tool}</div>
@@ -642,37 +689,95 @@ function App() {
                 </section>
 
                 {/* Footer */}
-                <footer id="footer_contact" className="mt-32 pt-10 border-t-4 border-ink flex flex-col md:flex-row justify-between items-start md:items-end gap-12 md:gap-8 scroll-mt-32">
-                    {/* Brand */}
-                    <div className="flex-shrink-0">
-                        <div className="text-6xl md:text-8xl font-black text-transparent leading-none" style={{ WebkitTextStroke: '2px var(--color-ink)' }}>HP_DEV</div>
-                    </div>
+                <footer
+                    id="footer_contact"
+                    className="mt-32 pt-10 border-t-4 border-ink flex flex-col gap-8 md:gap-16 scroll-mt-32 w-full relative"
+                    onMouseEnter={() => {
+                        if (isAudioEnabled && !hasTriggeredFooterAudio) {
+                            playSegment('footer_offer');
+                            setHasTriggeredFooterAudio(true);
+                            setShowCopyButton(true);
 
-                    {/* Contact Info & Button Stacked Vertically */}
-                    <div className="flex flex-col items-start md:items-end gap-6 w-full md:w-auto font-mono text-ink">
+                            // Let the acid background show for the 5s audio duration, then snap to regular styling
+                            setTimeout(() => {
+                                setCopyAnimationFinished(true);
+                            }, 2000);
+                        }
+                    }}
+                    onTouchStart={() => {
+                        if (isAudioEnabled && !hasTriggeredFooterAudio) {
+                            playSegment('footer_offer');
+                            setHasTriggeredFooterAudio(true);
+                            setShowCopyButton(true);
 
-                        {/* Action Button (Original Style) */}
-                        <a
-                            href="mailto:johannespprinsloo@gmail.com"
-                            className="w-full md:w-auto bg-paper text-ink border-2 border-ink px-6 py-4 font-bold uppercase hover:shadow-neo hover:-translate-y-1 transition-all shadow-neo hover:translate-x-1 hover:translate-y-1 hover:shadow-none text-center"
-                        >
-                            Send me a mail
-                        </a>
-
-                        {/* Text Group */}
-                        <div className="flex flex-col md:flex-row gap-6 md:gap-8 text-sm text-left">
-                            <div className="flex flex-col">
-                                <span className="mb-1 uppercase tracking-widest opacity-80 font-bold">Number:</span>
-                                <span className="leading-snug">
-                                    079 765 9596
-                                </span>
-                            </div>
-                            <div className="flex flex-col">
-                                <span className="mb-1 uppercase tracking-widest opacity-80 font-bold">Email:</span>
-                                <span>johannespprinsloo@gmail.com</span>
-                            </div>
+                            setTimeout(() => {
+                                setCopyAnimationFinished(true);
+                            }, 2000);
+                        }
+                    }}
+                >
+                    <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-12 md:gap-8 w-full">
+                        {/* Brand */}
+                        <div className="flex-shrink-0">
+                            <div className="text-6xl md:text-8xl font-black text-transparent leading-none" style={{ WebkitTextStroke: '2px var(--color-ink)' }}>HP_DEV</div>
                         </div>
 
+                        {/* Contact Info & Button Stacked Vertically */}
+                        <div className="flex flex-col items-start md:items-end gap-14 md:gap-6 w-full md:w-auto font-mono text-ink">
+
+                            {/* Action Button (Original Style) */}
+                            <a
+                                href="mailto:johannespprinsloo@gmail.com"
+                                className="w-full md:w-auto bg-paper text-ink border-2 border-ink px-6 py-4 font-bold uppercase transition-all shadow-neo hover:translate-x-1 hover:translate-y-1 hover:shadow-none text-center"
+                            >
+                                Send me a mail
+                            </a>
+
+                            {/* Text Group */}
+                            <div className="flex flex-col md:flex-row gap-6 md:gap-8 text-sm text-left relative">
+
+                                <div className="flex flex-col relative w-full md:w-auto">
+                                    <span className="mb-1 uppercase tracking-widest opacity-80 font-bold">Number:</span>
+
+                                    {/* Animated Copy Button */}
+                                    {showCopyButton && (
+                                        <button
+                                            onClick={() => {
+                                                navigator.clipboard.writeText('079 765 9596');
+                                                setCopyText("COPIED!");
+                                                setTimeout(() => setCopyText("Copy Number to Clipboard"), 2000);
+                                            }}
+                                            className={`
+                                                absolute -top-12 left-0 md:left-auto md:right-0 whitespace-nowrap px-3 py-1 text-xs font-bold uppercase transition-all duration-700 w-full md:w-auto
+                                                ${copyAnimationFinished
+                                                    ? 'bg-paper text-ink border-2 border-ink shadow-neo hover:translate-x-1 hover:translate-y-1 hover:shadow-none translate-x-0 translate-y-0'
+                                                    : 'bg-acid text-ink border-2 border-ink shadow-none translate-x-1 translate-y-1'
+                                                }
+                                            `}
+                                        >
+                                            {copyText}
+                                        </button>
+                                    )}
+
+                                    <span className="leading-snug">
+                                        079 765 9596
+                                    </span>
+                                </div>
+                                <div className="flex flex-col">
+                                    <span className="mb-1 uppercase tracking-widest opacity-80 font-bold">Email:</span>
+                                    <span>johannespprinsloo@gmail.com</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Credits & Copyright */}
+                    <div className="mt-16 pt-8 border-t-2 border-ink/20 flex flex-col items-center pb-8 text-center text-sm font-mono w-full">
+                        <div className="flex flex-col gap-2">
+                            <span className="font-bold uppercase tracking-widest">Developed, written & directed by Hannes Prinsloo</span>
+                            <span className="opacity-60 text-xs">© 2026 Hannes Prinsloo</span>
+                            <span className="opacity-40 hover:opacity-80 transition-opacity cursor-default text-[10px] mt-1 italic">i also played the guitar you hear in the background music</span>
+                        </div>
                     </div>
                 </footer>
 
