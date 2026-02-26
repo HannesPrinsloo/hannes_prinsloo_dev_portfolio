@@ -4,13 +4,9 @@ import { useAudioStore } from '../store/useAudioStore';
 export function useAudioScrollTracker() {
     const scrollTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
     const activeSectionRef = useRef<string | null>(null);
-    const { playSegment, fadeAndPause, isAudioEnabled, currentlyPlaying, isAudioPaused } = useAudioStore();
+    const { playSegment, fadeAndPause, currentlyPlaying } = useAudioStore();
 
     useEffect(() => {
-        if (!isAudioEnabled || isAudioPaused) {
-            return;
-        }
-
         const handleScroll = () => {
             // User is actively scrolling; fade out whatever is currently playing
             // fadeAndPause();
@@ -59,15 +55,16 @@ export function useAudioScrollTracker() {
                 }
             });
         }, {
-            threshold: 0.5 // Section must be at least 50% visible to claim focus
+            rootMargin: "-20% 0px -50% 0px", // Focus band in the top 30% of the screen (between 20% and 50% from the top)
+            threshold: 0 // Trigger as soon as any part of the section enters this band
         });
 
         const sections = document.querySelectorAll('section[id]');
         sections.forEach(section => observer.observe(section));
 
-        // Handle initial state if user enables audio while not scrolling
+        // Handle initial state if user enables audio or loads page while not scrolling
         const initialTimeout = setTimeout(() => {
-            if (activeSectionRef.current && isAudioEnabled && !currentlyPlaying) {
+            if (activeSectionRef.current && !currentlyPlaying) {
                 playSegment(activeSectionRef.current);
             }
         }, 100);
@@ -78,5 +75,5 @@ export function useAudioScrollTracker() {
             if (scrollTimeoutRef.current) clearTimeout(scrollTimeoutRef.current);
             clearTimeout(initialTimeout);
         };
-    }, [isAudioEnabled, isAudioPaused, fadeAndPause, playSegment, currentlyPlaying]);
+    }, [fadeAndPause, playSegment, currentlyPlaying]);
 }

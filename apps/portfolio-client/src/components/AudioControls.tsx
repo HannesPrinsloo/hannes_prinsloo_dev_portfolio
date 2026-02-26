@@ -20,6 +20,8 @@ export const AudioControls: React.FC<AudioControlsProps> = ({ disableSkip = fals
         currentSegment = 'home';
     } else if (currentSegment === 'projects') {
         currentSegment = 'work'; // mapping sprite ID back to section ID
+    } else if (currentSegment === 'footer_offer') {
+        currentSegment = 'tech_stack'; // footer acts as the end of the page
     }
 
     const currentIndex = sections.indexOf(currentSegment || 'home');

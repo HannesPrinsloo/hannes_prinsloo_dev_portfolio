@@ -51,7 +51,7 @@ export const useAudioStore = create<AudioState>((set, get) => ({
                 backgroundMusic.fade(backgroundMusic.volume(), 0, 1000);
                 setTimeout(() => {
                     backgroundMusic.stop();
-                    backgroundMusic.volume(0.5); // Reset back to default volume after stopping
+                    backgroundMusic.volume(0.25); // Reset back to default volume after stopping
                 }, 1000);
 
                 return { isAudioEnabled: isEnabled, currentlyPlaying: null, playbackTimeout: null, isAudioPaused: false, lastRequestedSegment: null, hasPlayedGreeting: false };
@@ -68,7 +68,7 @@ export const useAudioStore = create<AudioState>((set, get) => ({
                     backgroundMusic.load();
                     backgroundMusic.volume(0);
                     backgroundMusic.play();
-                    backgroundMusic.fade(0, 0.5, 2000);
+                    backgroundMusic.fade(0, 0.25, 2000);
                 });
             } else if (audioSprite.state() === 'loaded') {
                 // If it's already loaded
@@ -87,18 +87,19 @@ export const useAudioStore = create<AudioState>((set, get) => ({
     playSegment: (id: string) => {
         const { isAudioEnabled, isAudioPaused, currentlyPlaying, playbackTimeout } = get();
 
-        if (!isAudioEnabled) {
-            console.log(`AudioStore: Denied playing "${id}" - Audio is disabled --> FUNCTION playSegment`);
-            return;
-        }
-
         // Intercept greetings if they've already been played this session
         if (id.startsWith('intro_') && get().hasPlayedGreeting) {
             id = 'intro';
         }
 
-        // Keep track of what section the user is actually looking at, even if paused
+        // Keep track of what section the user is actually looking at, even if paused or disabled
         set({ lastRequestedSegment: id });
+
+        if (!isAudioEnabled) {
+            // Uncomment the next line if you want to see constant logs of the tracker moving while audio is off
+            // console.log(`AudioStore: Denied playing "${id}" - Audio is disabled --> FUNCTION playSegment`);
+            return;
+        }
 
         // EXCEPTION: Always play the footer offer if triggered, regardless of pause state
         if (isAudioPaused && id !== 'footer_offer') {
@@ -177,7 +178,7 @@ export const useAudioStore = create<AudioState>((set, get) => ({
         backgroundMusic.fade(backgroundMusic.volume(), 0, 1000);
         setTimeout(() => {
             backgroundMusic.stop();
-            backgroundMusic.volume(0.5);
+            backgroundMusic.volume(0.25);
         }, 1000);
         set({ currentlyPlaying: null, playbackTimeout: null });
         console.log('AudioStore: Stopped all audio');

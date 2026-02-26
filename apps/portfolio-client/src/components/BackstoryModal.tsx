@@ -124,7 +124,7 @@ Coming from a working-class background, I funded the dream myself, working terri
                                 My Background: <br /> Artist to Engineer
                             </h2>
                             <div className="font-mono text-sm flex gap-3 text-gray-500">
-                                <span className="line-through decoration-2 decoration-ink text-ink opacity-50">2026-02-19</span>
+                                <span className="line-through decoration-2 decoration-ink text-ink opacity-50">2012-11-06</span>
                                 <span className="text-ink font-bold">{currentDate}</span>
                             </div>
                         </div>

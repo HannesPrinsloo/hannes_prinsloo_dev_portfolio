@@ -20,6 +20,16 @@ function App() {
 
     useAudioScrollTracker();
 
+    const lastRequestedSegment = useAudioStore((state) => state.lastRequestedSegment);
+    const getActiveSection = () => {
+        let currentSegment = lastRequestedSegment;
+        if (currentSegment?.startsWith('intro')) return 'home';
+        if (currentSegment === 'projects') return 'work';
+        if (currentSegment === 'footer_offer') return 'tech_stack';
+        return currentSegment || 'home';
+    };
+    const activeSection = getActiveSection();
+
     const [showBackstory, setShowBackstory] = useState(false);
     const [isDarkMode, setIsDarkMode] = useState(false);
     const [themeClickCount, setThemeClickCount] = useState(0);
@@ -144,11 +154,11 @@ function App() {
 
                     {/* Nav Links (Desktop) */}
                     <div className="pointer-events-auto bg-paper border-2 border-ink shadow-neo px-6 py-2 hidden md:flex gap-8 font-bold uppercase text-sm tracking-widest">
-                        <a href="#home" className="hover:text-acid transition-colors">Home</a>
-                        <a href="#expertise" className="hover:text-acid transition-colors">Expertise</a>
-                        <a href="#work" className="hover:text-acid transition-colors">Work</a>
-                        <a href="#experience" className="hover:text-acid transition-colors">Experience</a>
-                        <a href="#footer_contact" className="hover:text-acid transition-colors">Contact</a>
+                        <a href="#home" className={`transition-colors ${activeSection === 'home' ? 'text-gray-400 dark:text-acid' : 'hover:text-acid'}`}>Home</a>
+                        <a href="#expertise" className={`transition-colors ${activeSection === 'expertise' ? 'text-gray-400 dark:text-acid' : 'hover:text-acid'}`}>Expertise</a>
+                        <a href="#work" className={`transition-colors ${activeSection === 'work' ? 'text-gray-400 dark:text-acid' : 'hover:text-acid'}`}>Work</a>
+                        <a href="#experience" className={`transition-colors ${activeSection === 'experience' ? 'text-gray-400 dark:text-acid' : 'hover:text-acid'}`}>Experience</a>
+                        <a href="#footer_contact" className={`transition-colors ${activeSection === 'tech_stack' ? 'text-gray-400 dark:text-acid' : 'hover:text-acid'}`}>Contact</a>
                     </div>
 
                     {/* Toggles Container (Desktop) */}
@@ -396,7 +406,7 @@ function App() {
                                 </div>
                                 <div>
                                     <h4 className="font-medium border-b border-ink mb-3 pb-1">Hoërskool Wonderfontein, Carletonville</h4>
-                                    <p className="text-sm">Matriculated — 2012</p>
+                                    <p className="text-sm">Matriculated Dux Learner and Head Boy — 2012</p>
                                 </div>
                             </div>
                         </div>
@@ -408,7 +418,7 @@ function App() {
                                 <h4 className="font-medium border-b border-ink mb-3 pb-1">University of Michigan (Coursera)</h4>
                                 <ul className="list-none space-y-2 text-sm">
                                     <li className="flex items-start gap-2 group/link">
-                                        <span className="text-acid font-bold">»</span>
+                                        <span className="text-ink font-bold">»</span>
                                         <a
                                             href="https://coursera.org/share/076eec0f1de2136d9806fd99763d8c83"
                                             target="_blank"
@@ -419,7 +429,7 @@ function App() {
                                         </a>
                                     </li>
                                     <li className="flex items-start gap-2 group/link">
-                                        <span className="text-acid font-bold">»</span>
+                                        <span className="text-ink font-bold">»</span>
                                         <a
                                             href="https://coursera.org/share/bd82982683be5bfbd25d4f4d2bacca0f"
                                             target="_blank"
@@ -430,7 +440,7 @@ function App() {
                                         </a>
                                     </li>
                                     <li className="flex items-start gap-2 group/link">
-                                        <span className="text-acid font-bold">»</span>
+                                        <span className="text-ink font-bold">»</span>
                                         <a
                                             href="https://coursera.org/share/a6daf21511a46339492d40238f7dbbd9"
                                             target="_blank"
@@ -448,7 +458,7 @@ function App() {
                                 <h4 className="font-medium border-b border-ink mb-3 pb-1">freeCodeCamp</h4>
                                 <ul className="list-none space-y-2 text-sm">
                                     <li className="flex items-start gap-2 group/link">
-                                        <span className="text-acid font-bold">»</span>
+                                        <span className="text-ink font-bold">»</span>
                                         <a
                                             href="https://www.freecodecamp.org/certification/hannesprinsloo/javascript-algorithms-and-data-structures-v8"
                                             target="_blank"
@@ -459,7 +469,7 @@ function App() {
                                         </a>
                                     </li>
                                     <li className="flex items-start gap-2 group/link">
-                                        <span className="text-acid font-bold">»</span>
+                                        <span className="text-ink font-bold">»</span>
                                         <a
                                             href="https://www.freecodecamp.org/certification/hannesprinsloo/responsive-web-design"
                                             target="_blank"
@@ -470,7 +480,7 @@ function App() {
                                         </a>
                                     </li>
                                     <li className="flex items-start gap-2 group/link">
-                                        <span className="text-acid font-bold">»</span>
+                                        <span className="text-ink font-bold">»</span>
                                         <a
                                             href="https://www.freecodecamp.org/certification/hannesprinsloo/front-end-development-libraries"
                                             target="_blank"
@@ -648,7 +658,7 @@ function App() {
                             <h3 className="text-xl font-bold mb-4 border-b-2 border-ink pb-2">Freelance Web Developer</h3>
                             <span className="text-sm font-mono opacity-70 mb-4 block bg-surface-muted inline-block px-2">2023 - Present</span>
                             <p className="max-w-2xl leading-relaxed text-sm">
-                                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit.
+                                Having never advertised my services, I have only had word-of-mouth clients. All of this paid client work has been done using WordPress and relied heavily on custom styling (raw CSS) and custom JavaScript. The sites range from bespoke designed wedding invitation websites to online stores and one national butchery chain with more than 90 stores.
                             </p>
                         </div>
 
@@ -658,16 +668,115 @@ function App() {
                             <h3 className="text-xl font-bold mb-4 border-b-2 border-ink pb-2">Professional Musician</h3>
                             <span className="text-sm font-mono opacity-70 mb-4 block bg-surface-muted inline-block px-2">2013 - Present</span>
                             <p className="max-w-2xl leading-relaxed text-sm">
-                                Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Developing discipline, creativity, and the ability to perform under pressure.
+                                Pubs, restaurants, malls, corporate events, weddings, private functions. If you can imagine someone hiring a live musician to perform there, I've probably done it. I've walked into a church with my guitar and a wireless mic singing "Somewhere Over The Rainbow" before the bride walked in.
+                                <br />I also did the technical side of events - provided and mixed sound for artists, bands and functions, done MC work, hosted open mics and booked other acts for venues.
                             </p>
                         </div>
+                        {/* Timeline Item 3 */}
                         <div className="relative group">
                             <div className="absolute -left-[43px] top-1 w-5 h-5 bg-[#f4f4f0] dark:bg-[#1A1A1A] rounded-full border-4 border-ink group-hover:bg-acid transition-colors"></div>
-                            <h3 className="text-xl font-bold mb-4 border-b-2 border-ink pb-2">Something or other</h3>
-                            <span className="text-sm font-mono opacity-70 mb-4 block bg-surface-muted inline-block px-2">2013 - Present</span>
+                            <h3 className="text-xl font-bold mb-4 border-b-2 border-ink pb-2">Music Teacher</h3>
+                            <span className="text-sm font-mono opacity-70 mb-4 block bg-surface-muted inline-block px-2">February 2024 - Present</span>
                             <p className="max-w-2xl leading-relaxed text-sm">
-                                Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Developing discipline, creativity, and the ability to perform under pressure.
+                                I have taught musical improvisation and musicality lessons to adults on and off for my whole music career, but this was nearly always to already capable musicians. In 2024 I took an official job as a music teacher to kids from various Primary Schools in Centurion. The amount of students vary, but I usually have between 30 and 40 students on my roster any given month.
+                                <br />I mainly teach guitar and the accompanying music theory, but I also teach my more advanced students Jazz style improvisation with different styles of music and musicality.
                             </p>
+                        </div>
+                        {/* Timeline Item 4 */}
+                        <div className="relative group">
+                            <div className="absolute -left-[43px] top-1 w-5 h-5 bg-[#f4f4f0] dark:bg-[#1A1A1A] rounded-full border-4 border-ink group-hover:bg-acid transition-colors"></div>
+                            <h3 className="text-xl font-bold mb-4 border-b-2 border-ink pb-2">Head Foreman at UniSigns - Signage company</h3>
+                            <span className="text-sm font-mono opacity-70 mb-4 block bg-surface-muted inline-block px-2">November 2022 - August 2023</span>
+                            <p className="max-w-2xl leading-relaxed text-sm">
+                                I was responsible for managing the production workshop of a busy signage company, as well as liasing with clients for measurement, discovery, quality control and hands-on oversight on-site during installations - that included operating heavy machinery and working at heights. This role had me travelling all over South Africa to manage teams on-site. I was responsible for quality of the product delivered as well as the safety of the team. We did work for large companies that included Suzuki, WeBuyCars, OBC and many more.
+                                <br />
+                            </p>
+                        </div>
+                        {/* Timeline Item 5 */}
+                        <div className="relative group">
+                            <div className="absolute -left-[43px] top-1 w-5 h-5 bg-[#f4f4f0] dark:bg-[#1A1A1A] rounded-full border-4 border-ink group-hover:bg-acid transition-colors"></div>
+                            <h3 className="text-xl font-bold mb-4 border-b-2 border-ink pb-2">Warehouse Manager at Vassco Distribution</h3>
+                            <span className="text-sm font-mono opacity-70 mb-4 block bg-surface-muted inline-block px-2">March 2021 - October 2022</span>
+                            <div className="max-w-2xl text-sm">
+                                <p className="leading-relaxed mb-4">This role was extremely broad in its scope and required working between 60 to 80 hours per week. We were a team of between 4 and 6 managers with differing responsibilities. This resulted in a high manager turnover because of the demanding nature of the job.
+                                    <br /><br />My responsibilities included:
+                                </p>
+
+                                <details className="group/details">
+                                    <summary className="cursor-pointer font-bold uppercase tracking-widest text-xs border-2 border-ink inline-block px-3 py-2 bg-surface hover:bg-acid hover:text-black shadow-neo hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all select-none focus:outline-none focus:ring-2 focus:ring-ink focus:ring-offset-2 mb-4">
+                                        <span className="flex items-center gap-2">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="group-open/details:rotate-90 transition-transform"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                                            Details
+                                        </span>
+                                    </summary>
+                                    <ul className="space-y-3 pl-2 border-l-2 border-ink ml-2 mt-2">
+                                        <li className="flex items-start gap-3 pl-2">
+                                            <span className="text-ink font-bold translate-y-0.5">»</span>
+                                            <span className="leading-relaxed">Capturing and checking attendance of more than 100 employees daily. This was done manually at the beginning and end of each shift and shared with the HR department.</span>
+                                        </li>
+                                        <li className="flex items-start gap-3 pl-2">
+                                            <span className="text-ink font-bold translate-y-0.5">»</span>
+                                            <span className="leading-relaxed">Manually checking the stock being loaded onto trucks that went to our hundreds of clients all over Guateng and surrounding areas. This required intimate knowledge of over 4000 products ranging from cleaning products, packaging to frozen food, canned goods and an extensive range of liquor.</span>
+                                        </li>
+                                        <li className="flex items-start gap-3 pl-2">
+                                            <span className="text-ink font-bold translate-y-0.5">»</span>
+                                            <span className="leading-relaxed">Handling the cash-up procedure where I had to ensure COD clients' cash was correctly received by our staff and that these funds were allocated correctly. I regularly had to take responsibility for handling large sums of cash (anywhere between R50,000 to R150,000 on a given day with almost no allowable margin of error).</span>
+                                        </li>
+                                        <li className="flex items-start gap-3 pl-2">
+                                            <span className="text-ink font-bold translate-y-0.5">»</span>
+                                            <span className="leading-relaxed">Cash-up included also checking EFT client's proofs of payment, ensuring all returns (including deposit items such as empty kegs), breakages and customer complaints were dealt with and resolved as soon as possible.</span>
+                                        </li>
+                                        <li className="flex items-start gap-3 pl-2">
+                                            <span className="text-ink font-bold translate-y-0.5">»</span>
+                                            <span className="leading-relaxed">General warehouse responsibilities such as searching staff, stock take, investigating stock discrepancies, checking stock rotation (especially frozen and perishable stock).</span>
+                                        </li>
+                                        <li className="flex items-start gap-3 pl-2">
+                                            <span className="text-ink font-bold translate-y-0.5">»</span>
+                                            <span className="leading-relaxed">Order processing (Ultisales system) from client's email orders and over the phone, dealing with client requests and making and ensuring (with the General Manager) that routes are correctly loaded, written and efficiently delivered.</span>
+                                        </li>
+                                        <li className="flex items-start gap-3 pl-2">
+                                            <span className="text-ink font-bold translate-y-0.5">»</span>
+                                            <span className="leading-relaxed">Checking in trucks that come back from routes.</span>
+                                        </li>
+                                    </ul>
+                                </details>
+                            </div>
+                        </div>
+                        {/* Timeline Item 6 */}
+                        <div className="relative group">
+                            <div className="absolute -left-[43px] top-1 w-5 h-5 bg-[#f4f4f0] dark:bg-[#1A1A1A] rounded-full border-4 border-ink group-hover:bg-acid transition-colors"></div>
+                            <h3 className="text-xl font-bold mb-4 border-b-2 border-ink pb-2">Other Jobs</h3>
+                            <span className="text-sm font-mono opacity-70 mb-4 block bg-surface-muted inline-block px-2">January 2013 - February 2021</span>
+                            <div className="max-w-2xl text-sm">
+                                <p className="leading-relaxed mb-4">
+                                    For a full list of the jobs that I had over the years as well as references for these jobs, feel free to <a href="#footer_contact" className="text-ink font-bold hover:underline">reach out</a> to me for a comprehensive Curriculim Vitae.<br />
+                                    <br />Some notable jobs I had include:
+                                </p>
+                                <ul className="space-y-3 pl-2">
+                                    <li className="flex items-start gap-3">
+                                        <span className="text-ink font-bold translate-y-0.5">»</span>
+                                        <span className="leading-relaxed">Managed restaurants and bars (and one live music venue) both in Pretoria and Hermanus (Western Cape). The experience in hospitality is how I got the job at Vassco, whose main clients are restaurants and bars.</span>
+                                    </li>
+                                    <li className="flex items-start gap-3">
+                                        <span className="text-ink font-bold translate-y-0.5">»</span>
+                                        <span className="leading-relaxed">Waitering and bartending.</span>
+                                    </li>
+                                    <li className="flex items-start gap-3">
+                                        <span className="text-ink font-bold translate-y-0.5">»</span>
+                                        <span className="leading-relaxed">Brief stint as a High School English teacher at my old high school, <br />Hoërskool Wonderfontein. Interesting story there.</span>
+                                    </li>
+                                    <li className="flex items-start gap-3">
+                                        <span className="text-ink font-bold translate-y-0.5">»</span>
+                                        <span className="leading-relaxed">Investment Art Salesman.</span>
+                                    </li>
+                                    <li className="flex items-start gap-3">
+                                        <span className="text-ink font-bold translate-y-0.5">»</span>
+                                        <span className="leading-relaxed">Youth Pastor at a church in Carletonville.</span>
+                                    </li>
+                                </ul>
+                                <br />
+                                <p className="leading-relaxed">This list is not exhaustive, but it gives you an idea of <br />the different things I've done.</p>
+                            </div>
                         </div>
                     </div>
                 </section>
@@ -696,23 +805,27 @@ function App() {
                         if (isAudioEnabled && !hasTriggeredFooterAudio) {
                             playSegment('footer_offer');
                             setHasTriggeredFooterAudio(true);
-                            setShowCopyButton(true);
+
+                            // Delay appearance slightly
+                            setTimeout(() => setShowCopyButton(true), 500);
 
                             // Let the acid background show for the 5s audio duration, then snap to regular styling
+                            // Reduced from 2000 to 2500 to account for 500ms appearance delay
                             setTimeout(() => {
                                 setCopyAnimationFinished(true);
-                            }, 2000);
+                            }, 2500);
                         }
                     }}
                     onTouchStart={() => {
                         if (isAudioEnabled && !hasTriggeredFooterAudio) {
                             playSegment('footer_offer');
                             setHasTriggeredFooterAudio(true);
-                            setShowCopyButton(true);
+
+                            setTimeout(() => setShowCopyButton(true), 500);
 
                             setTimeout(() => {
                                 setCopyAnimationFinished(true);
-                            }, 2000);
+                            }, 2500);
                         }
                     }}
                 >
@@ -774,7 +887,7 @@ function App() {
                     {/* Credits & Copyright */}
                     <div className="mt-16 pt-8 border-t-2 border-ink/20 flex flex-col items-center pb-8 text-center text-sm font-mono w-full">
                         <div className="flex flex-col gap-2">
-                            <span className="font-bold uppercase tracking-widest">Developed, written & directed by Hannes Prinsloo</span>
+                            <span className="font-bold uppercase tracking-widest">Developed, written and performed by Hannes Prinsloo</span>
                             <span className="opacity-60 text-xs">© 2026 Hannes Prinsloo</span>
                             <span className="opacity-40 hover:opacity-80 transition-opacity cursor-default text-[10px] mt-1 italic">i also played the guitar you hear in the background music</span>
                         </div>

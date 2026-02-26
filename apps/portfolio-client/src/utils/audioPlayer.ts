@@ -33,7 +33,7 @@ export const audioSprite = new Howl({
 export const backgroundMusic = new Howl({
     src: ['/assets/Deurmekaar_in_Durbanville_Web_Optimised .mp3'],
     loop: true,
-    volume: 0.5, // This is the default volume. You can adjust this value later!
+    volume: 0.25, // This is the default volume. You can adjust this value later!
     preload: false,
     onload: () => console.log('Howler: Background music loaded successfully'),
     onloaderror: (_id, error) => console.error('Howler: Error loading background music', error),
