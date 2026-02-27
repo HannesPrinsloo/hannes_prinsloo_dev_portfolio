@@ -30,13 +30,17 @@ export const getAllUsers = async () => {
         SELECT u.user_id, u.first_name, u.last_name, u.email, u.role_id, u.phone_number, 
                u.date_of_birth, u.is_active, u.created_at, u.updated_at,
                string_agg(DISTINCT t.first_name || ' ' || t.last_name, ', ') as teacher_names,
-               string_agg(DISTINCT l.level_name, ', ') as current_level_name,
+               MAX(latest_level.level_name) as current_level_name,
                jsonb_agg(DISTINCT CASE WHEN t.user_id IS NOT NULL THEN jsonb_build_object('id', t.user_id, 'name', t.first_name || ' ' || t.last_name) ELSE NULL END) as teachers
         FROM users u
         LEFT JOIN teacher_student_rosters tsr ON u.user_id = tsr.student_user_id
         LEFT JOIN users t ON tsr.teacher_user_id = t.user_id
-        LEFT JOIN student_levels sl ON u.user_id = sl.student_user_id
-        LEFT JOIN levels l ON sl.level_id = l.level_id
+        LEFT JOIN (
+            SELECT DISTINCT ON (sl.student_user_id) sl.student_user_id, l.level_name
+            FROM student_levels sl
+            JOIN levels l ON sl.level_id = l.level_id
+            ORDER BY sl.student_user_id, sl.date_completed DESC, sl.created_at DESC
+        ) latest_level ON u.user_id = latest_level.student_user_id
         GROUP BY u.user_id
         ORDER BY u.user_id ASC
     `;
