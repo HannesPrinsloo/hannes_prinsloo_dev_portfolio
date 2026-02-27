@@ -15,7 +15,7 @@ export const createUser = async (userData: any) => {
         VALUES ($1, $2, $3, $4, $5, $6, $7, $8) 
         RETURNING user_id, first_name, last_name, email;
     `;
-    const values = [role_id, first_name, last_name, email, phone_number, hashedPassword, date_of_birth, is_active];
+    const values = [role_id, first_name, last_name, email || null, phone_number || null, hashedPassword, date_of_birth, is_active];
 
     const result = await pool.query(query, values);
     return result.rows[0];
@@ -30,10 +30,13 @@ export const getAllUsers = async () => {
         SELECT u.user_id, u.first_name, u.last_name, u.email, u.role_id, u.phone_number, 
                u.date_of_birth, u.is_active, u.created_at, u.updated_at,
                string_agg(DISTINCT t.first_name || ' ' || t.last_name, ', ') as teacher_names,
+               string_agg(DISTINCT l.level_name, ', ') as current_level_name,
                jsonb_agg(DISTINCT CASE WHEN t.user_id IS NOT NULL THEN jsonb_build_object('id', t.user_id, 'name', t.first_name || ' ' || t.last_name) ELSE NULL END) as teachers
         FROM users u
         LEFT JOIN teacher_student_rosters tsr ON u.user_id = tsr.student_user_id
         LEFT JOIN users t ON tsr.teacher_user_id = t.user_id
+        LEFT JOIN student_levels sl ON u.user_id = sl.student_user_id
+        LEFT JOIN levels l ON sl.level_id = l.level_id
         GROUP BY u.user_id
         ORDER BY u.user_id ASC
     `;
@@ -296,7 +299,7 @@ export const createFamily = async (familyData: any) => {
                     `INSERT INTO users (role_id, first_name, last_name, email, phone_number, password_hash, date_of_birth, is_active) 
                      VALUES ($1, $2, $3, $4, $5, $6, $7, true) 
                      RETURNING user_id`,
-                    [4, s.firstName, s.lastName, `student_${Date.now()}_${i}@placeholder.com`, '', studentPassword, s.dob]
+                    [4, s.firstName, s.lastName, null, null, studentPassword, s.dob]
                 );
                 studentId = sRes.rows[0].user_id;
 

@@ -44,15 +44,18 @@ const App = () => {
   }, []); // Run only once
 
   if (authLoading) {
-    return <div className="app">
-      Checking authentication status...
-    </div>;
+    return (
+      <div className="min-h-screen w-full flex flex-col items-center bg-bg-light text-text-dark relative overflow-x-hidden">
+        Checking authentication status...
+      </div>
+    );
   }
 
 
 
   return (
-    <div className="app">
+    // CHANGELOG: Replaced '.app' with Tailwind baseline layout utilities (min-h-screen, colors, flexbox).
+    <div className="min-h-screen w-full flex flex-col items-center bg-bg-light text-text-dark relative overflow-x-hidden">
       {isLoggedIn ? <Dashboard /> : <LoginForm />}
     </div>
   );

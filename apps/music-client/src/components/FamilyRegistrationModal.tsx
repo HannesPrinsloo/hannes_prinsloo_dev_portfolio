@@ -143,13 +143,9 @@ const FamilyRegistrationModal = ({ isOpen, onClose, onSuccess }: FamilyRegistrat
     if (!isOpen) return null;
 
     return (
-        <div style={{
-            position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
-            backgroundColor: 'rgba(0,0,0,0.8)',
-            display: 'flex', justifyContent: 'center', alignItems: 'center',
-            zIndex: 1000
-        }}>
-            <div className="card modal-content" style={{ width: '500px', maxHeight: '90vh', overflowY: 'auto', textAlign: 'left', backgroundColor: 'white', padding: '25px', color: 'var(--text-dark)' }}>
+        /* CHANGELOG: Refactored FamilyRegistrationModal layout and buttons to use Tailwind CSS utility classes instead of inline styling and global CSS. */
+        <div className="fixed inset-0 bg-black/80 flex justify-center items-center z-[1000] p-5">
+            <div className="bg-white text-text-dark p-[25px] rounded-xl w-full max-w-[500px] max-h-[90vh] overflow-y-auto text-left shadow-[0_10px_25px_rgba(0,0,0,0.15)] border border-[#eee]">
                 <h2 style={{ marginTop: 0 }}>Family Registration</h2>
 
                 {/* Step 1: Manager */}
@@ -270,9 +266,9 @@ const FamilyRegistrationModal = ({ isOpen, onClose, onSuccess }: FamilyRegistrat
                     )}
                 </div>
 
-                <div style={{ display: 'flex', gap: '10px', marginTop: '30px', borderTop: '1px solid #eee', paddingTop: '20px' }}>
-                    <button className="btn-secondary" onClick={onClose} disabled={loading}>Cancel</button>
-                    <button className="btn-primary" onClick={handleSubmit} disabled={loading} style={{ width: '100%' }}>
+                <div className="flex gap-2.5 mt-[30px] border-t border-[#eee] pt-5">
+                    <button className="bg-transparent text-[#666] border border-[#ccc] px-4 py-2 rounded cursor-pointer" onClick={onClose} disabled={loading}>Cancel</button>
+                    <button className="bg-primary-red text-white border-none px-4 py-2 rounded cursor-pointer w-full hover:bg-black transition-colors" onClick={handleSubmit} disabled={loading}>
                         {loading ? 'Registering...' : 'Complete Registration'}
                     </button>
                 </div>

@@ -96,20 +96,16 @@ const AddUserModal = ({ isOpen, onClose, onUserAdded, defaultRole, userToEdit }:
     };
 
     return (
-        <div style={{
-            position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
-            backgroundColor: 'rgba(0,0,0,0.7)',
-            display: 'flex', justifyContent: 'center', alignItems: 'center',
-            zIndex: 1000
-        }}>
-            <div className="card" style={{ width: '400px', textAlign: 'left', backgroundColor: '#242424' }}>
-                <h3>{userToEdit ? 'Edit User' : 'Add New User'}</h3>
-                {error && <p style={{ color: 'red' }}>{error}</p>}
+        /* CHANGELOG: Refactored AddUserModal wrapper and form layout to use Tailwind CSS utility classes instead of inline logic and App.css classes. */
+        <div className="fixed inset-0 bg-black/70 flex justify-center items-center z-[1000] p-5">
+            <div className="bg-[#242424] text-white p-[25px] rounded-xl w-full max-w-[400px] text-left shadow-[0_10px_25px_rgba(0,0,0,0.15)] border border-[#333]">
+                <h3 className="mt-0 font-bold mb-[20px] pb-2.5 border-b border-[#333]">{userToEdit ? 'Edit User' : 'Add New User'}</h3>
+                {error && <p className="text-red-500 mb-4">{error}</p>}
 
-                <form onSubmit={handleSubmit}>
-                    <div>
-                        <label>Role</label>
-                        <select name="role_id" value={formData.role_id} onChange={handleChange}>
+                <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+                    <div className="flex flex-col gap-2">
+                        <label className="text-[#aaa] font-medium text-sm">Role</label>
+                        <select name="role_id" className="w-full p-2.5 rounded-md border border-[#444] bg-[#333] text-white focus:outline-none focus:border-primary-red" value={formData.role_id} onChange={handleChange}>
                             <option value={1}>Admin</option>
                             <option value={2}>Teacher</option>
                             <option value={3}>Manager</option>
@@ -117,40 +113,43 @@ const AddUserModal = ({ isOpen, onClose, onUserAdded, defaultRole, userToEdit }:
                         </select>
                     </div>
 
-                    <div>
-                        <label>First Name</label>
-                        <input name="first_name" required value={formData.first_name} onChange={handleChange} />
+                    <div className="flex flex-col gap-2">
+                        <label className="text-[#aaa] font-medium text-sm">First Name</label>
+                        <input name="first_name" className="w-full p-2.5 rounded-md border border-[#444] bg-[#333] text-white focus:outline-none focus:border-primary-red" required value={formData.first_name} onChange={handleChange} />
                     </div>
 
-                    <div>
-                        <label>Last Name</label>
-                        <input name="last_name" required value={formData.last_name} onChange={handleChange} />
+                    <div className="flex flex-col gap-2">
+                        <label className="text-[#aaa] font-medium text-sm">Last Name</label>
+                        <input name="last_name" className="w-full p-2.5 rounded-md border border-[#444] bg-[#333] text-white focus:outline-none focus:border-primary-red" required value={formData.last_name} onChange={handleChange} />
                     </div>
 
-                    <div>
-                        <label>Email</label>
-                        <input type="email" name="email" required value={formData.email} onChange={handleChange} />
+                    {formData.role_id !== 4 && (
+                        <div className="flex flex-col gap-2">
+                            <label className="text-[#aaa] font-medium text-sm">Email</label>
+                            <input type="email" name="email" className="w-full p-2.5 rounded-md border border-[#444] bg-[#333] text-white focus:outline-none focus:border-primary-red" required value={formData.email} onChange={handleChange} />
+                        </div>
+                    )}
+
+                    <div className="flex flex-col gap-2">
+                        <label className="text-[#aaa] font-medium text-sm">Phone</label>
+                        <input name="phone_number" className="w-full p-2.5 rounded-md border border-[#444] bg-[#333] text-white focus:outline-none focus:border-primary-red" value={formData.phone_number} onChange={handleChange} />
                     </div>
 
-                    <div>
-                        <label>Phone</label>
-                        <input name="phone_number" value={formData.phone_number} onChange={handleChange} />
-                    </div>
-
-                    <div>
-                        <label>Password {userToEdit && <span style={{ fontSize: '0.8em', color: '#aaa' }}>(Leave blank to keep current)</span>}</label>
+                    <div className="flex flex-col gap-2">
+                        <label className="text-[#aaa] font-medium text-sm">Password {userToEdit && <span className="text-xs text-[#888]">(Leave blank to keep current)</span>}</label>
                         <input
                             type="password"
                             name="password"
+                            className="w-full p-2.5 rounded-md border border-[#444] bg-[#333] text-white focus:outline-none focus:border-primary-red"
                             required={!userToEdit} // Required only for new users
                             value={formData.password}
                             onChange={handleChange}
                         />
                     </div>
 
-                    <div style={{ flexDirection: 'row', gap: '10px', marginTop: '20px' }}>
-                        <button type="button" onClick={onClose} disabled={loading}>Cancel</button>
-                        <button type="submit" disabled={loading}>
+                    <div className="flex justify-end gap-2.5 mt-[25px]">
+                        <button type="button" className="bg-transparent text-[#aaa] border border-[#555] px-4 py-2 rounded cursor-pointer hover:bg-[#333] transition-colors" onClick={onClose} disabled={loading}>Cancel</button>
+                        <button type="submit" className="bg-primary-red text-white border-none px-4 py-2 rounded cursor-pointer hover:bg-[#cc0000] transition-colors" disabled={loading}>
                             {loading ? 'Saving...' : (userToEdit ? 'Update User' : 'Create User')}
                         </button>
                     </div>

@@ -64,12 +64,12 @@ const BottomNav: React.FC<BottomNavProps> = ({ activeTab, setActiveTab, role }) 
         <>
             {/* More Menu Overlay */}
             {showMoreMenu && (
-                <div className="more-menu-overlay" onClick={() => setShowMoreMenu(false)}>
-                    <div className="more-menu-content" onClick={(e) => e.stopPropagation()}>
+                <div className="fixed inset-0 bg-black/50 z-50 flex items-end md:hidden" onClick={() => setShowMoreMenu(false)}>
+                    <div className="bg-white w-full rounded-t-2xl p-5 pb-24 shadow-[0_-10px_25px_rgba(0,0,0,0.1)] flex flex-col gap-2.5" onClick={(e) => e.stopPropagation()}>
                         {adminMoreTabs.map(tab => (
                             <button
                                 key={tab.id}
-                                className={`more-menu-item ${activeTab === tab.id ? 'active' : ''}`}
+                                className={`flex items-center gap-3.5 p-3.5 w-full border-none text-left text-[1.05rem] rounded-[10px] active:bg-[#f0f0f0] ${activeTab === tab.id ? 'bg-[#fff0f0] text-primary-red' : 'bg-[#f9f9f9] text-[#444]'}`}
                                 onClick={() => {
                                     setActiveTab(tab.id);
                                     setShowMoreMenu(false);
@@ -83,7 +83,7 @@ const BottomNav: React.FC<BottomNavProps> = ({ activeTab, setActiveTab, role }) 
                 </div>
             )}
 
-            <div className="bottom-nav">
+            <div className="fixed bottom-0 left-0 w-full bg-white border-t border-[#eee] flex justify-around p-2.5 z-40 md:hidden shadow-[0_-2px_10px_rgba(0,0,0,0.05)]">
                 {tabs.map((tab) => {
                     const Icon = tab.icon;
                     // Highlight "More" if the active tab is one of the hidden ones

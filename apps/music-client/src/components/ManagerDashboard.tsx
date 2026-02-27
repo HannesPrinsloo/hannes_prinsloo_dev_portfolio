@@ -102,19 +102,20 @@ const ManagerDashboard = () => {
     if (error) return <div className="dashboard-error">Error: {error}</div>;
 
     return (
-        <div className="dashboard-container">
-            <div className="dashboard-header">
-                <h2>Manager Dashboard</h2>
-                <div className="user-info">
+        /* CHANGELOG: Refactored ManagerDashboard layout container, header, and tabs to use Tailwind CSS utility classes. */
+        <div className="w-full max-w-7xl mx-auto md:p-5 box-border">
+            <div className="flex justify-between items-center mb-5">
+                <h2 className="text-2xl font-bold">Manager Dashboard</h2>
+                <div className="bg-[#f8f9fa] p-2.5 px-4 rounded border border-[#eee] text-[#333] font-medium shadow-sm">
                     {profile?.first_name} {profile?.last_name} (ID: {user?.user_id})
                 </div>
             </div>
 
-            <div className="admin-tabs">
-                <button className={`tab-btn ${activeTab === 'students' ? 'active' : ''}`} onClick={() => setActiveTab('students')}>My Students</button>
-                <button className={`tab-btn ${activeTab === 'schedule' ? 'active' : ''}`} onClick={() => setActiveTab('schedule')}>Classes</button>
-                <button className={`tab-btn ${activeTab === 'attendance' ? 'active' : ''}`} onClick={() => setActiveTab('attendance')}>Attendance</button>
-                <button className={`tab-btn ${activeTab === 'events' ? 'active' : ''}`} onClick={() => setActiveTab('events')}>Events</button>
+            <div className="hidden md:flex flex-wrap items-center gap-2.5 md:justify-center mb-5">
+                <button className={`px-5 py-2 font-medium rounded-full transition-all duration-200 border ${activeTab === 'students' ? 'bg-[#ff6b6b] text-white border-[#ff6b6b] shadow-sm tracking-wide' : 'bg-white text-[#555] border-[#f0f0f0] hover:bg-[#ffeaea] hover:border-[#ff6b6b] hover:text-[#ff6b6b]'}`} onClick={() => setActiveTab('students')}>My Students</button>
+                <button className={`px-5 py-2 font-medium rounded-full transition-all duration-200 border ${activeTab === 'schedule' ? 'bg-[#ff6b6b] text-white border-[#ff6b6b] shadow-sm tracking-wide' : 'bg-white text-[#555] border-[#f0f0f0] hover:bg-[#ffeaea] hover:border-[#ff6b6b] hover:text-[#ff6b6b]'}`} onClick={() => setActiveTab('schedule')}>Classes</button>
+                <button className={`px-5 py-2 font-medium rounded-full transition-all duration-200 border ${activeTab === 'attendance' ? 'bg-[#ff6b6b] text-white border-[#ff6b6b] shadow-sm tracking-wide' : 'bg-white text-[#555] border-[#f0f0f0] hover:bg-[#ffeaea] hover:border-[#ff6b6b] hover:text-[#ff6b6b]'}`} onClick={() => setActiveTab('attendance')}>Attendance</button>
+                <button className={`px-5 py-2 font-medium rounded-full transition-all duration-200 border ${activeTab === 'events' ? 'bg-[#ff6b6b] text-white border-[#ff6b6b] shadow-sm tracking-wide' : 'bg-white text-[#555] border-[#f0f0f0] hover:bg-[#ffeaea] hover:border-[#ff6b6b] hover:text-[#ff6b6b]'}`} onClick={() => setActiveTab('events')}>Events</button>
             </div>
 
             <div className="dashboard-content">
@@ -122,8 +123,8 @@ const ManagerDashboard = () => {
                     <div className="manager-students-section">
                         <h3>My Students</h3>
                         {managerStudents.length === 0 ? <p>No students linked.</p> : (
-                            <div className="table-container">
-                                <table className="admin-table">
+                            <div className="flex justify-center w-full mt-5 overflow-x-auto">
+                                <table className="w-full border-collapse bg-transparent mt-5 [&_th]:bg-[#f8f8f8] [&_th]:text-text-dark [&_th]:px-[25px] [&_th]:py-[18px] [&_th]:text-center [&_th]:font-semibold [&_th]:border-b-2 [&_th]:border-[#eee] [&_th]:tracking-[0.5px] [&_td]:px-[25px] [&_td]:py-[15px] [&_td]:text-text-dark [&_td]:border-b [&_td]:border-[#eee] [&_td]:text-center [&_td]:align-middle [&_tbody_tr:hover]:bg-[#f9f9f9] [&_tbody_tr]:transition-colors">
                                     <thead>
                                         <tr>
                                             <th>Name</th>
@@ -236,14 +237,14 @@ const ManagerDashboard = () => {
                 )}
 
                 {activeTab === 'events' && (
-                    <div className="manager-events-section">
+                    <div className="mt-5">
                         <h3>Upcoming Events for Your Students</h3>
                         {managerEvents.length === 0 ? (
                             <p>No relevant upcoming events found.</p>
                         ) : (
-                            <div className="events-list">
+                            <div className="grid grid-cols-[repeat(auto-fit,minmax(300px,1fr))] gap-5">
                                 {managerEvents.map(event => (
-                                    <div key={event.event_id} className="event-card" style={{ background: 'white', padding: '20px', borderRadius: '12px', marginBottom: '20px', boxShadow: '0 2px 8px rgba(0,0,0,0.08)' }}>
+                                    <div key={event.event_id} className="bg-white p-5 rounded-xl mb-5 shadow-[0_2px_8px_rgba(0,0,0,0.08)]">
                                         <h4 style={{ margin: '0 0 10px 0', fontSize: '1.2em' }}>{event.event_name} <span style={{ fontSize: '0.8em', fontWeight: 'normal', color: '#666', backgroundColor: '#f0f0f0', padding: '2px 8px', borderRadius: '12px' }}>({event.event_type})</span></h4>
                                         <p style={{ color: '#555' }}><strong>Date:</strong> {new Date(event.start_time).toLocaleString()}</p>
                                         <p style={{ color: '#555' }}><strong>Venue:</strong> {event.venue_name}</p>

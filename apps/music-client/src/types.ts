@@ -12,6 +12,7 @@ export interface UserData {
     is_active: boolean;
     // New fields from backend aggregation
     teacher_names?: string;
+    current_level_name?: string;
     teachers?: { id: number, name: string }[];
 }
 

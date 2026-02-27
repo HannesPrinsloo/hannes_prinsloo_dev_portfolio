@@ -208,10 +208,10 @@ const WeeklySchedule: React.FC<WeeklyScheduleProps> = ({ teacherId, currentWeekS
     return (
         <div className="weekly-schedule">
             <div className="schedule-header">
-                <button className="btn-secondary" onClick={handlePreviousWeek}>&lt; Prev Week</button>
+                <button className="bg-transparent text-text-dark border-2 border-text-dark px-4 py-2 rounded-md hover:bg-text-dark hover:text-white transition-colors font-medium" onClick={handlePreviousWeek}>&lt; Prev Week</button>
                 <h3>Week of {currentWeekStart.toLocaleDateString()}</h3>
-                <button className="btn-secondary" onClick={handleNextWeek}>Next Week &gt;</button>
-                <button className="btn-primary" onClick={() => { setShowScheduler(true); setSchedulerDefaults({ startTime: '' }); }}>
+                <button className="bg-transparent text-text-dark border-2 border-text-dark px-4 py-2 rounded-md hover:bg-text-dark hover:text-white transition-colors font-medium" onClick={handleNextWeek}>Next Week &gt;</button>
+                <button className="bg-primary-red text-white border-none px-4 py-2 rounded cursor-pointer hover:bg-black transition-colors" onClick={() => { setShowScheduler(true); setSchedulerDefaults({ startTime: '' }); }}>
                     + Book Lesson
                 </button>
             </div>
@@ -257,9 +257,9 @@ const WeeklySchedule: React.FC<WeeklyScheduleProps> = ({ teacherId, currentWeekS
 
             {/* Scheduler Modal */}
             {showScheduler && (
-                <div className="modal-overlay">
-                    <div className="modal-content">
-                        <button className="close-btn" onClick={() => setShowScheduler(false)}>X</button>
+                <div className="fixed inset-0 bg-black/50 flex justify-center items-center z-[1000] backdrop-blur-[2px]">
+                    <div className="bg-white text-text-dark p-[25px] rounded-xl w-[450px] max-w-[90%] relative shadow-[0_10px_25px_rgba(0,0,0,0.15)] border border-[#eee]">
+                        <button className="absolute top-[15px] right-[15px] bg-transparent border-none text-[#aaa] text-[1.2em] cursor-pointer hover:text-primary-red transition-colors" onClick={() => setShowScheduler(false)}>X</button>
                         <LessonScheduler
                             onLessonCreated={() => {
                                 setShowScheduler(false);
@@ -274,9 +274,9 @@ const WeeklySchedule: React.FC<WeeklyScheduleProps> = ({ teacherId, currentWeekS
 
             {/* Lesson Details Modal */}
             {selectedLesson && (
-                <div className="modal-overlay">
-                    <div className="modal-content">
-                        <button className="close-btn" onClick={() => setSelectedLesson(null)}>X</button>
+                <div className="fixed inset-0 bg-black/50 flex justify-center items-center z-[1000] backdrop-blur-[2px]">
+                    <div className="bg-white text-text-dark p-[25px] rounded-xl w-[450px] max-w-[90%] relative shadow-[0_10px_25px_rgba(0,0,0,0.15)] border border-[#eee]">
+                        <button className="absolute top-[15px] right-[15px] bg-transparent border-none text-[#aaa] text-[1.2em] cursor-pointer hover:text-primary-red transition-colors" onClick={() => setSelectedLesson(null)}>X</button>
                         <h3>Lesson Details</h3>
                         <p><strong>Student:</strong> {selectedLesson.student_first_name} {selectedLesson.student_last_name}</p>
                         <p><strong>Time:</strong> {new Date(selectedLesson.start_time).toLocaleString()}</p>
@@ -289,10 +289,10 @@ const WeeklySchedule: React.FC<WeeklyScheduleProps> = ({ teacherId, currentWeekS
                             </div>
                         )}
 
-                        <div className="modal-actions">
-                            <button className="delete-btn" onClick={() => handleDelete(false)}>Delete Lesson</button>
+                        <div className="mt-[25px] flex justify-end gap-2.5">
+                            <button className="bg-[#ff4444] text-white border-none px-3 py-2 rounded cursor-pointer mr-2.5 hover:opacity-90" onClick={() => handleDelete(false)}>Delete Lesson</button>
                             {selectedLesson.recurrence_group_id && (
-                                <button className="delete-btn danger" onClick={() => handleDelete(true)}>
+                                <button className="bg-[#cc0000] text-white border-none px-3 py-2 rounded cursor-pointer mr-2.5 hover:opacity-90" onClick={() => handleDelete(true)}>
                                     Delete Series (Future Lessons)
                                 </button>
                             )}
@@ -362,46 +362,6 @@ const WeeklySchedule: React.FC<WeeklyScheduleProps> = ({ teacherId, currentWeekS
                     text-transform: uppercase;
                     border-bottom: 1px solid #c8e6c9;
                 }
-
-                /* Reuse Modal Styles */
-                .delete-btn { background: #ff4444; color: white; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer; margin-right: 10px; }
-                .delete-btn.danger { background: #cc0000; }
-                .delete-btn:hover { opacity: 0.9; }
-
-                .modal-overlay { 
-                    position: fixed; 
-                    top: 0; left: 0; right: 0; bottom: 0; 
-                    background: rgba(0,0,0,0.5); 
-                    display: flex; 
-                    justify-content: center; 
-                    align-items: center; 
-                    z-index: 1000; 
-                    backdrop-filter: blur(2px);
-                }
-                .modal-content { 
-                    background: white; 
-                    color: var(--text-dark);
-                    padding: 25px; 
-                    border-radius: 12px; 
-                    width: 450px; 
-                    max-width: 90%; 
-                    position: relative;
-                    box-shadow: 0 10px 25px rgba(0,0,0,0.15);
-                    border: 1px solid #eee;
-                }
-                .close-btn { 
-                    position: absolute; 
-                    top: 15px; 
-                    right: 15px; 
-                    background: none; 
-                    border: none; 
-                    color: #aaa; 
-                    font-size: 1.2em; 
-                    cursor: pointer; 
-                    transition: color 0.2s;
-                }
-                .close-btn:hover { color: var(--primary-red); }
-                .modal-actions { margin-top: 25px; display: flex; justify-content: flex-end; gap: 10px; }
             `}</style>
         </div>
     );

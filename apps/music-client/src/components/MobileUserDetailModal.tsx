@@ -34,42 +34,14 @@ const MobileUserDetailModal: React.FC<MobileUserDetailModalProps> = ({
     };
 
     return (
+        /* CHANGELOG: Refactored MobileUserDetailModal layout and buttons to use Tailwind CSS utility classes instead of inline styles and global classes. */
         <div
-            className="mobile-modal-overlay"
-            style={{
-                position: 'fixed',
-                top: 0,
-                left: 0,
-                right: 0,
-                bottom: 0,
-                backgroundColor: 'rgba(0,0,0,0.5)', // Changed from 0.7
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-                zIndex: 1000, // Changed from 10001
-                backdropFilter: 'blur(2px)', // Added
-                padding: '20px', // Added
-            }}
+            className="fixed inset-0 bg-black/50 flex justify-center items-center z-[1000] backdrop-blur-[2px] p-5"
             onClick={onClose}
         >
             <div
-                className="mobile-modal-content"
+                className="bg-white text-text-dark w-full max-w-[400px] rounded-xl p-5 max-h-[85vh] flex flex-col relative shadow-[0_4px_20px_rgba(0,0,0,0.15)] overflow-hidden outline-none"
                 onClick={e => e.stopPropagation()}
-                style={{
-                    backgroundColor: 'white',
-                    color: 'var(--text-dark)', // Kept from original
-                    width: '100%', // Changed from 90%
-                    maxWidth: '400px',
-                    borderRadius: '12px', // Changed from 8px
-                    padding: '20px',
-                    maxHeight: '85vh',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    position: 'relative',
-                    boxShadow: '0 4px 20px rgba(0,0,0,0.15)', // Added
-                    overflow: 'hidden', // Kept from original
-                    outline: 'none', // Remove blue focus ring
-                }}
             >
                 <button
                     onClick={onClose}
@@ -170,7 +142,7 @@ const MobileUserDetailModal: React.FC<MobileUserDetailModalProps> = ({
 
                             <div>
                                 <label style={{ display: 'block', color: '#888', fontSize: '0.85rem' }}>Status</label>
-                                <div className={`status-badge ${user.is_active ? 'present' : 'absent'}`} style={{ display: 'inline-block', marginTop: '5px' }}>
+                                <div className={`px-2 py-1 rounded-xl text-[0.85em] font-bold capitalize inline-block mt-[5px] ${user.is_active ? 'bg-[rgba(40,167,69,0.1)] text-[#28a745] border border-[#28a745]' : 'bg-[rgba(220,53,69,0.1)] text-[#dc3545] border border-[#dc3545]'}`}>
                                     {user.is_active ? 'Active' : 'Inactive'}
                                 </div>
                             </div>
@@ -268,16 +240,15 @@ const MobileUserDetailModal: React.FC<MobileUserDetailModalProps> = ({
                     )}
 
                     {activeTab === 'actions' && (
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                        <div className="flex flex-col gap-2.5">
                             <button
                                 onClick={() => { onEdit(user); onClose(); }}
-                                className="btn-primary"
-                                style={{ width: '100%', padding: '12px', justifyContent: 'center', backgroundColor: '#2196F3', color: 'white', border: 'none', borderRadius: '6px' }}
+                                className="w-full flex justify-center bg-[#2196F3] text-white border-none py-3 rounded-md cursor-pointer hover:bg-[#1976D2] transition-colors"
                             >
                                 Edit Details
                             </button>
 
-                            <hr style={{ width: '100%', border: 'none', borderTop: '1px solid #eee', margin: '10px 0' }} />
+                            <hr className="w-full border-none border-t border-[#eee] my-2.5" />
 
                             <button
                                 onClick={() => {
@@ -286,8 +257,7 @@ const MobileUserDetailModal: React.FC<MobileUserDetailModalProps> = ({
                                         onClose();
                                     }
                                 }}
-                                className="btn-secondary"
-                                style={{ width: '100%', padding: '12px', color: '#dc3545', borderColor: '#dc3545', backgroundColor: 'white', border: '1px solid #dc3545', borderRadius: '6px' }}
+                                className="w-full flex justify-center bg-white text-[#dc3545] border border-[#dc3545] py-3 rounded-md cursor-pointer hover:bg-[#fff0f0] transition-colors"
                             >
                                 Delete / Archive
                             </button>

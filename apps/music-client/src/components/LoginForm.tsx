@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useAuthStore } from '../../store/authStore';
 import '../App.css';
+import logo from '../assets/swallow-15-logo.png';
 
 const LoginForm = () => {
     const [email, setEmail] = useState<string>('');
@@ -60,29 +61,51 @@ const LoginForm = () => {
     };
 
     return (
-        <form onSubmit={handleSubmit}>
-            <h1>Vinnige Swallow 15 Demo App</h1>
-            <h3>Vir Kobus, en ander mense wat hy dalk wil wys 😉</h3>
-            <label htmlFor="email">Email</label><br />
-            <input
-                type="email"
-                id="email"
-                value={email}
-                name="username"
-                onChange={handleEmailChange}
-                autoComplete="username"
-            /><br /><br />
-            <label htmlFor="password">Password</label><br />
-            <input
-                type="password"
-                id="password"
-                name="password"
-                value={password}
-                onChange={handlePasswordChange}
-                autoComplete="current-password"
-            /><br /><br />
-            <button type="submit">Submit</button>
-        </form>
+        <div className="w-full max-w-md mx-auto mt-10 md:mt-24 px-4">
+            <div className="bg-[#f0f0f0] p-6 md:p-8 rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.08)] border border-[#ddd]">
+                <form onSubmit={handleSubmit} className="flex flex-col gap-5 text-left">
+                    <div className="text-center mb-4">
+                        <img src={logo} alt="Swallow 15 Logo" className="mx-auto mb-4 w-24 h-auto object-contain" />
+                        <h1 className="text-2xl md:text-3xl font-bold text-text-dark mb-2 leading-tight">Swallow 15 Demo</h1>
+                    </div>
+
+                    <div className="flex flex-col gap-2">
+                        <label htmlFor="email" className="text-sm font-semibold text-[#444] tracking-wide">Email</label>
+                        <input
+                            className="w-full px-4 py-3 rounded-lg border border-[#ddd] bg-[#fdfdfd] text-[#333] focus:border-primary-red focus:ring-2 focus:ring-red-100 outline-none transition-all placeholder-[#999]"
+                            type="email"
+                            id="email"
+                            value={email}
+                            name="username"
+                            onChange={handleEmailChange}
+                            autoComplete="username"
+                            placeholder="Enter your email"
+                        />
+                    </div>
+
+                    <div className="flex flex-col gap-2 mb-2">
+                        <label htmlFor="password" className="text-sm font-semibold text-[#444] tracking-wide">Password</label>
+                        <input
+                            className="w-full px-4 py-3 rounded-lg border border-[#ddd] bg-[#fdfdfd] text-[#333] focus:border-primary-red focus:ring-2 focus:ring-red-100 outline-none transition-all placeholder-[#999]"
+                            type="password"
+                            id="password"
+                            name="password"
+                            value={password}
+                            onChange={handlePasswordChange}
+                            autoComplete="current-password"
+                            placeholder="Enter your password"
+                        />
+                    </div>
+
+                    <button
+                        type="submit"
+                        className="w-full bg-primary-red text-white py-3.5 rounded-lg font-semibold text-lg hover:brightness-110 active:scale-[0.98] transition-all shadow-[0_4px_14px_rgba(239,68,68,0.3)] mt-2"
+                    >
+                        Log In
+                    </button>
+                </form>
+            </div>
+        </div>
     );
 }
 

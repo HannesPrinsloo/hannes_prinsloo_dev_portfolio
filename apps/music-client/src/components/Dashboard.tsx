@@ -119,7 +119,8 @@ const Dashboard = () => {
     }
 
     return (
-        <div>
+        /* CHANGELOG: Refactored Dashboard container and mobile logout button to use Tailwind layout and spacing utilities instead of inline styles and App.css classes. */
+        <div className="w-full max-w-7xl mx-auto md:p-5 box-border pb-20 md:pb-5">
             <ProfileHeader
                 profile={profile}
                 role={roleName}
@@ -128,8 +129,13 @@ const Dashboard = () => {
             {getDashboardAccordingToRole()}<br></br>
 
             {/* Mobile Logout Button (Bottom) - Desktop has it in the header */}
-            <div className="mobile-only-logout">
-                <button className="btn-secondary" onClick={handleLogout} style={{ width: '100%', maxWidth: '200px', margin: '20px auto', display: 'block' }}>Log Out</button>
+            <div className="block md:hidden pb-5">
+                <button
+                    className="bg-transparent text-[#666] border border-[#ccc] px-4 py-2 rounded mt-5 mx-auto block w-full max-w-[200px]"
+                    onClick={handleLogout}
+                >
+                    Log Out
+                </button>
             </div>
         </div>
     );
