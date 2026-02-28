@@ -1,6 +1,16 @@
+/**
+ * REACT QUERY MIGRATION PHASES OVERVIEW:
+ * 
+ * Phase 1: ManagerDashboard.tsx - Migrated basic student lists, schedule grids, and attendance views to React Query.
+ * Phase 2: TeacherDashboard.tsx - Hooked roster, schedule, and events into the global cache.
+ * Phase 3: Dashboard.tsx - Bridged root user state fetching with Zustand for seamless global state management.
+ * Phase 4: WeeklySchedule.tsx & LessonScheduler.tsx - Reused existing cache blocks for instant loading, added bi-directional cache invalidation.
+ * Phase 5: Modals (AddUserModal.tsx & FamilyRegistrationModal.tsx) - Replaced manual fetch/useEffect logic with useQuery and useMutation.
+ */
+
 const API_URL = import.meta.env.VITE_API_URL;
 
-// Interface matching our complex SQL Join result
+// Interface matching the complex SQL Join result
 export interface RosterEntry {
     student_id: number;
     student_first_name: string;
@@ -68,24 +78,28 @@ export const assignStudentLevel = async (studentId: number, levelId: number, rec
 };
 
 // ... existing code ...
+//Phase 1 --> migrated ManagerDashboard to React Query to pull the basic student list.
 export const fetchManagerStudents = async (): Promise<any[]> => {
     const response = await fetch(`${API_URL}/api/rosters/manager`, { credentials: 'include' });
     if (!response.ok) throw new Error('Failed to fetch manager students');
     return response.json();
 };
 
+//Phase 1 --> used this to display the manager's localized schedule grid.
 export const fetchManagerSchedule = async (): Promise<any[]> => {
     const response = await fetch(`${API_URL}/api/rosters/manager/schedule`, { credentials: 'include' });
     if (!response.ok) throw new Error('Failed to fetch manager schedule');
     return response.json();
 };
 
+//Phase 1 --> powers the billing/attendance accordion view for Managers.
 export const fetchManagerAttendance = async (): Promise<any[]> => {
     const response = await fetch(`${API_URL}/api/rosters/manager/attendance`, { credentials: 'include' });
     if (!response.ok) throw new Error('Failed to fetch manager attendance');
     return response.json();
 };
 
+// Phase 1 mutation hook target. Use this to let mangaers update notes next to attendance records.
 export const updateParentNote = async (enrollmentId: number, note: string): Promise<any> => {
     const response = await fetch(`${API_URL}/api/rosters/manager/note`, {
         method: 'POST',
@@ -97,6 +111,8 @@ export const updateParentNote = async (enrollmentId: number, note: string): Prom
     return response.json();
 };
 
+// Phase 2 --> Brought this into the TeacherDashboard's My Roster tab. 
+// ALSO: reused in Phase 4 for lessonScheduler to instantly populate student dropdowns from the global cache ♻
 export const fetchTeacherRoster = async (teacherId: number): Promise<RosterEntry[]> => {
     const response = await fetch(`${API_URL}/api/rosters/teacher/${teacherId}`, {
         credentials: 'include'
@@ -108,6 +124,7 @@ export const fetchTeacherRoster = async (teacherId: number): Promise<RosterEntry
     return response.json();
 };
 
+// Phase 4 mutation target. I use this in LessonScheduler and then immediately invalidate the ['teacherSchedule'] cache.
 export const createLesson = async (lessonData: {
     teacherId: number;
     studentIds?: number[];
@@ -129,6 +146,7 @@ export const createLesson = async (lessonData: {
     return response.json();
 };
 
+// Phase 4 mutation target. Linked this to WeeklySchedule's delete buttons, triggering cache clears right after.
 export const deleteLesson = async (lessonId: number) => {
     const response = await fetch(`${API_URL}/api/lessons/${lessonId}`, {
         method: 'DELETE',
@@ -138,6 +156,7 @@ export const deleteLesson = async (lessonId: number) => {
     return response.json();
 };
 
+// Also a Phase 4 mutation, handling the complex series deletions while keeping the schedule cache perfectly in sync.
 export const deleteLessonSeries = async (groupId: string, fromDate?: string) => {
     const url = new URL(`${API_URL}/api/lessons/series/${groupId}`);
     if (fromDate) url.searchParams.append('fromDate', fromDate);
@@ -150,6 +169,8 @@ export const deleteLessonSeries = async (groupId: string, fromDate?: string) => 
     return response.json();
 };
 
+// Originally attached this to TeacherDashboard in Phase 2.
+// ALSO: In Phase 4, reused this heavily across WeeklySchedule and AdminDashboard to share the exact same underlying cache block.
 export const getTeacherSchedule = async (teacherId: number): Promise<Lesson[]> => {
     const response = await fetch(`${API_URL}/api/lessons/teacher/${teacherId}`, {
         credentials: 'include'
@@ -158,6 +179,7 @@ export const getTeacherSchedule = async (teacherId: number): Promise<Lesson[]> =
     return response.json();
 };
 
+// Phase 2 mutation. Used in TeacherDashboard's Attendance tab, pushing local state changes to the server.
 export const markAttendance = async (data: any) => {
     const response = await fetch(`${API_URL}/api/attendance`, {
         method: 'POST',
@@ -177,7 +199,7 @@ export const getLessonAttendance = async (lessonId: number): Promise<AttendanceR
     return response.json();
 };
 
-// Create User
+// Phase 5 mutation target. Used in AddUserModal to instantly update the ['adminUsers'] cache list.
 export const createUser = async (userData: any) => {
     const response = await fetch(`${API_URL}/api/users`, {
         method: 'POST',
@@ -207,6 +229,7 @@ export const deleteUser = async (userId: number, deleteManager: boolean = false)
     return response.json();
 };
 
+// Phase 5 mutation target. Also used in AddUserModal for existing user editing.
 export const updateUser = async (userId: number, userData: any) => {
     const response = await fetch(`${API_URL}/api/users/${userId}`, {
         method: 'PUT',
@@ -230,6 +253,21 @@ export const assignTeacher = async (studentId: number, teacherId: number | null)
         credentials: 'include'
     });
     if (!response.ok) throw new Error('Failed to assign teacher');
+    return response.json();
+};
+
+// Phase 5 mutation target. Added to power the FamilyRegistrationModal, bypassing old manual fetches.
+export const registerFamily = async (payload: any) => {
+    const response = await fetch(`${API_URL}/api/users/family`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+        credentials: 'include'
+    });
+    if (!response.ok) {
+        const err = await response.json();
+        throw new Error(err.error || 'Failed to register family');
+    }
     return response.json();
 };
 
@@ -283,12 +321,14 @@ export const deleteEvent = async (eventId: number) => {
     return response.json();
 };
 
+// Used this in Phase 1 alongside the other manager views.
 export const fetchManagerEvents = async (): Promise<any[]> => {
     const response = await fetch(`${API_URL}/api/events/manager`, { credentials: 'include' });
     if (!response.ok) throw new Error('Failed to fetch manager events');
     return response.json();
 };
 
+// Attached this to TeacherDashboard's events view in Phase 2.
 export const fetchTeacherEvents = async (): Promise<any[]> => {
     const response = await fetch(`${API_URL}/api/events/teacher`, { credentials: 'include' });
     if (!response.ok) throw new Error('Failed to fetch teacher events');

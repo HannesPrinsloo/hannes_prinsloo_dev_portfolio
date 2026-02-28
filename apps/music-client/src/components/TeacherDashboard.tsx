@@ -1,6 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAuthStore } from '../../store/authStore';
-import { fetchTeacherRoster, fetchLevels, assignStudentLevel, getTeacherSchedule, markAttendance, fetchTeacherEvents, bookStudentForEvent, type RosterEntry, type Level, type Lesson } from '../services/api';
+import { fetchTeacherRoster, fetchLevels, assignStudentLevel, getTeacherSchedule, markAttendance, fetchTeacherEvents, bookStudentForEvent } from '../services/api';
 import WeeklySchedule from './WeeklySchedule';
 import BillingAccordion from './BillingAccordion';
 import BottomNav from './BottomNav';
@@ -9,136 +10,102 @@ import '../App.css';
 const TeacherDashboard: React.FC = () => {
     const { user } = useAuthStore();
     const [activeTab, setActiveTab] = useState('roster');
-    const [roster, setRoster] = useState<RosterEntry[]>([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
+    const queryClient = useQueryClient();
 
-    const [levels, setLevels] = useState<Level[]>([]);
+    const { data: roster = [], isLoading: loadingRoster, isError: isRosterError, error: rosterError } = useQuery({
+        queryKey: ['teacherRoster', user?.user_id],
+        queryFn: () => fetchTeacherRoster(user!.user_id),
+        enabled: !!user?.user_id,
+        refetchInterval: 10000,
+    });
 
+    const { data: levels = [] } = useQuery({
+        queryKey: ['teacherLevels'],
+        queryFn: fetchLevels,
+    });
 
-    const [schedule, setSchedule] = useState<Lesson[]>([]);
-    const [loadingSchedule, setLoadingSchedule] = useState(false);
+    const { data: schedule = [], isLoading: loadingSchedule } = useQuery({
+        queryKey: ['teacherSchedule', user?.user_id],
+        queryFn: () => getTeacherSchedule(user!.user_id),
+        enabled: !!user?.user_id,
+        refetchInterval: 10000,
+    });
 
-    const [teacherEvents, setTeacherEvents] = useState<any[]>([]);
+    const { data: teacherEvents = [] } = useQuery({
+        queryKey: ['teacherEvents'],
+        queryFn: fetchTeacherEvents,
+        enabled: activeTab === 'events' && !!user?.user_id,
+        refetchInterval: 10000,
+    });
 
-    const getRosterData = async () => {
-        if (!user?.user_id) return;
-        try {
-            const data = await fetchTeacherRoster(user.user_id);
-            setRoster(data);
-            setError(null);
-        } catch (err: any) {
-            console.error("Error loading roster:", err);
-            setError(err.message || "Failed to load student roster.");
-        } finally {
-            setLoading(false);
+    const assignLevelMutation = useMutation({
+        mutationFn: ({ studentId, newLevelId }: { studentId: number, newLevelId: number }) =>
+            assignStudentLevel(studentId, newLevelId, user!.user_id),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['teacherRoster'] });
+        },
+        onError: () => {
+            alert("Failed to update level");
         }
-    };
+    });
 
-    const loadLevels = async () => {
-        try {
-            const data = await fetchLevels();
-            setLevels(data);
-        } catch (err) {
-            console.error("Error loading levels:", err);
-        }
-    };
-
-    const loadSchedule = async () => {
-        if (!user?.user_id) return;
-        setLoadingSchedule(true);
-        try {
-            const data = await getTeacherSchedule(user.user_id);
-            setSchedule(data);
-        } catch (err) {
-            console.error("Error loading schedule:", err);
-        } finally {
-            setLoadingSchedule(false);
-        }
-    };
-
-    const loadEvents = async () => {
-        try {
-            const data = await fetchTeacherEvents();
-            setTeacherEvents(data);
-        } catch (err) {
-            console.error("Error loading events:", err);
-        }
-    };
-
-    useEffect(() => {
-        if (user?.user_id) {
-            getRosterData();
-            loadSchedule();
-            loadLevels();
-        }
-    }, [user]);
-
-    useEffect(() => {
-        if (activeTab === 'events' && user?.user_id) {
-            loadEvents();
-        }
-    }, [activeTab, user]);
-
-    const handleLevelChange = async (studentId: number, levelId: string) => {
+    const handleLevelChange = (studentId: number, levelId: string) => {
         if (!user?.user_id) return;
         const newLevelId = parseInt(levelId);
         if (isNaN(newLevelId)) return;
-
-        try {
-            await assignStudentLevel(studentId, newLevelId, user.user_id);
-            await getRosterData();
-        } catch (err) {
-            alert("Failed to update level");
-        }
+        assignLevelMutation.mutate({ studentId, newLevelId });
     };
 
-    const handleUpdateStatus = async (lessonId: number, status: string) => {
+    const attendanceMutation = useMutation({
+        mutationFn: (data: Parameters<typeof markAttendance>[0]) => markAttendance(data),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['teacherSchedule'] });
+        },
+        onError: (err: any) => {
+            alert("Failed to update attendance: " + err.message);
+        }
+    });
+
+    const handleUpdateStatus = (lessonId: number, status: string) => {
         if (!user?.user_id) return;
         const lesson = schedule.find(l => l.lesson_id === lessonId);
         if (!lesson) return;
-
-        try {
-            await markAttendance({
-                lessonId,
-                studentId: lesson.student_id as number,
-                teacherId: user.user_id,
-                status,
-                notes: lesson.attendance_notes
-            });
-            await loadSchedule();
-        } catch (err: any) {
-            alert("Failed to update status: " + err.message);
-        }
+        attendanceMutation.mutate({
+            lessonId,
+            studentId: lesson.student_id as number,
+            teacherId: user.user_id,
+            status,
+            notes: typeof lesson.attendance_notes === 'string' ? lesson.attendance_notes : undefined
+        });
     };
 
-    const handleUpdateNote = async (lessonId: number, note: string) => {
+    const handleUpdateNote = (lessonId: number, note: string) => {
         if (!user?.user_id) return;
         const lesson = schedule.find(l => l.lesson_id === lessonId);
         if (!lesson) return;
-
-        try {
-            await markAttendance({
-                lessonId,
-                studentId: lesson.student_id as number,
-                teacherId: user.user_id,
-                status: lesson.attendance_status || 'Pending', // Keep existing status
-                notes: note
-            });
-            await loadSchedule();
-        } catch (err: any) {
-            alert("Failed to update note: " + err.message);
-        }
+        attendanceMutation.mutate({
+            lessonId,
+            studentId: lesson.student_id as number,
+            teacherId: user.user_id,
+            status: lesson.attendance_status || 'Pending',
+            notes: note
+        });
     };
 
-    const handleBookStudent = async (eventId: number, studentId: number) => {
-        try {
-            await bookStudentForEvent(eventId, studentId);
+    const bookStudentMutation = useMutation({
+        mutationFn: ({ eventId, studentId }: { eventId: number, studentId: number }) => bookStudentForEvent(eventId, studentId),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['teacherEvents'] });
             alert("Student booked successfully!");
-            loadEvents();
-        } catch (err: any) {
+        },
+        onError: (err: any) => {
+            queryClient.invalidateQueries({ queryKey: ['teacherEvents'] });
             alert("Booking failed: " + err.message);
         }
+    });
+
+    const handleBookStudent = (eventId: number, studentId: number) => {
+        bookStudentMutation.mutate({ eventId, studentId });
     };
 
     return (
@@ -155,9 +122,9 @@ const TeacherDashboard: React.FC = () => {
             <div className="tab-content">
                 {activeTab === 'roster' && (
                     <div className="teacher-dashboard-data">
-                        {loading && <p>Loading...</p>}
-                        {error && <p className="error">{error}</p>}
-                        {!loading && !error && (
+                        {loadingRoster && <p>Loading...</p>}
+                        {isRosterError && <p className="error">{rosterError instanceof Error ? rosterError.message : "Failed to load"}</p>}
+                        {!loadingRoster && !isRosterError && (
                             <div className="flex justify-center w-full mt-5 overflow-x-auto">
                                 <table className="w-full border-collapse bg-transparent mt-5 [&_th]:bg-[#f8f8f8] [&_th]:text-text-dark [&_th]:px-[25px] [&_th]:py-[18px] [&_th]:text-center [&_th]:font-semibold [&_th]:border-b-2 [&_th]:border-[#eee] [&_th]:tracking-[0.5px] [&_td]:px-[25px] [&_td]:py-[15px] [&_td]:text-text-dark [&_td]:border-b [&_td]:border-[#eee] [&_td]:text-center [&_td]:align-middle [&_tbody_tr:hover]:bg-[#f9f9f9] [&_tbody_tr]:transition-colors">
                                     <thead>
@@ -204,7 +171,7 @@ const TeacherDashboard: React.FC = () => {
                 {activeTab === 'schedule' && user?.user_id && (
                     <WeeklySchedule
                         teacherId={user.user_id}
-                        onLessonCreated={loadSchedule}
+                        onLessonCreated={() => queryClient.invalidateQueries({ queryKey: ['teacherSchedule'] })}
                     />
                 )}
 

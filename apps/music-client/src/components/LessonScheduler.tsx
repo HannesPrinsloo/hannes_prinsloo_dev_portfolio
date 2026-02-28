@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import { createLesson, fetchTeacherRoster, type RosterEntry } from '../services/api';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { createLesson, fetchTeacherRoster } from '../services/api';
 import { useAuthStore } from '../../store/authStore';
 
 interface LessonSchedulerProps {
@@ -9,26 +10,25 @@ interface LessonSchedulerProps {
 
 const LessonScheduler: React.FC<LessonSchedulerProps> = ({ onLessonCreated, initialStartTime }) => {
     const { user } = useAuthStore();
-    const [roster, setRoster] = useState<RosterEntry[]>([]);
+    const queryClient = useQueryClient();
     const [lessonType, setLessonType] = useState<'solo' | 'group'>('solo');
     const [selectedStudents, setSelectedStudents] = useState<number[]>([]);
     const [startTime, setStartTime] = useState<string>(initialStartTime || '');
     // Duration is derived: solo=30, group=60
     const [recurrenceCount, setRecurrenceCount] = useState<number>(1);
-    const [loading, setLoading] = useState(false);
     const [message, setMessage] = useState<string | null>(null);
+
+    const { data: roster = [] } = useQuery({
+        queryKey: ['teacherRoster', user?.user_id],
+        queryFn: () => fetchTeacherRoster(user!.user_id),
+        enabled: !!user?.user_id
+    });
 
     useEffect(() => {
         if (initialStartTime) {
             setStartTime(initialStartTime);
         }
     }, [initialStartTime]);
-
-    useEffect(() => {
-        if (user?.user_id) {
-            fetchTeacherRoster(user.user_id).then(setRoster).catch(console.error);
-        }
-    }, [user]);
 
     const handleStudentChange = (index: number, studentId: string) => {
         const id = parseInt(studentId);
@@ -45,43 +45,48 @@ const LessonScheduler: React.FC<LessonSchedulerProps> = ({ onLessonCreated, init
         setSelectedStudents(newSelection.filter(n => !isNaN(n)));
     };
 
-    const handleCreate = async (e: React.FormEvent) => {
-        e.preventDefault();
-        setLoading(true);
-        setMessage(null);
+    const createLessonMutation = useMutation({
+        mutationFn: (lessonData: any) => createLesson(lessonData),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['teacherSchedule'] });
+            queryClient.invalidateQueries({ queryKey: ['adminTeacherSchedule'] });
 
-        // Validation
-        if (lessonType === 'solo' && selectedStudents.length !== 1) {
-            setMessage('Solo lessons require exactly 1 student.');
-            setLoading(false);
-            return;
-        }
-        if (lessonType === 'group' && selectedStudents.length < 2) {
-            setMessage('Group lessons require at least 2 students.');
-            setLoading(false);
-            return;
-        }
-
-        try {
-            await createLesson({
-                teacherId: user?.user_id || 0,
-                studentIds: selectedStudents,
-                instrumentId: 1, // Hardcoded for prototype (Guitar)
-                startTime: new Date(startTime).toISOString(),
-                durationMinutes: lessonType === 'solo' ? 30 : 60,
-                recurrenceCount
-            });
             setMessage('Lesson scheduled successfully!');
             setStartTime('');
             setSelectedStudents([]);
             setRecurrenceCount(1);
             onLessonCreated();
-        } catch (err) {
+        },
+        onError: () => {
             setMessage('Failed to create lesson.');
-        } finally {
-            setLoading(false);
         }
+    });
+
+    const handleCreate = (e: React.FormEvent) => {
+        e.preventDefault();
+        setMessage(null);
+
+        // Validation
+        if (lessonType === 'solo' && selectedStudents.length !== 1) {
+            setMessage('Solo lessons require exactly 1 student.');
+            return;
+        }
+        if (lessonType === 'group' && selectedStudents.length < 2) {
+            setMessage('Group lessons require at least 2 students.');
+            return;
+        }
+
+        createLessonMutation.mutate({
+            teacherId: user?.user_id || 0,
+            studentIds: selectedStudents,
+            instrumentId: 1, // Hardcoded for prototype (Guitar)
+            startTime: new Date(startTime).toISOString(),
+            durationMinutes: lessonType === 'solo' ? 30 : 60,
+            recurrenceCount
+        });
     };
+
+    const loading = createLessonMutation.isPending;
 
     return (
         <div className="card">

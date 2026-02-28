@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
-import { } from '../services/api';
-
-const API_URL = import.meta.env.VITE_API_URL;
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { registerFamily } from '../services/api';
 
 interface FamilyRegistrationModalProps {
     isOpen: boolean;
@@ -20,9 +19,19 @@ interface StudentData {
 
 const FamilyRegistrationModal = ({ isOpen, onClose, onSuccess }: FamilyRegistrationModalProps) => {
 
-    const [loading, setLoading] = useState(false);
-    const [managers, setManagers] = useState<any[]>([]);
-    const [teachers, setTeachers] = useState<any[]>([]);
+    const queryClient = useQueryClient();
+
+    // Fetch users from cache
+    const { data: allUsers = [] } = useQuery<any[]>({
+        queryKey: ['adminUsers'],
+        // Assuming adminUsers is already prefetched/cached by AdminDashboard.
+        // We could provide a queryFn here as a fallback, but AdminDashboard fetches it.
+        staleTime: 5 * 60 * 1000,
+    });
+
+    const managers = allUsers.filter((u: any) => u.role_id === 3);
+    const teachers = allUsers.filter((u: any) => u.role_id === 2);
+
     const [isAdultStudent, setIsAdultStudent] = useState(false);
 
     // Manager State
@@ -58,32 +67,9 @@ const FamilyRegistrationModal = ({ isOpen, onClose, onSuccess }: FamilyRegistrat
                 date_of_birth: '1990-01-01'
             });
             setStudents([{ firstName: '', lastName: '', dob: '2015-01-01' }]);
-
-            // Fetch Managers & Teachers
-            fetchManagers();
-            fetchTeachers();
+            setStudents([{ firstName: '', lastName: '', dob: '2015-01-01' }]);
         }
     }, [isOpen]);
-
-    const fetchManagers = async () => {
-        try {
-            const res = await fetch(`${API_URL}/api/users`);
-            const users = await res.json();
-            setManagers(users.filter((u: any) => u.role_id === 3)); // Filter valid managers
-        } catch (e) {
-            console.error("Failed to fetch managers", e);
-        }
-    };
-
-    const fetchTeachers = async () => {
-        try {
-            const res = await fetch(`${API_URL}/api/users`);
-            const users = await res.json();
-            setTeachers(users.filter((u: any) => u.role_id === 2)); // Filter valid teachers
-        } catch (e) {
-            console.error("Failed to fetch teachers", e);
-        }
-    };
 
     const handleManagerChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setManagerDetails({ ...managerDetails, [e.target.name]: e.target.value });
@@ -107,38 +93,33 @@ const FamilyRegistrationModal = ({ isOpen, onClose, onSuccess }: FamilyRegistrat
         setStudents(newStudents);
     };
 
-    const handleSubmit = async () => {
-        setLoading(true);
-        try {
-            const payload = {
-                manager: {
-                    isNew: managerMode === 'new',
-                    userId: managerMode === 'existing' ? Number(selectedManagerId) : undefined,
-                    details: managerMode === 'new' ? { ...managerDetails, role_id: 3 } : undefined
-                },
-                students: students,
-                isAdultStudent
-            };
-
-            const res = await fetch(`${API_URL}/api/users/family`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
-            });
-
-            if (!res.ok) {
-                const err = await res.json();
-                throw new Error(err.error || 'Failed to register family');
-            }
-
+    const registerFamilyMutation = useMutation({
+        mutationFn: registerFamily,
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['adminUsers'] });
             onSuccess();
             onClose();
-        } catch (err: any) {
-            alert(err.message);
-        } finally {
-            setLoading(false);
+        },
+        onError: (err: any) => {
+            alert(err.message || 'Failed to register family');
         }
+    });
+
+    const handleSubmit = async () => {
+        const payload = {
+            manager: {
+                isNew: managerMode === 'new',
+                userId: managerMode === 'existing' ? Number(selectedManagerId) : undefined,
+                details: managerMode === 'new' ? { ...managerDetails, role_id: 3 } : undefined
+            },
+            students: students,
+            isAdultStudent
+        };
+
+        registerFamilyMutation.mutate(payload);
     };
+
+    const loading = registerFamilyMutation.isPending;
 
     if (!isOpen) return null;
 
@@ -170,7 +151,7 @@ const FamilyRegistrationModal = ({ isOpen, onClose, onSuccess }: FamilyRegistrat
                             style={{ width: '100%', padding: '10px' }}
                         >
                             <option value="">-- Select Manager --</option>
-                            {managers.map(m => (
+                            {managers.map((m: any) => (
                                 <option key={m.user_id} value={m.user_id}>
                                     {m.first_name} {m.last_name} ({m.email})
                                 </option>
@@ -245,7 +226,7 @@ const FamilyRegistrationModal = ({ isOpen, onClose, onSuccess }: FamilyRegistrat
                                     onChange={(e) => handleStudentChange(idx, 'assignedTeacherId', e.target.value ? Number(e.target.value) : undefined)}
                                 >
                                     <option value="">-- No Teacher Assigned --</option>
-                                    {teachers.map(t => (
+                                    {teachers.map((t: any) => (
                                         <option key={t.user_id} value={t.user_id}>
                                             {t.first_name} {t.last_name}
                                         </option>

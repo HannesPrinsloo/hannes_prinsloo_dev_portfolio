@@ -148,19 +148,64 @@ export const getEligibleStudents = async (eventId: number) => {
 
 // 4. Book Student
 export const bookStudent = async (eventId: number, studentId: number, bookedByUserId: number) => {
-    // Check if already booked
-    const check = await pool.query('SELECT * FROM event_bookings WHERE event_id = $1 AND student_user_id = $2', [eventId, studentId]);
-    if (check.rows.length > 0) {
-        throw new Error("Student already booked for this event");
-    }
+    const client = await pool.connect();
 
-    const query = `
-        INSERT INTO event_bookings (event_id, student_user_id, booked_by_user_id, booking_status, booked_at)
-        VALUES ($1, $2, $3, 'Confirmed', NOW())
-        RETURNING *
-    `;
-    const res = await pool.query(query, [eventId, studentId, bookedByUserId]);
-    return res.rows[0];
+    try {
+        await client.query('BEGIN');
+
+        // Check if already booked with FOR UPDATE lock
+        const check = await client.query('SELECT 1 FROM event_bookings WHERE event_id = $1 AND student_user_id = $2 FOR UPDATE', [eventId, studentId]);
+        if (check.rows.length > 0) {
+            throw new Error("Student already booked for this event");
+        }
+
+        // Re-validate absolute current eligibility dynamically
+        const validationQuery = `
+            WITH StudentInfo AS (
+                SELECT 
+                    u.date_of_birth,
+                    EXTRACT(YEAR FROM AGE(u.date_of_birth))::int AS age,
+                    (
+                        SELECT level_id FROM student_levels 
+                        WHERE student_user_id = $2 
+                        ORDER BY date_completed DESC, created_at DESC LIMIT 1
+                    ) as current_level_id
+                FROM users u WHERE user_id = $2 AND role_id = 4
+            ),
+            EventInfo AS (
+                SELECT event_id FROM events WHERE event_id = $1
+            ),
+            AllowedLevels AS (
+                SELECT level_id FROM event_eligibility_levels WHERE event_id = $1
+            )
+            SELECT * FROM StudentInfo
+            WHERE age <= 18 
+              AND (
+                  NOT EXISTS (SELECT 1 FROM AllowedLevels) 
+                  OR current_level_id IN (SELECT level_id FROM AllowedLevels)
+              );
+        `;
+
+        const validationRes = await client.query(validationQuery, [eventId, studentId]);
+        if (validationRes.rows.length === 0) {
+            throw new Error("Student no longer meets the eligibility criteria for this event. Please refresh your page.");
+        }
+
+        const insertQuery = `
+            INSERT INTO event_bookings (event_id, student_user_id, booked_by_user_id, booking_status, booked_at)
+            VALUES ($1, $2, $3, 'Confirmed', NOW())
+            RETURNING *
+        `;
+        const res = await client.query(insertQuery, [eventId, studentId, bookedByUserId]);
+
+        await client.query('COMMIT');
+        return res.rows[0];
+    } catch (err) {
+        await client.query('ROLLBACK');
+        throw err;
+    } finally {
+        client.release();
+    }
 };
 
 // 5. Get Booked Students for an Event (Admin View)

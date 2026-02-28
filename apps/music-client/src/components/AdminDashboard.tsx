@@ -1,11 +1,11 @@
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAuthStore } from '../../store/authStore';
 import {
     fetchTeacherRoster, getTeacherSchedule, deleteUser,
     fetchEvents, createEvent, deleteEvent, getEligibleStudentsForEvent, getBookedStudentsForEvent,
     bookStudentForEvent, cancelEventBooking, fetchLevels,
-    type RosterEntry, type EventData, type StudentEligibility, type Level,
     assignTeacher // New Import
 } from '../services/api';
 import AddUserModal from './AddUserModal';
@@ -17,7 +17,7 @@ import MobileUserDetailModal from './MobileUserDetailModal';
 
 // ...
 
-import type { UserData, AdminLesson } from '../types';
+import type { UserData } from '../types';
 
 // ... inside AdminDashboard ...
 
@@ -29,9 +29,7 @@ const API_URL = import.meta.env.VITE_API_URL;
 
 const AdminDashboard = () => {
     const { user, profile } = useAuthStore();
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
-    const [allUsers, setAllUsers] = useState<UserData[]>([]);
+    const queryClient = useQueryClient();
 
     // Main Tab State
     const [mainTab, setMainTab] = useState<'Students' | 'Teachers' | 'Managers' | 'Admins' | 'Events'>('Teachers');
@@ -44,9 +42,7 @@ const AdminDashboard = () => {
     const [isFamilyModalOpen, setIsFamilyModalOpen] = useState(false);
 
     // Events State
-    const [events, setEvents] = useState<EventData[]>([]);
-    const [pastEvents, setPastEvents] = useState<EventData[]>([]);
-    const [selectedEvent, setSelectedEvent] = useState<EventData | null>(null);
+    const [selectedEvent, setSelectedEvent] = useState<any | null>(null);
     const [isCreateEventOpen, setIsCreateEventOpen] = useState(false);
     const [newEventData, setNewEventData] = useState<any>({
         eventName: '',
@@ -58,10 +54,6 @@ const AdminDashboard = () => {
         maxCapacity: 50,
         levelIds: []
     });
-    const [levels, setLevels] = useState<Level[]>([]);
-    const [eligibleStudents, setEligibleStudents] = useState<StudentEligibility[]>([]);
-    const [bookedStudents, setBookedStudents] = useState<any[]>([]);
-    const [eventLoading, setEventLoading] = useState(false);
 
     const handleEditUser = (user: UserData, event: React.MouseEvent) => {
         event.stopPropagation();
@@ -103,137 +95,120 @@ const AdminDashboard = () => {
     };
     const [teacherDetailTab, setTeacherDetailTab] = useState<'roster' | 'attendance'>('roster');
 
-    // Teacher Detail data
-    const [teacherRoster, setTeacherRoster] = useState<RosterEntry[]>([]);
-    const [teacherSchedule, setTeacherSchedule] = useState<AdminLesson[]>([]);
-    const [detailLoading, setDetailLoading] = useState(false);
-
-
-    const getAllData = async () => {
-        setLoading(true);
-        try {
+    // React Query: Root Data
+    const { data: allUsers = [], isLoading: usersLoading, error: usersError } = useQuery({
+        queryKey: ['adminUsers'],
+        queryFn: async () => {
             const response = await fetch(`${API_URL}/api/users`, { credentials: 'include' });
-            if (response.ok) {
-                const result = await response.json();
-                setAllUsers(result);
-                setError(null);
-            } else {
-                setError("Failed to load users.");
-            }
-        } catch (err) {
-            setError("Network error.");
-        } finally {
-            setLoading(false);
-        }
-    };
+            if (!response.ok) throw new Error("Failed to load users.");
+            return response.json();
+        },
+        enabled: !!user && profile?.role_id === 1,
+        refetchInterval: 10000
+    });
 
-    const handleTeacherAssignmentChange = async (studentId: number, newTeacherIdStr: string, _currentTeacherName: string) => {
+    const { data: levels = [] } = useQuery({
+        queryKey: ['adminLevels'],
+        queryFn: fetchLevels,
+        enabled: !!user && profile?.role_id === 1
+    });
+
+    const { data: upcomingEvents = [], isLoading: upcomingLoading } = useQuery({
+        queryKey: ['adminEvents', 'upcoming'],
+        queryFn: () => fetchEvents('upcoming'),
+        enabled: !!user && profile?.role_id === 1,
+        refetchInterval: 10000
+    });
+
+    const { data: pastEvents = [] } = useQuery({
+        queryKey: ['adminEvents', 'past'],
+        queryFn: () => fetchEvents('past'),
+        enabled: !!user && profile?.role_id === 1,
+        refetchInterval: 10000
+    });
+
+    // React Query: Teacher Details (Conditional)
+    const { data: teacherRoster = [], isLoading: rosterLoading } = useQuery({
+        queryKey: ['adminTeacherRoster', selectedTeacher?.user_id],
+        queryFn: () => fetchTeacherRoster(selectedTeacher!.user_id),
+        enabled: !!selectedTeacher?.user_id,
+        refetchInterval: 10000
+    });
+
+    const { data: teacherSchedule = [], isLoading: scheduleLoading } = useQuery({
+        queryKey: ['adminTeacherSchedule', selectedTeacher?.user_id],
+        queryFn: () => getTeacherSchedule(selectedTeacher!.user_id),
+        enabled: !!selectedTeacher?.user_id,
+        refetchInterval: 10000
+    });
+
+    const detailLoading = rosterLoading || scheduleLoading;
+
+    // React Query: Event Details (Conditional)
+    const { data: eligibleStudents = [], isLoading: eligibleLoading } = useQuery({
+        queryKey: ['adminEventEligible', selectedEvent?.event_id],
+        queryFn: () => getEligibleStudentsForEvent(selectedEvent!.event_id!),
+        enabled: !!selectedEvent?.event_id,
+        refetchInterval: 10000
+    });
+
+    const { data: bookedStudents = [], isLoading: bookedLoading } = useQuery({
+        queryKey: ['adminEventBooked', selectedEvent?.event_id],
+        queryFn: () => getBookedStudentsForEvent(selectedEvent!.event_id!),
+        enabled: !!selectedEvent?.event_id,
+        refetchInterval: 10000
+    });
+
+    const eventLoading = eligibleLoading || bookedLoading;
+
+    const assignTeacherMutation = useMutation({
+        mutationFn: ({ studentId, newTeacherId }: { studentId: number, newTeacherId: number | null }) => assignTeacher(studentId, newTeacherId),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['adminUsers'] });
+        },
+        onError: (err: any) => {
+            alert("Failed to update assignment: " + err.message);
+        }
+    });
+
+    const handleTeacherAssignmentChange = (studentId: number, newTeacherIdStr: string, _currentTeacherName: string) => {
         const newTeacherId = newTeacherIdStr ? Number(newTeacherIdStr) : null;
         const action = newTeacherId ? "Assign to new teacher?" : "Remove assigned teacher?";
 
         if (confirm(`${action} This will update the student's enrollment.`)) {
-            try {
-                await assignTeacher(studentId, newTeacherId);
-                await getAllData(); // Refresh to show new assignment
-            } catch (err: any) {
-                alert("Failed to update assignment: " + err.message);
-            }
-        } else {
-            await getAllData(); // Revert UI
+            assignTeacherMutation.mutate({ studentId, newTeacherId });
         }
     };
 
-    const loadEvents = async () => {
-        try {
-            const [upcoming, past] = await Promise.all([
-                fetchEvents('upcoming'),
-                fetchEvents('past')
-            ]);
-            setEvents(upcoming);
-            setPastEvents(past);
-        } catch (err) {
-            console.error("Failed to load events", err);
-        }
-    };
-
-    const loadLevels = async () => {
-        try {
-            const data = await fetchLevels();
-            setLevels(data);
-        } catch (err) {
-            console.error("Failed to load levels", err);
-        }
-    };
-
-    useEffect(() => {
-        if (user && profile?.role_id === 1) {
-            getAllData();
-            loadEvents();
-            loadLevels();
-        }
-    }, [user, profile]);
-
-    // Fetch details when a teacher is selected
-    useEffect(() => {
-        if (!selectedTeacher) return;
-
-        const loadDetails = async () => {
-            setDetailLoading(true);
-            try {
-                const [rosterData, scheduleData] = await Promise.all([
-                    fetchTeacherRoster(selectedTeacher.user_id),
-                    getTeacherSchedule(selectedTeacher.user_id)
-                ]);
-
-                setTeacherRoster(rosterData);
-                setTeacherSchedule(scheduleData as AdminLesson[]);
-            } catch (err) {
-                console.error(err);
-            } finally {
-                setDetailLoading(false);
-            }
-        };
-
-        loadDetails();
-    }, [selectedTeacher]);
-
-    // Load Event Details (Eligible & Booked students)
-    useEffect(() => {
-        if (!selectedEvent || !selectedEvent.event_id) return;
-
-        const loadEventDetails = async () => {
-            setEventLoading(true);
-            try {
-                const [eligible, booked] = await Promise.all([
-                    getEligibleStudentsForEvent(selectedEvent.event_id!),
-                    getBookedStudentsForEvent(selectedEvent.event_id!)
-                ]);
-                setEligibleStudents(eligible);
-                setBookedStudents(booked);
-            } catch (err) {
-                console.error("Error loading event details", err);
-            } finally {
-                setEventLoading(false);
-            }
-        };
-        loadEventDetails();
-    }, [selectedEvent]);
-
-
-    const handleDeleteEvent = async (eventId: number) => {
-        if (!confirm("Are you sure you want to delete this event? All bookings will be removed.")) return;
-        try {
-            await deleteEvent(eventId);
-            loadEvents();
-        } catch (err: any) {
+    const deleteEventMutation = useMutation({
+        mutationFn: (eventId: number) => deleteEvent(eventId),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['adminEvents'] });
+        },
+        onError: (err: any) => {
             alert("Failed to delete event: " + err.message);
         }
+    });
+
+    const handleDeleteEvent = (eventId: number) => {
+        if (!confirm("Are you sure you want to delete this event? All bookings will be removed.")) return;
+        deleteEventMutation.mutate(eventId);
     };
 
-    const handleDeleteUser = async (userId: number, event: React.MouseEvent) => {
-        event.stopPropagation();
+    const deleteUserMutation = useMutation({
+        mutationFn: ({ userId, deleteManager }: { userId: number, deleteManager: boolean }) => deleteUser(userId, deleteManager),
+        onSuccess: (_, { userId }) => {
+            queryClient.invalidateQueries({ queryKey: ['adminUsers'] });
+            if (selectedTeacher?.user_id === userId) setSelectedTeacher(null);
+        },
+        onError: (err: any) => {
+            alert(err.message);
+        }
+    });
 
-        const userToDelete = allUsers.find(u => u.user_id === userId);
+    const handleDeleteUser = (userId: number, event: React.MouseEvent) => {
+        event.stopPropagation();
+        const userToDelete = allUsers.find((u: UserData) => u.user_id === userId);
         if (!userToDelete) return;
 
         if (!window.confirm(`Are you sure you want to delete ${userToDelete.first_name} ${userToDelete.last_name}? This cannot be undone.`)) {
@@ -241,51 +216,33 @@ const AdminDashboard = () => {
         }
 
         let deleteManager = false;
-        // Check if student (Role 4)
         if (userToDelete.role_id === 4) {
-            // Ask for optional manager deletion
-            // Using a confirm box for the second question
-            // "OK" to delete manager, "Cancel" to keep manager.
-            // We need to be clear in the message.
             if (window.confirm("Do you ALSO want to delete the associated Manager (Parent) account?\n\nClick OK to DELETE the Manager.\nClick Cancel to KEEP the Manager (only delete Student).")) {
                 deleteManager = true;
             }
         }
-
-        try {
-            await deleteUser(userId, deleteManager);
-            // Refresh list
-            await getAllData();
-            // Deselect if verified
-            if (selectedTeacher?.user_id === userId) {
-                setSelectedTeacher(null);
-            }
-        } catch (err: any) {
-            alert(err.message);
-        }
+        deleteUserMutation.mutate({ userId, deleteManager });
     };
 
-    const handleCreateEvent = async (e: React.FormEvent) => {
-        e.preventDefault();
-        try {
-            await createEvent(newEventData);
+    const createEventMutation = useMutation({
+        mutationFn: (data: any) => createEvent(data),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['adminEvents'] });
             alert("Event created!");
             setIsCreateEventOpen(false);
-            loadEvents();
-            // Reset form
             setNewEventData({
-                eventName: '',
-                description: '',
-                venueName: '',
-                startTime: '',
-                endTime: '',
-                eventType: 'Workshop',
-                maxCapacity: 50,
-                levelIds: []
+                eventName: '', description: '', venueName: '', startTime: '',
+                endTime: '', eventType: 'Workshop', maxCapacity: 50, levelIds: []
             });
-        } catch (err: any) {
+        },
+        onError: (err: any) => {
             alert("Failed to create event: " + err.message);
         }
+    });
+
+    const handleCreateEvent = (e: React.FormEvent) => {
+        e.preventDefault();
+        createEventMutation.mutate(newEventData);
     };
 
     const toggleLevelSelection = (levelId: number) => {
@@ -299,43 +256,43 @@ const AdminDashboard = () => {
         });
     };
 
-    const handleBookStudent = async (studentId: number) => {
-        if (!selectedEvent?.event_id) return;
-        try {
-            await bookStudentForEvent(selectedEvent.event_id, studentId);
-            // Refresh lists
-            const [eligible, booked] = await Promise.all([
-                getEligibleStudentsForEvent(selectedEvent.event_id!),
-                getBookedStudentsForEvent(selectedEvent.event_id!)
-            ]);
-            setEligibleStudents(eligible);
-            setBookedStudents(booked);
-            loadEvents(); // Update counts
-        } catch (err: any) {
+    const bookEventMutation = useMutation({
+        mutationFn: ({ eventId, studentId }: { eventId: number, studentId: number }) => bookStudentForEvent(eventId, studentId),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['adminEventEligible'] });
+            queryClient.invalidateQueries({ queryKey: ['adminEventBooked'] });
+            queryClient.invalidateQueries({ queryKey: ['adminEvents'] });
+        },
+        onError: (err: any) => {
             alert(err.message);
         }
+    });
+
+    const cancelBookingMutation = useMutation({
+        mutationFn: (bookingId: number) => cancelEventBooking(bookingId),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['adminEventEligible'] });
+            queryClient.invalidateQueries({ queryKey: ['adminEventBooked'] });
+            queryClient.invalidateQueries({ queryKey: ['adminEvents'] });
+        },
+        onError: (err: any) => {
+            alert(err.message);
+        }
+    });
+
+    const handleBookStudent = (studentId: number) => {
+        if (!selectedEvent?.event_id) return;
+        bookEventMutation.mutate({ eventId: selectedEvent.event_id, studentId });
     };
 
-    const handleCancelBooking = async (bookingId: number) => {
+    const handleCancelBooking = (bookingId: number) => {
         if (!selectedEvent?.event_id) return;
         if (!confirm("Cancel this booking?")) return;
-        try {
-            await cancelEventBooking(bookingId);
-            // Refresh lists
-            const [eligible, booked] = await Promise.all([
-                getEligibleStudentsForEvent(selectedEvent.event_id!),
-                getBookedStudentsForEvent(selectedEvent.event_id!)
-            ]);
-            setEligibleStudents(eligible);
-            setBookedStudents(booked);
-            loadEvents(); // Update counts
-        } catch (err: any) {
-            alert(err.message);
-        }
+        cancelBookingMutation.mutate(bookingId);
     };
 
     const renderGenericListView = (users: UserData[]) => {
-        const teacherOptions = allUsers.filter(u => u.role_id === 2);
+        const teacherOptions = allUsers.filter((u: UserData) => u.role_id === 2);
 
         // Mobile View Structure
         const mobileView = (
@@ -386,7 +343,7 @@ const AdminDashboard = () => {
                                             onChange={(e) => handleTeacherAssignmentChange(u.user_id, e.target.value, u.teacher_names || '')}
                                         >
                                             <option value="">-- Unassigned --</option>
-                                            {teacherOptions.map(t => (
+                                            {teacherOptions.map((t: UserData) => (
                                                 <option key={t.user_id} value={t.user_id}>
                                                     {t.first_name} {t.last_name}
                                                 </option>
@@ -427,14 +384,14 @@ const AdminDashboard = () => {
         );
     };
 
-    if (loading) return <div className="dashboard-loading">Loading Admin Dashboard...</div>;
-    if (error) return <div className="dashboard-error">{error}</div>;
+    if (usersLoading || upcomingLoading) return <div className="dashboard-loading">Loading Admin Dashboard...</div>;
+    if (usersError) return <div className="dashboard-error">{(usersError as Error).message || "Failed to load"}</div>;
 
     // Filter users based on active tab
     const getFilteredUsers = () => {
         const roleMap: Record<string, number> = { 'Admins': 1, 'Teachers': 2, 'Managers': 3, 'Students': 4 };
         const roleId = roleMap[mainTab];
-        return allUsers.filter(u => u.role_id === roleId);
+        return allUsers.filter((u: UserData) => u.role_id === roleId);
     };
 
     const getRoleForNewUser = () => {
@@ -443,7 +400,13 @@ const AdminDashboard = () => {
     };
 
     const renderStudentView = (students: UserData[]) => {
-        const teacherOptions = allUsers.filter(u => u.role_id === 2);
+        const teacherOptions = allUsers.filter((u: UserData) => u.role_id === 2);
+
+        // Derive the absolute latest data for the selected student from the live React Query cache array.
+        // This solves the bug where the dropdown gets stuck on stale local component state.
+        const activeStudent = selectedStudent
+            ? students.find(s => s.user_id === selectedStudent.user_id) || selectedStudent
+            : null;
 
         return (
             <>
@@ -464,14 +427,14 @@ const AdminDashboard = () => {
                                 <li
                                     key={student.user_id}
                                     onClick={() => setSelectedStudent(student)}
-                                    className={`p-4 rounded-xl border transition-all duration-200 cursor-pointer mb-3 flex flex-col gap-3 ${selectedStudent?.user_id === student.user_id ? 'bg-[#ffebfb] border-primary-red shadow-sm' : 'bg-white border-[#eee] hover:border-primary-red hover:shadow-sm'}`}
+                                    className={`p-4 rounded-xl border transition-all duration-200 cursor-pointer mb-3 flex flex-col gap-3 ${activeStudent?.user_id === student.user_id ? 'bg-[#ffebfb] border-primary-red shadow-sm' : 'bg-white border-[#eee] hover:border-primary-red hover:shadow-sm'}`}
                                 >
                                     <div className="flex flex-col w-full">
                                         <strong className="text-[1.05em] text-text-dark mb-1 break-words">{student.first_name} {student.last_name}</strong>
                                         <span className="text-sm text-[#888] mb-1">Level: <span className="text-primary-red font-medium">{student.current_level_name || 'None'}</span></span>
                                         <span className="text-sm text-[#666]">Teacher: {student.teacher_names || 'Unassigned'}</span>
                                     </div>
-                                    {selectedStudent?.user_id === student.user_id && (
+                                    {activeStudent?.user_id === student.user_id && (
                                         <div className="flex gap-2">
                                             <button
                                                 onClick={(e) => handleEditUser(student, e)}
@@ -493,11 +456,11 @@ const AdminDashboard = () => {
                     </div>
 
                     {/* Right Panel: Detail View */}
-                    <div className={`flex-1 overflow-y-auto transition-all duration-200 ${selectedStudent ? 'bg-white rounded-lg p-5 shadow-[0_2px_8px_rgba(0,0,0,0.1)]' : ''}`}>
-                        {selectedStudent ? (
+                    <div className={`flex-1 overflow-y-auto transition-all duration-200 ${activeStudent ? 'bg-white rounded-lg p-5 shadow-[0_2px_8px_rgba(0,0,0,0.1)]' : ''}`}>
+                        {activeStudent ? (
                             <>
                                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                    <h3 className="m-0 text-xl">{selectedStudent.first_name} {selectedStudent.last_name}</h3>
+                                    <h3 className="m-0 text-xl">{activeStudent.first_name} {activeStudent.last_name}</h3>
                                     <button
                                         className="bg-transparent text-[#666] border border-[#ccc] px-4 py-2 rounded cursor-pointer hover:bg-[#f0f0f0] transition-colors"
                                         onClick={() => setSelectedStudent(null)}
@@ -511,10 +474,10 @@ const AdminDashboard = () => {
                                     <div className="p-4 bg-gray-50 rounded-lg border border-[#eee]">
                                         <h4 className="text-md font-semibold mb-3 text-text-dark mt-0">Student Information</h4>
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-                                            <div><span className="text-gray-500 block mb-1 font-medium">ID</span> {selectedStudent.user_id}</div>
-                                            <div><span className="text-gray-500 block mb-1 font-medium">Status</span> {selectedStudent.is_active ? 'Active' : 'Inactive'}</div>
-                                            <div><span className="text-gray-500 block mb-1 font-medium">Current Level</span> {selectedStudent.current_level_name || 'None'}</div>
-                                            <div><span className="text-gray-500 block mb-1 font-medium">Phone Number</span> {selectedStudent.phone_number || 'N/A'}</div>
+                                            <div><span className="text-gray-500 block mb-1 font-medium">ID</span> {activeStudent.user_id}</div>
+                                            <div><span className="text-gray-500 block mb-1 font-medium">Status</span> {activeStudent.is_active ? 'Active' : 'Inactive'}</div>
+                                            <div><span className="text-gray-500 block mb-1 font-medium">Current Level</span> {activeStudent.current_level_name || 'None'}</div>
+                                            <div><span className="text-gray-500 block mb-1 font-medium">Phone Number</span> {activeStudent.phone_number || 'N/A'}</div>
                                         </div>
                                     </div>
 
@@ -523,11 +486,11 @@ const AdminDashboard = () => {
                                         <div className="flex items-center gap-3">
                                             <select
                                                 className="px-3 py-2 bg-white text-text-dark border border-[#ccc] rounded-md focus:outline-none focus:border-primary-red focus:ring-1 focus:ring-primary-red transition-colors shadow-sm text-sm min-w-[200px]"
-                                                value={selectedStudent.teachers?.[0]?.id || ''}
-                                                onChange={(e) => handleTeacherAssignmentChange(selectedStudent.user_id, e.target.value, selectedStudent.teacher_names || '')}
+                                                value={activeStudent.teachers?.[0]?.id || ''}
+                                                onChange={(e) => handleTeacherAssignmentChange(activeStudent.user_id, e.target.value, activeStudent.teacher_names || '')}
                                             >
                                                 <option value="">-- Unassigned --</option>
-                                                {teacherOptions.map(t => (
+                                                {teacherOptions.map((t: UserData) => (
                                                     <option key={t.user_id} value={t.user_id}>
                                                         {t.first_name} {t.last_name}
                                                     </option>
@@ -548,123 +511,129 @@ const AdminDashboard = () => {
         );
     };
 
-    const renderTeacherView = (teachers: UserData[]) => (
-        <>
-            <div className="md:hidden">
-                <MobileUserList
-                    users={teachers}
-                    onUserClick={handleMobileUserClick}
-                    emptyMessage="No teachers found."
-                />
-            </div>
-            <div className="hidden md:flex flex-col md:flex-row gap-5 w-full max-w-[1200px] mx-auto text-left box-border overflow-x-hidden md:h-[80vh]">
-                {/* Left Panel: Teacher List */}
-                <div className="w-full md:w-1/3 md:min-w-[280px] md:max-w-[320px] shrink-0 overflow-y-auto overflow-x-hidden flex flex-col bg-white rounded-lg p-5 shadow-[0_2px_8px_rgba(0,0,0,0.1)]">
-                    <h3>Teachers</h3>
-                    <p style={{ fontSize: '0.9em', color: '#aaa', margin: '0 0 10px 0' }}>Select a teacher from the list to view details.</p>
-                    <ul className="list-none p-0 m-0 w-full">
-                        {teachers.map(teacher => (
-                            <li
-                                key={teacher.user_id}
-                                onClick={() => setSelectedTeacher(teacher)}
-                                className={`p-4 rounded-xl border transition-all duration-200 cursor-pointer mb-3 flex flex-col gap-3 ${selectedTeacher?.user_id === teacher.user_id ? 'bg-[#ffebfb] border-primary-red shadow-sm' : 'bg-white border-[#eee] hover:border-primary-red hover:shadow-sm'}`}
-                            >
-                                <div className="flex flex-col w-full">
-                                    <strong className="text-[1.05em] text-text-dark mb-1 break-words">{teacher.first_name} {teacher.last_name}</strong>
-                                    <span className="text-sm text-[#666] break-words">{teacher.email}</span>
+    const renderTeacherView = (teachers: UserData[]) => {
+        const activeTeacher = selectedTeacher
+            ? teachers.find(t => t.user_id === selectedTeacher.user_id) || selectedTeacher
+            : null;
+
+        return (
+            <>
+                <div className="md:hidden">
+                    <MobileUserList
+                        users={teachers}
+                        onUserClick={handleMobileUserClick}
+                        emptyMessage="No teachers found."
+                    />
+                </div>
+                <div className="hidden md:flex flex-col md:flex-row gap-5 w-full max-w-[1200px] mx-auto text-left box-border overflow-x-hidden md:h-[80vh]">
+                    {/* Left Panel: Teacher List */}
+                    <div className="w-full md:w-1/3 md:min-w-[280px] md:max-w-[320px] shrink-0 overflow-y-auto overflow-x-hidden flex flex-col bg-white rounded-lg p-5 shadow-[0_2px_8px_rgba(0,0,0,0.1)]">
+                        <h3>Teachers</h3>
+                        <p style={{ fontSize: '0.9em', color: '#aaa', margin: '0 0 10px 0' }}>Select a teacher from the list to view details.</p>
+                        <ul className="list-none p-0 m-0 w-full">
+                            {teachers.map(teacher => (
+                                <li
+                                    key={teacher.user_id}
+                                    onClick={() => setSelectedTeacher(teacher)}
+                                    className={`p-4 rounded-xl border transition-all duration-200 cursor-pointer mb-3 flex flex-col gap-3 ${activeTeacher?.user_id === teacher.user_id ? 'bg-[#ffebfb] border-primary-red shadow-sm' : 'bg-white border-[#eee] hover:border-primary-red hover:shadow-sm'}`}
+                                >
+                                    <div className="flex flex-col w-full">
+                                        <strong className="text-[1.05em] text-text-dark mb-1 break-words">{teacher.first_name} {teacher.last_name}</strong>
+                                        <span className="text-sm text-[#666] break-words">{teacher.email}</span>
+                                    </div>
+                                    {activeTeacher?.user_id === teacher.user_id && (
+                                        <div className="flex gap-2">
+                                            <button
+                                                onClick={(e) => handleEditUser(teacher, e)}
+                                                className="bg-[#2196F3] text-white text-xs font-medium px-4 py-1.5 rounded-md border-none hover:bg-[#1976D2] transition-colors shadow-sm"
+                                            >
+                                                Edit
+                                            </button>
+                                            <button
+                                                onClick={(e) => handleDeleteUser(teacher.user_id, e)}
+                                                className="bg-[#ff4444] text-white text-xs font-medium px-4 py-1.5 rounded-md border-none hover:bg-[#cc0000] transition-colors shadow-sm"
+                                            >
+                                                Delete
+                                            </button>
+                                        </div>
+                                    )}
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
+
+                    {/* Right Panel: Detail View */}
+                    <div className={`flex-1 overflow-y-auto transition-all duration-200 ${activeTeacher ? 'bg-white rounded-lg p-5 shadow-[0_2px_8px_rgba(0,0,0,0.1)]' : ''}`}>
+                        {activeTeacher ? (
+                            <>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                    <h3>{activeTeacher.first_name} {activeTeacher.last_name} - Detail View</h3>
+                                    <button
+                                        className="bg-transparent text-[#666] border border-[#ccc] px-4 py-2 rounded cursor-pointer hover:bg-[#f0f0f0] transition-colors"
+                                        onClick={() => setSelectedTeacher(null)}
+                                        style={{ height: 'fit-content' }}
+                                    >
+                                        Close View
+                                    </button>
                                 </div>
-                                {selectedTeacher?.user_id === teacher.user_id && (
-                                    <div className="flex gap-2">
-                                        <button
-                                            onClick={(e) => handleEditUser(teacher, e)}
-                                            className="bg-[#2196F3] text-white text-xs font-medium px-4 py-1.5 rounded-md border-none hover:bg-[#1976D2] transition-colors shadow-sm"
-                                        >
-                                            Edit
-                                        </button>
-                                        <button
-                                            onClick={(e) => handleDeleteUser(teacher.user_id, e)}
-                                            className="bg-[#ff4444] text-white text-xs font-medium px-4 py-1.5 rounded-md border-none hover:bg-[#cc0000] transition-colors shadow-sm"
-                                        >
-                                            Delete
-                                        </button>
+                                <div className="flex flex-wrap gap-2.5 justify-start mb-5">
+                                    <button
+                                        className={`px-5 py-2 font-medium rounded-md transition-all duration-200 border ${teacherDetailTab === 'roster' ? 'bg-[#ffeaeb] text-primary-red border-[#ffeaeb]' : 'bg-transparent text-text-dark border-transparent hover:bg-gray-100 hover:text-primary-red'}`}
+                                        onClick={() => setTeacherDetailTab('roster')}
+                                    >
+                                        Student Roster
+                                    </button>
+                                    <button
+                                        className={`px-5 py-2 font-medium rounded-md transition-all duration-200 border ${teacherDetailTab === 'attendance' ? 'bg-[#ffeaeb] text-primary-red border-[#ffeaeb]' : 'bg-transparent text-text-dark border-transparent hover:bg-gray-100 hover:text-primary-red'}`}
+                                        onClick={() => setTeacherDetailTab('attendance')}
+                                    >
+                                        Attendance & Billing
+                                    </button>
+                                </div>
+
+                                {detailLoading ? (
+                                    <p>Loading details...</p>
+                                ) : (
+                                    <div className="tab-content">
+                                        {teacherDetailTab === 'roster' && (
+                                            <table>
+                                                <thead>
+                                                    <tr>
+                                                        <th>ID</th><th>Student</th><th>Manager</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {teacherRoster.map(s => (
+                                                        <tr key={s.student_id}>
+                                                            <td>{s.student_id}</td>
+                                                            <td>{s.student_first_name} {s.student_last_name}</td>
+                                                            <td>{s.manager_first_name} {s.manager_last_name}</td>
+                                                        </tr>
+                                                    ))}
+                                                    {teacherRoster.length === 0 && <tr><td colSpan={3}>No students assigned.</td></tr>}
+                                                </tbody>
+                                            </table>
+                                        )}
+
+                                        {teacherDetailTab === 'attendance' && (
+                                            <BillingAccordion
+                                                students={teacherRoster}
+                                                schedule={teacherSchedule.map(l => ({ ...l, parent_note: '' }))}
+                                            />
+                                        )}
                                     </div>
                                 )}
-                            </li>
-                        ))}
-                    </ul>
-                </div>
-
-                {/* Right Panel: Detail View */}
-                <div className={`flex-1 overflow-y-auto transition-all duration-200 ${selectedTeacher ? 'bg-white rounded-lg p-5 shadow-[0_2px_8px_rgba(0,0,0,0.1)]' : ''}`}>
-                    {selectedTeacher ? (
-                        <>
-                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                <h3>{selectedTeacher.first_name} {selectedTeacher.last_name} - Detail View</h3>
-                                <button
-                                    className="bg-transparent text-[#666] border border-[#ccc] px-4 py-2 rounded cursor-pointer hover:bg-[#f0f0f0] transition-colors"
-                                    onClick={() => setSelectedTeacher(null)}
-                                    style={{ height: 'fit-content' }}
-                                >
-                                    Close View
-                                </button>
+                            </>
+                        ) : (
+                            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', color: '#888', textAlign: 'center', padding: '40px', border: '2px dashed #eee', borderRadius: '12px' }}>
+                                <p>Select a teacher from the list to view details.</p>
                             </div>
-                            <div className="flex flex-wrap gap-2.5 justify-start mb-5">
-                                <button
-                                    className={`px-5 py-2 font-medium rounded-md transition-all duration-200 border ${teacherDetailTab === 'roster' ? 'bg-[#ffeaeb] text-primary-red border-[#ffeaeb]' : 'bg-transparent text-text-dark border-transparent hover:bg-gray-100 hover:text-primary-red'}`}
-                                    onClick={() => setTeacherDetailTab('roster')}
-                                >
-                                    Student Roster
-                                </button>
-                                <button
-                                    className={`px-5 py-2 font-medium rounded-md transition-all duration-200 border ${teacherDetailTab === 'attendance' ? 'bg-[#ffeaeb] text-primary-red border-[#ffeaeb]' : 'bg-transparent text-text-dark border-transparent hover:bg-gray-100 hover:text-primary-red'}`}
-                                    onClick={() => setTeacherDetailTab('attendance')}
-                                >
-                                    Attendance & Billing
-                                </button>
-                            </div>
-
-                            {detailLoading ? (
-                                <p>Loading details...</p>
-                            ) : (
-                                <div className="tab-content">
-                                    {teacherDetailTab === 'roster' && (
-                                        <table>
-                                            <thead>
-                                                <tr>
-                                                    <th>ID</th><th>Student</th><th>Manager</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                {teacherRoster.map(s => (
-                                                    <tr key={s.student_id}>
-                                                        <td>{s.student_id}</td>
-                                                        <td>{s.student_first_name} {s.student_last_name}</td>
-                                                        <td>{s.manager_first_name} {s.manager_last_name}</td>
-                                                    </tr>
-                                                ))}
-                                                {teacherRoster.length === 0 && <tr><td colSpan={3}>No students assigned.</td></tr>}
-                                            </tbody>
-                                        </table>
-                                    )}
-
-                                    {teacherDetailTab === 'attendance' && (
-                                        <BillingAccordion
-                                            students={teacherRoster}
-                                            schedule={teacherSchedule.map(l => ({ ...l, parent_note: '' }))}
-                                        />
-                                    )}
-                                </div>
-                            )}
-                        </>
-                    ) : (
-                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', color: '#888', textAlign: 'center', padding: '40px', border: '2px dashed #eee', borderRadius: '12px' }}>
-                            <p>Select a teacher from the list to view details.</p>
-                        </div>
-                    )}
+                        )}
+                    </div>
                 </div>
-            </div>
-        </>
-    );
+            </>
+        );
+    };
 
 
 
@@ -676,8 +645,8 @@ const AdminDashboard = () => {
             </div>
 
             <div className="grid grid-cols-[repeat(auto-fit,minmax(300px,1fr))] gap-5">
-                {events.length === 0 && <p style={{ color: '#aaa' }}>No upcoming events.</p>}
-                {events.map(event => (
+                {upcomingEvents.length === 0 && <p style={{ color: '#aaa' }}>No upcoming events.</p>}
+                {upcomingEvents.map((event: any) => (
                     <div key={event.event_id} className="bg-white border border-[#eee] rounded-lg p-5 flex flex-col shadow-[0_2px_4px_rgba(0,0,0,0.05)]">
                         <h3>{event.event_name}</h3>
                         <div className="[&_p]:my-1.5 [&_p]:text-[#666]">
@@ -757,7 +726,7 @@ const AdminDashboard = () => {
                                     <table className="w-full border-collapse bg-transparent mt-5 [&_th]:bg-[#f8f8f8] [&_th]:text-text-dark [&_th]:px-[25px] [&_th]:py-[18px] [&_th]:text-center [&_th]:font-semibold [&_th]:border-b-2 [&_th]:border-[#eee] [&_th]:tracking-[0.5px] [&_td]:px-[25px] [&_td]:py-[15px] [&_td]:text-text-dark [&_td]:border-b [&_td]:border-[#eee] [&_td]:text-center [&_td]:align-middle [&_tbody_tr:hover]:bg-[#f9f9f9] [&_tbody_tr]:transition-colors">
                                         <thead><tr><th>Name</th><th>Booked At</th><th>Action</th></tr></thead>
                                         <tbody>
-                                            {bookedStudents.map(b => (
+                                            {bookedStudents.map((b: any) => (
                                                 <tr key={b.event_booking_id}>
                                                     <td>{b.first_name} {b.last_name}</td>
                                                     <td>{new Date(b.booked_at).toLocaleDateString()}</td>
@@ -933,7 +902,7 @@ const AdminDashboard = () => {
             <AddUserModal
                 isOpen={isAddUserOpen}
                 onClose={() => setIsAddUserOpen(false)}
-                onUserAdded={getAllData}
+                onUserAdded={() => queryClient.invalidateQueries({ queryKey: ['adminUsers'] })}
                 defaultRole={getRoleForNewUser()}
                 userToEdit={userToEdit}
             />
@@ -941,7 +910,7 @@ const AdminDashboard = () => {
             <FamilyRegistrationModal
                 isOpen={isFamilyModalOpen}
                 onClose={() => setIsFamilyModalOpen(false)}
-                onSuccess={getAllData}
+                onSuccess={() => queryClient.invalidateQueries({ queryKey: ['adminUsers'] })}
             />
             <BottomNav
                 activeTab={mainTab}
@@ -961,7 +930,7 @@ const AdminDashboard = () => {
                     handleDeleteUser(userId, {} as any); // Re-use existing delete logic
                 }}
                 // Props for Student actions
-                teachers={allUsers.filter(u => u.role_id === 2).map(t => ({ id: t.user_id, name: `${t.first_name} ${t.last_name}` }))}
+                teachers={allUsers.filter((u: UserData) => u.role_id === 2).map((t: UserData) => ({ id: t.user_id, name: `${t.first_name} ${t.last_name}` }))}
                 onAssignTeacher={(userId, teacherId) => handleTeacherAssignmentChange(userId, teacherId, '')}
                 mainTab={mainTab}
                 teacherRoster={teacherRoster}

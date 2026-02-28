@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { createUser, updateUser } from '../services/api';
 
 interface AddUserModalProps {
@@ -21,7 +22,7 @@ const AddUserModal = ({ isOpen, onClose, onUserAdded, defaultRole, userToEdit }:
         is_active: true
     });
     const [error, setError] = useState<string | null>(null);
-    const [loading, setLoading] = useState(false);
+    const queryClient = useQueryClient();
 
     // Reset or Popualte form when opening/changing user
     useEffect(() => {
@@ -64,36 +65,42 @@ const AddUserModal = ({ isOpen, onClose, onUserAdded, defaultRole, userToEdit }:
         }));
     };
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        setLoading(true);
-        setError(null);
-
-        try {
-            const payload: any = { ...formData };
-            // If editing and password is empty, don't send it
-            if (userToEdit && !payload.password) {
-                delete payload.password;
-            } else {
-                // Backend expects password_hash key
-                payload.password_hash = payload.password;
-                delete payload.password;
-            }
-
+    const saveUserMutation = useMutation({
+        mutationFn: async (payload: any) => {
             if (userToEdit) {
-                await updateUser(userToEdit.user_id, payload);
+                return updateUser(userToEdit.user_id, payload);
             } else {
-                await createUser(payload);
+                return createUser(payload);
             }
-
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['adminUsers'] });
             onUserAdded();
             onClose();
-        } catch (err: any) {
+        },
+        onError: (err: any) => {
             setError(err.message || (userToEdit ? 'Failed to update user' : 'Failed to create user'));
-        } finally {
-            setLoading(false);
         }
+    });
+
+    const handleSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        setError(null);
+
+        const payload: any = { ...formData };
+        // If editing and password is empty, don't send it
+        if (userToEdit && !payload.password) {
+            delete payload.password;
+        } else {
+            // Backend expects password_hash key
+            payload.password_hash = payload.password;
+            delete payload.password;
+        }
+
+        saveUserMutation.mutate(payload);
     };
+
+    const loading = saveUserMutation.isPending;
 
     return (
         /* CHANGELOG: Refactored AddUserModal wrapper and form layout to use Tailwind CSS utility classes instead of inline logic and App.css classes. */

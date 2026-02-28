@@ -1,5 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useAuthStore } from '../../store/authStore';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import {
     fetchManagerEvents,
     fetchManagerStudents,
@@ -16,90 +17,96 @@ import '../App.css';
 
 const ManagerDashboard = () => {
     const { user, profile } = useAuthStore();
+    const queryClient = useQueryClient();
 
     // Tabs
     const [activeTab, setActiveTab] = useState<'students' | 'events' | 'schedule' | 'attendance'>('students');
 
-    // Data State
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
+    const isManager = Number(profile?.role_id) === 3;
 
-    const [managerEvents, setManagerEvents] = useState<any[]>([]);
-    const [managerStudents, setManagerStudents] = useState<any[]>([]);
-    const [managerSchedule, setManagerSchedule] = useState<any[]>([]);
-    const [managerAttendance, setManagerAttendance] = useState<any[]>([]);
+    // React Query Data Fetching
+    const { data: managerEvents = [], isLoading: eventsLoading, isError: eventsError } = useQuery({
+        queryKey: ['managerEvents', user?.user_id],
+        queryFn: fetchManagerEvents,
+        enabled: !!user && isManager,
+        refetchInterval: 10000,
+    });
 
-    const loadData = async () => {
-        setLoading(true);
-        try {
-            const [eventsData, studentsData, scheduleData, attendanceData] = await Promise.all([
-                fetchManagerEvents(),
-                fetchManagerStudents(),
-                fetchManagerSchedule(),
-                fetchManagerAttendance()
-            ]);
+    const { data: managerStudents = [], isLoading: studentsLoading, isError: studentsError } = useQuery({
+        queryKey: ['managerStudents', user?.user_id],
+        queryFn: fetchManagerStudents,
+        enabled: !!user && isManager,
+        refetchInterval: 10000,
+    });
 
-            setManagerEvents(eventsData);
-            setManagerStudents(studentsData);
-            setManagerSchedule(scheduleData);
-            setManagerAttendance(attendanceData);
-            setError(null);
-        } catch (err: any) {
-            console.error("Error loading manager data:", err);
-            setError("Failed to load dashboard data. " + err.message);
-        } finally {
-            setLoading(false);
-        }
-    };
+    const { data: managerSchedule = [], isLoading: scheduleLoading, isError: scheduleError } = useQuery({
+        queryKey: ['managerSchedule', user?.user_id],
+        queryFn: fetchManagerSchedule,
+        enabled: !!user && isManager,
+        refetchInterval: 10000,
+    });
 
-    useEffect(() => {
-        if (user) {
-            // Role ID 3 is Manager. Check profile for role.
-            if (Number(profile?.role_id) === 3) {
-                loadData();
-            } else {
-                setLoading(false);
-            }
-        }
-    }, [user, profile]);
+    const { data: managerAttendance = [], isLoading: attendanceLoading, isError: attendanceError } = useQuery({
+        queryKey: ['managerAttendance', user?.user_id],
+        queryFn: fetchManagerAttendance,
+        enabled: !!user && isManager,
+        refetchInterval: 10000,
+    });
 
-    const handleBookStudent = async (eventId: number, studentId: number) => {
-        try {
-            await bookStudentForEvent(eventId, studentId);
-            await loadData();
+    // React Query Mutations
+    const bookStudentMutation = useMutation({
+        mutationFn: ({ eventId, studentId }: { eventId: number, studentId: number }) => bookStudentForEvent(eventId, studentId),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['managerEvents'] });
             alert("Student booked successfully!");
-        } catch (err: any) {
+        },
+        onError: (err: any) => {
+            queryClient.invalidateQueries({ queryKey: ['managerEvents'] });
             alert("Booking failed: " + err.message);
         }
-    };
+    });
 
-    const handleCancelBooking = async (bookingId: number) => {
-        if (!confirm("Are you sure you want to cancel this booking?")) return;
-        try {
-            await cancelEventBooking(bookingId);
-            await loadData();
-        } catch (err: any) {
+    const cancelBookingMutation = useMutation({
+        mutationFn: (bookingId: number) => cancelEventBooking(bookingId),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['managerEvents'] });
+        },
+        onError: (err: any) => {
             alert("Cancellation failed: " + err.message);
         }
-    };
+    });
 
-    const handleUpdateNote = async (enrollmentId: number, currentNote: string) => {
-        const newNote = prompt("Enter a note for the teacher:", currentNote || "");
-        if (newNote === null) return; // Cancelled
-        try {
-            await updateParentNote(enrollmentId, newNote);
-            // Optimistic update or reload
-            const updatedSchedule = managerSchedule.map(lesson =>
-                lesson.enrollment_id === enrollmentId ? { ...lesson, parent_note: newNote } : lesson
-            );
-            setManagerSchedule(updatedSchedule);
-        } catch (err: any) {
+    const updateNoteMutation = useMutation({
+        mutationFn: ({ enrollmentId, newNote }: { enrollmentId: number, newNote: string }) => updateParentNote(enrollmentId, newNote),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['managerSchedule'] });
+            queryClient.invalidateQueries({ queryKey: ['managerAttendance'] });
+        },
+        onError: (err: any) => {
             alert("Failed to update note: " + err.message);
         }
+    });
+
+    const handleBookStudent = (eventId: number, studentId: number) => {
+        bookStudentMutation.mutate({ eventId, studentId });
     };
 
+    const handleCancelBooking = (bookingId: number) => {
+        if (!confirm("Are you sure you want to cancel this booking?")) return;
+        cancelBookingMutation.mutate(bookingId);
+    };
+
+    const handleUpdateNote = (enrollmentId: number, currentNote: string) => {
+        const newNote = prompt("Enter a note for the teacher:", currentNote || "");
+        if (newNote === null) return; // Cancelled
+        updateNoteMutation.mutate({ enrollmentId, newNote });
+    };
+
+    const loading = !user || (isManager && (eventsLoading || studentsLoading || scheduleLoading || attendanceLoading));
+    const error = eventsError || studentsError || scheduleError || attendanceError;
+
     if (loading) return <div className="dashboard-loading">Loading Dashboard...</div>;
-    if (error) return <div className="dashboard-error">Error: {error}</div>;
+    if (error) return <div className="dashboard-error">Error: Failed to load dashboard data.</div>;
 
     return (
         /* CHANGELOG: Refactored ManagerDashboard layout container, header, and tabs to use Tailwind CSS utility classes. */

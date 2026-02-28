@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { getTeacherSchedule, deleteLesson, deleteLessonSeries, type Lesson } from '../services/api';
 import LessonScheduler from './LessonScheduler';
 
@@ -9,7 +10,7 @@ interface WeeklyScheduleProps {
 }
 
 const WeeklySchedule: React.FC<WeeklyScheduleProps> = ({ teacherId, currentWeekStart: initialWeekStart, onLessonCreated }) => {
-    const [lessons, setLessons] = useState<Lesson[]>([]);
+    const queryClient = useQueryClient();
     const [currentWeekStart, setCurrentWeekStart] = useState<Date>(initialWeekStart || getStartOfWeek(new Date()));
     const [selectedLesson, setSelectedLesson] = useState<Lesson | null>(null);
     const [showScheduler, setShowScheduler] = useState(false);
@@ -28,15 +29,13 @@ const WeeklySchedule: React.FC<WeeklyScheduleProps> = ({ teacherId, currentWeekS
         return d;
     }
 
-    const refreshSchedule = () => {
-        if (teacherId) {
-            getTeacherSchedule(teacherId).then(setLessons).catch(console.error);
-        }
-    };
-
-    useEffect(() => {
-        refreshSchedule();
-    }, [teacherId]);
+    // React Query equivalent of refreshSchedule()
+    const { data: lessons = [] } = useQuery({
+        queryKey: ['teacherSchedule', teacherId],
+        queryFn: () => getTeacherSchedule(teacherId),
+        enabled: !!teacherId,
+        refetchInterval: 10000
+    });
 
     // Check for auto-expansion
     useEffect(() => {
@@ -70,21 +69,38 @@ const WeeklySchedule: React.FC<WeeklyScheduleProps> = ({ teacherId, currentWeekS
         setCurrentWeekStart(d);
     };
 
-    const handleDelete = async (deleteSeries: boolean) => {
+    const deleteLessonMutation = useMutation({
+        mutationFn: (lessonId: number) => deleteLesson(lessonId),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['teacherSchedule', teacherId] });
+            queryClient.invalidateQueries({ queryKey: ['adminTeacherSchedule', teacherId] });
+            setSelectedLesson(null);
+        },
+        onError: (err: any) => {
+            alert('Failed to delete lesson: ' + err.message);
+        }
+    });
+
+    const deleteSeriesMutation = useMutation({
+        mutationFn: ({ groupId, fromDate }: { groupId: string, fromDate?: string }) => deleteLessonSeries(groupId, fromDate),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['teacherSchedule', teacherId] });
+            queryClient.invalidateQueries({ queryKey: ['adminTeacherSchedule', teacherId] });
+            setSelectedLesson(null);
+        },
+        onError: (err: any) => {
+            alert('Failed to delete series: ' + err.message);
+        }
+    });
+
+    const handleDelete = (deleteSeries: boolean) => {
         if (!selectedLesson) return;
 
         if (window.confirm(deleteSeries ? 'Are you sure you want to delete all future lessons in this series?' : 'Are you sure you want to delete this lesson?')) {
-            try {
-                if (deleteSeries && selectedLesson.recurrence_group_id) {
-                    await deleteLessonSeries(selectedLesson.recurrence_group_id, selectedLesson.start_time);
-                } else {
-                    await deleteLesson(selectedLesson.lesson_id);
-                }
-                setSelectedLesson(null);
-                refreshSchedule();
-            } catch (error) {
-                console.error('Failed to delete', error);
-                alert('Failed to delete lesson(s)');
+            if (deleteSeries && selectedLesson.recurrence_group_id) {
+                deleteSeriesMutation.mutate({ groupId: selectedLesson.recurrence_group_id, fromDate: selectedLesson.start_time });
+            } else {
+                deleteLessonMutation.mutate(selectedLesson.lesson_id);
             }
         }
     };
@@ -263,7 +279,6 @@ const WeeklySchedule: React.FC<WeeklyScheduleProps> = ({ teacherId, currentWeekS
                         <LessonScheduler
                             onLessonCreated={() => {
                                 setShowScheduler(false);
-                                refreshSchedule();
                                 if (onLessonCreated) onLessonCreated();
                             }}
                             initialStartTime={schedulerDefaults.startTime}
