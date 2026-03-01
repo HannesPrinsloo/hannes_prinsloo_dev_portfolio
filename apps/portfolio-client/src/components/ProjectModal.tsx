@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 
 interface ProjectModalProps {
     isOpen: boolean;
@@ -7,22 +7,101 @@ interface ProjectModalProps {
 
 const ProjectModal: React.FC<ProjectModalProps> = ({ isOpen, onClose }) => {
     const [showTechnicalDetails, setShowTechnicalDetails] = useState(false);
+    const [showTourSection, setShowTourSection] = useState(false);
 
-    // Lock body scroll when modal is open
+    // Video refs: 0 = mobile portrait, 1 = admin, 2 = teacher, 3 = manager
+    const videoRefs = useRef<(HTMLVideoElement | null)[]>([]);
+    const [playingStates, setPlayingStates] = useState<boolean[]>([]);
+    const introVideoRef = useRef<HTMLVideoElement | null>(null);
+
+    // Lock body scroll when modal is open + 10s intro timer
     useEffect(() => {
         if (isOpen) {
             document.body.style.overflow = 'hidden';
-            // Reset technical details view when reopened
             setShowTechnicalDetails(false);
+            setShowTourSection(false);
+            setPlayingStates([]);
+
+            // Start 10s timer for intro video
+            const timer = setTimeout(() => {
+                if (introVideoRef.current) {
+                    introVideoRef.current.pause();
+                }
+            }, 10000);
+
+            return () => clearTimeout(timer);
         } else {
             document.body.style.overflow = 'unset';
-            // Add a small delay to reset the state after animation completes
-            const timer = setTimeout(() => setShowTechnicalDetails(false), 300);
+            const timer = setTimeout(() => {
+                setShowTechnicalDetails(false);
+                setShowTourSection(false);
+            }, 300);
             return () => clearTimeout(timer);
         }
     }, [isOpen]);
 
+    const togglePlayPause = (index: number) => {
+        const video = videoRefs.current[index];
+        if (!video) return;
+
+        if (video.paused) {
+            video.play();
+            setPlayingStates(prev => {
+                const next = [...prev];
+                next[index] = true;
+                return next;
+            });
+        } else {
+            video.pause();
+            setPlayingStates(prev => {
+                const next = [...prev];
+                next[index] = false;
+                return next;
+            });
+        }
+    };
+
     if (!isOpen) return null;
+
+    const tourSections = [
+        {
+            title: 'Admin',
+            video: '/assets/s15/s15-intro-web.mp4',
+            description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.'
+        },
+        {
+            title: 'Teacher',
+            video: '/assets/s15/s15-teacher-web.mp4',
+            description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.'
+        },
+        {
+            title: 'Manager',
+            video: '/assets/s15/s15-manager-web.mp4',
+            description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.'
+        }
+    ];
+
+    // Play button overlay component (same as FreelanceWorkModal)
+    const PlayButton = ({ index, label }: { index: number; label: string }) => (
+        <>
+            {/* Dark overlay when paused */}
+            <div className={`absolute inset-0 bg-ink/25 transition-opacity duration-300 pointer-events-none ${playingStates[index] ? 'opacity-0' : 'opacity-100'}`}></div>
+
+            {/* Play Button */}
+            <div
+                className={`absolute inset-0 flex items-center justify-center transition-opacity duration-300 ${playingStates[index] ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}
+            >
+                <button
+                    className="w-16 h-16 md:w-20 md:h-20 bg-paper border-4 border-ink shadow-neo flex items-center justify-center hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all active:bg-acid"
+                    aria-label={`Play ${label} video`}
+                >
+                    <svg viewBox="0 0 24 24" fill="var(--color-ink)" className="w-8 h-8 md:w-10 md:h-10 ml-1">
+                        <polygon points="5 3 19 12 5 21 5 3" />
+                    </svg>
+                </button>
+            </div>
+        </>
+    );
 
     return (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
@@ -63,13 +142,13 @@ const ProjectModal: React.FC<ProjectModalProps> = ({ isOpen, onClose }) => {
 
                     <div className="relative z-10 max-w-4xl mx-auto flex flex-col gap-8 md:gap-12">
 
-                        {/* Video Showcase Area */}
+                        {/* Video Showcase Area - Intro (10s autoplay) */}
                         <div className="w-full aspect-video border-4 border-ink bg-ink relative overflow-hidden shadow-neo-sm">
                             <video
-                                src="/assets/placeholder_video.mp4"
+                                ref={introVideoRef}
+                                src="/assets/s15/s15-intro-web.mp4"
                                 className="w-full h-full object-cover"
                                 autoPlay
-                                loop
                                 muted
                                 playsInline
                             >
@@ -80,41 +159,151 @@ const ProjectModal: React.FC<ProjectModalProps> = ({ isOpen, onClose }) => {
                             <div className="absolute inset-0 border-2 border-white/10 pointer-events-none mix-blend-overlay"></div>
                         </div>
 
-                        {/* Top-Level Description (Default View) */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
-                            <div className="bg-paper border-2 border-ink p-6 shadow-neo-sm">
-                                <h3 className="text-xl font-bold uppercase border-b-2 border-ink pb-2 mb-4">Project Overview</h3>
-                                <p className="text-sm leading-relaxed font-mono">
-                                    The Music School Manager is a comprehensive CRM built specifically for a growing music academy.
-                                    It handles the complex relationships between multiple user roles: Administrators, Teachers, Managers, and Students.
-                                </p>
-                                <p className="text-sm leading-relaxed font-mono mt-4">
-                                    The application streamlines daily operations including scheduling lessons, building teacher rosters,
-                                    managing event bookings, and handling billing and registration procedures.
-                                </p>
+                        {/* Rearranged: Mobile Video (left) + Overview & Features stacked (right) */}
+                        <div className="grid grid-cols-1 md:grid-cols-[auto_1fr] gap-8 items-start">
+                            {/* Left: Portrait Mobile Video */}
+                            <div
+                                className="w-full md:w-[240px] border-4 border-ink bg-ink relative overflow-hidden shadow-neo-sm cursor-pointer group/video"
+                                style={{ aspectRatio: '9 / 17.5' }}
+                                onClick={() => togglePlayPause(0)}
+                            >
+                                <video
+                                    ref={el => { videoRefs.current[0] = el; }}
+                                    src="/assets/s15/s15-mobile-web.mp4"
+                                    className="w-full h-full object-cover"
+                                    preload="metadata"
+                                    muted
+                                    playsInline
+                                    onPlay={() => setPlayingStates(prev => {
+                                        const next = [...prev];
+                                        next[0] = true;
+                                        return next;
+                                    })}
+                                    onPause={() => setPlayingStates(prev => {
+                                        const next = [...prev];
+                                        next[0] = false;
+                                        return next;
+                                    })}
+                                >
+                                    Your browser does not support the video tag.
+                                </video>
+
+                                <PlayButton index={0} label="Mobile preview" />
+
+                                {/* Inner Video Border highlight */}
+                                <div className="absolute inset-0 border-2 border-white/10 pointer-events-none mix-blend-overlay"></div>
                             </div>
 
-                            <div className="bg-paper border-2 border-ink p-6 shadow-neo-sm">
-                                <h3 className="text-xl font-bold uppercase border-b-2 border-ink pb-2 mb-4">Key Features</h3>
-                                <ul className="text-sm font-mono space-y-3">
-                                    <li className="flex gap-2">
-                                        <span className="text-acid font-bold">»</span>
-                                        <span>Multi-role dashboards with distinct permission sets</span>
-                                    </li>
-                                    <li className="flex gap-2">
-                                        <span className="text-acid font-bold">»</span>
-                                        <span>Complex event and lesson booking systems</span>
-                                    </li>
-                                    <li className="flex gap-2">
-                                        <span className="text-acid font-bold">»</span>
-                                        <span>Real-time UI synchronization across sessions</span>
-                                    </li>
-                                    <li className="flex gap-2">
-                                        <span className="text-acid font-bold">»</span>
-                                        <span>Automated student progression leveling</span>
-                                    </li>
-                                </ul>
+                            {/* Right: Project Overview + Key Features stacked */}
+                            <div className="flex flex-col gap-8">
+                                <div className="bg-paper border-2 border-ink p-6 shadow-neo-sm">
+                                    <h3 className="text-xl font-bold uppercase border-b-2 border-ink pb-2 mb-4">Project Overview</h3>
+                                    <p className="text-sm leading-relaxed font-mono">
+                                        The Music School Manager is a comprehensive CRM built specifically for a growing music academy.
+                                        It handles the complex relationships between multiple user roles: Administrators, Teachers, Managers, and Students.
+                                    </p>
+                                    <p className="text-sm leading-relaxed font-mono mt-4">
+                                        The application streamlines daily operations including scheduling lessons, building teacher rosters,
+                                        managing event bookings, and handling billing and registration procedures.
+                                    </p>
+                                </div>
+
+                                <div className="bg-paper border-2 border-ink p-6 shadow-neo-sm">
+                                    <h3 className="text-xl font-bold uppercase border-b-2 border-ink pb-2 mb-4">Key Features</h3>
+                                    <ul className="text-sm font-mono space-y-3">
+                                        <li className="flex gap-2">
+                                            <span className="text-acid font-bold">»</span>
+                                            <span>Multi-role dashboards with distinct permission sets</span>
+                                        </li>
+                                        <li className="flex gap-2">
+                                            <span className="text-acid font-bold">»</span>
+                                            <span>Complex event and lesson booking systems</span>
+                                        </li>
+                                        <li className="flex gap-2">
+                                            <span className="text-acid font-bold">»</span>
+                                            <span>Real-time UI synchronization across sessions</span>
+                                        </li>
+                                        <li className="flex gap-2">
+                                            <span className="text-acid font-bold">»</span>
+                                            <span>Automated student progression leveling</span>
+                                        </li>
+                                    </ul>
+                                </div>
                             </div>
+                        </div>
+
+                        {/* Tour the App Toggle Button */}
+                        <div className="flex justify-center my-4">
+                            <button
+                                onClick={() => setShowTourSection(!showTourSection)}
+                                className={`
+                                    bg-ink text-paper px-8 py-4 font-bold uppercase tracking-widest text-sm border-2 border-transparent
+                                    hover:bg-acid hover:text-ink hover:border-ink hover:shadow-neo transition-all active:translate-y-1 active:translate-x-1 active:shadow-none
+                                    flex items-center gap-3 group
+                                `}
+                            >
+                                <span>Tour the App</span>
+                                <svg
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    strokeWidth="3"
+                                    className={`w-5 h-5 transition-transform duration-300 ${showTourSection ? 'rotate-180' : 'group-hover:translate-y-1'}`}
+                                >
+                                    <path d="M19 9l-7 7-7-7" />
+                                </svg>
+                            </button>
+                        </div>
+
+                        {/* Tour the App Section */}
+                        <div className={`
+                            transition-all duration-500 overflow-hidden flex flex-col gap-10
+                            ${showTourSection ? 'max-h-[5000px] opacity-100 mb-8' : 'max-h-0 opacity-0'}
+                        `}>
+                            {tourSections.map((section, index) => {
+                                const videoIndex = index + 1; // offset by 1 because 0 = mobile video
+                                return (
+                                    <div key={section.title} className="flex flex-col gap-4">
+                                        <h3 className="text-2xl font-black uppercase inline-block bg-ink text-paper px-4 py-2 self-start shadow-neo-sm transform -rotate-1">
+                                            {section.title}
+                                        </h3>
+                                        <p className="text-sm leading-relaxed font-mono">
+                                            {section.description}
+                                        </p>
+                                        {/* Video with play button */}
+                                        <div
+                                            className="w-full aspect-video border-4 border-ink bg-ink relative overflow-hidden shadow-neo-sm cursor-pointer group/video"
+                                            onClick={() => togglePlayPause(videoIndex)}
+                                        >
+                                            <video
+                                                ref={el => { videoRefs.current[videoIndex] = el; }}
+                                                src={section.video}
+                                                className="w-full h-full object-cover"
+                                                preload="metadata"
+                                                muted
+                                                playsInline
+                                                onPlay={() => setPlayingStates(prev => {
+                                                    const next = [...prev];
+                                                    next[videoIndex] = true;
+                                                    return next;
+                                                })}
+                                                onPause={() => setPlayingStates(prev => {
+                                                    const next = [...prev];
+                                                    next[videoIndex] = false;
+                                                    return next;
+                                                })}
+                                            >
+                                                Your browser does not support the video tag.
+                                            </video>
+
+                                            <PlayButton index={videoIndex} label={section.title} />
+
+                                            {/* Inner Video Border highlight */}
+                                            <div className="absolute inset-0 border-2 border-white/10 pointer-events-none mix-blend-overlay"></div>
+                                        </div>
+                                    </div>
+                                );
+                            })}
                         </div>
 
                         {/* Toggle Button for Technical Details */}
