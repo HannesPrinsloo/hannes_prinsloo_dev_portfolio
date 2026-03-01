@@ -7,7 +7,9 @@ import BackstoryModal from './components/BackstoryModal'
 // import { useGameStore } from './store/useGameStore'
 import { useDelayedTooltip } from './hooks/useDelayedTooltip'
 import { AudioControls } from './components/AudioControls'
-
+import ProjectModal from './components/ProjectModal'
+import FreelanceWorkModal from './components/FreelanceWorkModal'
+import FreeCodeCampModal from './components/FreeCodeCampModal'
 function App() {
     const isAudioEnabled = useAudioStore((state) => state.isAudioEnabled);
     const isAudioLoading = useAudioStore((state) => state.isAudioLoading);
@@ -31,6 +33,11 @@ function App() {
     const activeSection = getActiveSection();
 
     const [showBackstory, setShowBackstory] = useState(false);
+    const [isProjectModalOpen, setIsProjectModalOpen] = useState(false);
+    const [isFreelanceWorkModalOpen, setIsFreelanceWorkModalOpen] = useState(false);
+    const [isFreeCodeCampModalOpen, setIsFreeCodeCampModalOpen] = useState(false);
+    const [activeFreeCodeCampProject, setActiveFreeCodeCampProject] = useState('');
+    const [isFreeCodeCampExpanded, setIsFreeCodeCampExpanded] = useState(false);
     const [isDarkMode, setIsDarkMode] = useState(false);
     const [themeClickCount, setThemeClickCount] = useState(0);
     const [dotLottie, setDotLottie] = useState<any>(null);
@@ -259,6 +266,9 @@ function App() {
 
             {/* <GameModal /> */}
             <AudioControls disableSkip={showBackstory} />
+            <ProjectModal isOpen={isProjectModalOpen} onClose={() => setIsProjectModalOpen(false)} />
+            <FreelanceWorkModal isOpen={isFreelanceWorkModalOpen} onClose={() => setIsFreelanceWorkModalOpen(false)} />
+            <FreeCodeCampModal isOpen={isFreeCodeCampModalOpen} onClose={() => setIsFreeCodeCampModalOpen(false)} projectTitle={activeFreeCodeCampProject} />
 
             {/* Main Content Container */}
             <main className="max-w-5xl mx-auto mt-32 md:mt-48 pb-20">
@@ -546,7 +556,7 @@ function App() {
 
                                     {/* Tech Tags */}
                                     <div className="flex flex-wrap gap-2 mb-8">
-                                        {['React', 'PostgreSQL', 'Node.js', 'Vite'].map(tech => (
+                                        {['TypeScript', 'React', 'React Query', 'Zustand', 'Node / Express', 'Tailwind', 'JWT Auth', 'PostgreSQL'].map(tech => (
                                             <span key={tech} className="text-xs font-bold uppercase border border-ink px-2 py-1 hover:bg-ink hover:text-paper cursor-default transition-colors">
                                                 {tech}
                                             </span>
@@ -555,14 +565,12 @@ function App() {
                                 </div>
 
                                 {/* Action Button */}
-                                <a
-                                    href="https://demo.hannesprinsloo.dev"
-                                    target="_blank"
-                                    rel="noopener noreferrer"
+                                <button
+                                    onClick={() => setIsProjectModalOpen(true)}
                                     className="block w-full bg-ink text-paper text-center font-bold uppercase py-4 border-2 border-transparent hover:bg-paper hover:text-ink hover:border-ink hover:shadow-neo transition-all active:translate-x-1 active:translate-y-1 active:shadow-none"
                                 >
-                                    Launch Demo Application
-                                </a>
+                                    View Project Case Study
+                                </button>
                             </div>
                         </div>
 
@@ -581,8 +589,116 @@ function App() {
                         </div>
                     </div>
 
-                    {/* Placeholder Project Card */}
-                    <div className="border-2 border-ink shadow-neo bg-surface p-2 relative group hover:bg-acid transition-colors duration-0">
+                    {/* freeCodeCamp Projects Card */}
+                    <div className="border-2 border-ink shadow-neo bg-surface p-2 relative group hover:bg-acid transition-colors duration-0 mt-12">
+                        {/* The "Label" */}
+                        <div className="border border-ink dark:group-hover:border-surface-muted p-6 md:p-10 flex flex-col bg-paper group-hover:bg-surface transition-colors h-full">
+
+                            <div className="flex flex-col md:flex-row gap-10">
+                                {/* Visual Side - Conditional visibility based on expansion */}
+                                <div className={`aspect-video border-2 border-ink bg-surface-muted relative overflow-hidden grayscale group-hover:grayscale-0 transition-all duration-500 ease-in-out origin-left ${isFreeCodeCampExpanded ? 'w-0 opacity-0 overflow-hidden border-0 !p-0 max-h-0 md:max-h-full' : 'w-full md:w-1/2 opacity-100 max-h-[1000px]'}`}>
+                                    {/* Abstract Lines / Screenprint Effect */}
+                                    <div className="absolute inset-0 bg-[linear-gradient(45deg,var(--color-ink)_1px,transparent_1px)] bg-[length:10px_10px] opacity-10 min-w-[300px]"></div>
+                                    <div className="absolute inset-0 flex items-center justify-center p-8 min-w-[300px]">
+                                        <div className="w-full h-full border-2 border-dashed border-ink flex items-center justify-center p-4 text-center">
+                                            <span className="font-sans font-bold text-4xl opacity-20 transform -rotate-12 whitespace-nowrap">CERTIFICATION PROJECTS</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Info Side */}
+                                <div className={`flex flex-col justify-between transition-all duration-500 ease-in-out ${isFreeCodeCampExpanded ? 'w-full' : 'w-full md:w-1/2'}`}>
+                                    <div>
+                                        <div className="flex justify-between items-start mb-4">
+                                            <h3 className="text-3xl font-black uppercase leading-none">freeCodeCamp<br />Projects</h3>
+                                            <span className="border border-ink px-2 py-1 text-xs font-bold bg-acid text-black">v1.0</span>
+                                        </div>
+                                        <p className="text-sm mb-6 border-l-2 border-ink pl-4">
+                                            A selection of functional projects built during my <a href="https://www.freecodecamp.org/" target="_blank" rel="noopener noreferrer" className="font-bold hover:bg-acid hover:text-ink cursor-default transition-colors">freeCodeCamp</a> self-study to gain certification.
+                                        </p>
+
+                                        {/* Tech Tags */}
+                                        <div className="flex flex-wrap gap-2 mb-8">
+                                            {['React', 'JavaScript', 'CSS', 'APIs'].map(tech => (
+                                                <span key={tech} className="text-xs font-bold uppercase border border-ink px-2 py-1 hover:bg-ink hover:text-paper cursor-default transition-colors">
+                                                    {tech}
+                                                </span>
+                                            ))}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Action Button - Moved outside the collapsible area */}
+                            <button
+                                onClick={() => setIsFreeCodeCampExpanded(!isFreeCodeCampExpanded)}
+                                className={`block w-full bg-ink text-paper text-center font-bold uppercase py-4 border-2 border-transparent hover:bg-paper hover:text-ink hover:border-ink hover:shadow-neo transition-all active:translate-x-1 active:translate-y-1 active:shadow-none flex items-center justify-center gap-2 ${isFreeCodeCampExpanded ? 'mt-0' : 'mt-10'}`}
+                            >
+                                <span>{isFreeCodeCampExpanded ? 'Hide Projects' : 'View Projects'}</span>
+                                <svg
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    strokeWidth="3"
+                                    className={`w-5 h-5 transition-transform duration-300 ${isFreeCodeCampExpanded ? 'rotate-180' : ''}`}
+                                >
+                                    <path d="M19 9l-7 7-7-7" />
+                                </svg>
+                            </button>
+
+                            {/* Expanded List View */}
+                            <div className={`transition-all duration-500 overflow-hidden flex flex-col ${isFreeCodeCampExpanded ? 'max-h-[3000px] opacity-100 mt-10 border-t-2 border-ink pt-10' : 'max-h-0 opacity-0 mt-0 pt-0'}`}>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                    {[
+                                        { title: 'JavaScript Calculator', tech: 'React + JS', thumbnail: '/assets/js-calculator.JPG' },
+                                        { title: 'Pokemon Search App', tech: 'Pure JS + API', thumbnail: '/assets/pokemon-search-app.jpeg' },
+                                        { title: 'Pomodoro Timer', tech: 'React + JS', thumbnail: '/assets/pomodoro-timer.jpeg' },
+                                        { title: 'Random Nietzsche', tech: 'React + JS', thumbnail: '/assets/random-nietzsche.jpeg' },
+                                        { title: 'Drum Machine', tech: 'React + JS', thumbnail: '/assets/drum-machine.jpeg' },
+                                        { title: 'Roman Numeral Converter', tech: 'React + JS', thumbnail: '/assets/roman-numeral-converter.jpeg' }
+                                    ].map((project, index) => (
+                                        <div key={index} className="border-2 border-ink bg-surface-muted flex flex-col shadow-neo hover:translate-y-1 hover:translate-x-1 hover:shadow-none transition-all">
+                                            <div className="aspect-video bg-ink border-b-2 border-ink relative overflow-hidden group/thumb">
+                                                <img src={project.thumbnail} alt={project.title} className="absolute inset-0 w-full h-full object-cover" />
+                                                <div className="absolute inset-0 bg-ink/0 group-hover/thumb:bg-ink/20 transition-colors" />
+                                            </div>
+                                            <div className="p-4 flex flex-col flex-grow bg-paper">
+                                                <h4 className="font-bold text-lg uppercase mb-2">{project.title}</h4>
+                                                <span className="text-xs font-mono border border-ink px-2 py-1 self-start mb-4 bg-acid/20">{project.tech}</span>
+                                                <button
+                                                    onClick={() => {
+                                                        setActiveFreeCodeCampProject(project.title);
+                                                        setIsFreeCodeCampModalOpen(true);
+                                                    }}
+                                                    className="mt-auto block w-full bg-surface text-ink text-center font-bold uppercase py-2 border-2 border-ink hover:bg-ink hover:text-paper hover:shadow-neo transition-all active:translate-x-1 active:translate-y-1 active:shadow-none"
+                                                >
+                                                    Try It
+                                                </button>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+
+                        </div>
+
+                        {/* Decor: Screws */}
+                        <div className="absolute top-2 left-2 w-2 h-2 rounded-full border border-ink bg-surface-muted flex items-center justify-center">
+                            <div className="w-full h-[1px] bg-ink transform rotate-45"></div>
+                        </div>
+                        <div className="absolute top-2 right-2 w-2 h-2 rounded-full border border-ink bg-surface-muted flex items-center justify-center">
+                            <div className="w-full h-[1px] bg-ink transform rotate-45"></div>
+                        </div>
+                        <div className="absolute bottom-2 left-2 w-2 h-2 rounded-full border border-ink bg-surface-muted flex items-center justify-center">
+                            <div className="w-full h-[1px] bg-ink transform rotate-45"></div>
+                        </div>
+                        <div className="absolute bottom-2 right-2 w-2 h-2 rounded-full border border-ink bg-surface-muted flex items-center justify-center">
+                            <div className="w-full h-[1px] bg-ink transform rotate-45"></div>
+                        </div>
+                    </div>
+
+                    {/* Freelance Work Card */}
+                    <div className="border-2 border-ink shadow-neo bg-surface p-2 relative group hover:bg-acid transition-colors duration-0 mt-12">
                         {/* The "Label" */}
                         <div className="border border-ink dark:group-hover:border-surface-muted p-6 md:p-10 flex flex-col md:flex-row gap-10 bg-paper group-hover:bg-surface transition-colors h-full">
 
@@ -601,7 +717,7 @@ function App() {
                             <div className="w-full md:w-1/2 flex flex-col justify-between">
                                 <div>
                                     <div className="flex justify-between items-start mb-4">
-                                        <h3 className="text-3xl font-black uppercase leading-none">Another Cool<br />Project</h3>
+                                        <h3 className="text-3xl font-black uppercase leading-none">Freelance<br />Work</h3>
                                         <span className="border border-ink px-2 py-1 text-xs font-bold bg-acid text-black">v1.0</span>
                                     </div>
                                     <p className="text-sm mb-6 border-l-2 border-ink pl-4">
@@ -619,14 +735,15 @@ function App() {
                                 </div>
 
                                 {/* Action Button */}
-                                <a
-                                    href="#"
-                                    className="block w-full bg-ink text-paper text-center font-bold uppercase py-4 border-2 border-transparent hover:bg-paper hover:text-ink hover:border-ink hover:shadow-neo transition-all active:translate-x-1 active:translate-y-1 active:shadow-none opacity-80 cursor-not-allowed"
+                                <button
+                                    onClick={() => setIsFreelanceWorkModalOpen(true)}
+                                    className="block w-full bg-ink text-paper text-center font-bold uppercase py-4 border-2 border-transparent hover:bg-paper hover:text-ink hover:border-ink hover:shadow-neo transition-all active:translate-x-1 active:translate-y-1 active:shadow-none"
                                 >
-                                    Work in Progress
-                                </a>
+                                    View Projects
+                                </button>
                             </div>
                         </div>
+
 
                         {/* Decor: Screws */}
                         <div className="absolute top-2 left-2 w-2 h-2 rounded-full border border-ink bg-surface-muted flex items-center justify-center">
@@ -642,6 +759,7 @@ function App() {
                             <div className="w-full h-[1px] bg-ink transform rotate-45"></div>
                         </div>
                     </div>
+
                 </section>
 
 
@@ -895,7 +1013,7 @@ function App() {
                 </footer>
 
             </main>
-        </div>
+        </div >
     )
 }
 

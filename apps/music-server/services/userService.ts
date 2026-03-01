@@ -26,15 +26,19 @@ export const createUser = async (userData: any) => {
 export const getAllUsers = async () => {
     // We join with teacher_student_rosters and teachers to get assigned teacher info for students
     // We use string_agg to handle cases (though rare for now) where a student has multiple teachers
+    // We do similar aggregation for instruments
     const query = `
         SELECT u.user_id, u.first_name, u.last_name, u.email, u.role_id, u.phone_number, 
                u.date_of_birth, u.is_active, u.created_at, u.updated_at,
                string_agg(DISTINCT t.first_name || ' ' || t.last_name, ', ') as teacher_names,
                MAX(latest_level.level_name) as current_level_name,
-               jsonb_agg(DISTINCT CASE WHEN t.user_id IS NOT NULL THEN jsonb_build_object('id', t.user_id, 'name', t.first_name || ' ' || t.last_name) ELSE NULL END) as teachers
+               jsonb_agg(DISTINCT CASE WHEN t.user_id IS NOT NULL THEN jsonb_build_object('id', t.user_id, 'name', t.first_name || ' ' || t.last_name) ELSE NULL END) as teachers,
+               jsonb_agg(DISTINCT CASE WHEN i.instrument_id IS NOT NULL THEN jsonb_build_object('instrument_id', i.instrument_id, 'instrument_name', i.instrument_name) ELSE NULL END) as instruments
         FROM users u
         LEFT JOIN teacher_student_rosters tsr ON u.user_id = tsr.student_user_id
         LEFT JOIN users t ON tsr.teacher_user_id = t.user_id
+        LEFT JOIN student_instruments si ON u.user_id = si.student_user_id
+        LEFT JOIN instruments i ON si.instrument_id = i.instrument_id
         LEFT JOIN (
             SELECT DISTINCT ON (sl.student_user_id) sl.student_user_id, l.level_name
             FROM student_levels sl
@@ -49,7 +53,8 @@ export const getAllUsers = async () => {
     // Clean up the json_agg result (remove nulls if any)
     const rows = result.rows.map(row => ({
         ...row,
-        teachers: row.teachers.filter((t: any) => t !== null)
+        teachers: row.teachers.filter((t: any) => t !== null),
+        instruments: row.instruments.filter((i: any) => i !== null)
     }));
 
     return rows;
@@ -335,4 +340,46 @@ export const createFamily = async (familyData: any) => {
     } finally {
         client.release();
     }
+};
+
+// --- Instrument Management ---
+export const addStudentInstrument = async (studentId: number, instrumentId: number) => {
+    // Upsert the instrument to the student_instruments table
+    const query = `
+        INSERT INTO student_instruments (student_user_id, instrument_id)
+        VALUES ($1, $2)
+        ON CONFLICT (student_user_id, instrument_id) DO NOTHING
+    `;
+    await pool.query(query, [studentId, instrumentId]);
+    return { success: true };
+};
+
+export const removeStudentInstrument = async (studentId: number, instrumentId: number) => {
+    const query = `
+        DELETE FROM student_instruments
+        WHERE student_user_id = $1 AND instrument_id = $2
+    `;
+    await pool.query(query, [studentId, instrumentId]);
+    return { success: true };
+};
+
+// --- Teacher Management ---
+export const addStudentTeacher = async (studentId: number, teacherId: number) => {
+    // Upsert the teacher relationship
+    const query = `
+        INSERT INTO teacher_student_rosters (student_user_id, teacher_user_id)
+        VALUES ($1, $2)
+        ON CONFLICT (teacher_user_id, student_user_id) DO NOTHING
+    `;
+    await pool.query(query, [studentId, teacherId]);
+    return { success: true };
+};
+
+export const removeStudentTeacher = async (studentId: number, teacherId: number) => {
+    const query = `
+        DELETE FROM teacher_student_rosters
+        WHERE student_user_id = $1 AND teacher_user_id = $2
+    `;
+    await pool.query(query, [studentId, teacherId]);
+    return { success: true };
 };

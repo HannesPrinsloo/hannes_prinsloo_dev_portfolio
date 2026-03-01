@@ -199,6 +199,16 @@ export const getLessonAttendance = async (lessonId: number): Promise<AttendanceR
     return response.json();
 };
 
+export const fetchUsers = async (): Promise<any[]> => {
+    const response = await fetch(`${API_URL}/api/users`, {
+        credentials: 'include'
+    });
+    if (!response.ok) {
+        throw new Error('Failed to fetch users');
+    }
+    return response.json();
+};
+
 // Phase 5 mutation target. Used in AddUserModal to instantly update the ['adminUsers'] cache list.
 export const createUser = async (userData: any) => {
     const response = await fetch(`${API_URL}/api/users`, {
@@ -367,5 +377,58 @@ export const cancelEventBooking = async (bookingId: number) => {
         credentials: 'include'
     });
     if (!response.ok) throw new Error('Failed to cancel booking');
+    return response.json();
+};
+
+// --- Instrument/Teacher Assignment APIs ---
+
+export const addStudentInstrument = async (studentId: number, instrumentId: number) => {
+    const response = await fetch(`${API_URL}/api/users/${studentId}/instruments`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ instrumentId }),
+        credentials: 'include'
+    });
+    if (!response.ok) throw new Error('Failed to add instrument');
+    return response.json();
+};
+
+export const removeStudentInstrument = async (studentId: number, instrumentId: number) => {
+    const response = await fetch(`${API_URL}/api/users/${studentId}/instruments/${instrumentId}`, {
+        method: 'DELETE',
+        credentials: 'include'
+    });
+    if (!response.ok) throw new Error('Failed to remove instrument');
+    return response.json();
+};
+
+export const addStudentTeacher = async (studentId: number, teacherId: number) => {
+    const response = await fetch(`${API_URL}/api/users/${studentId}/teachers`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ teacherId }),
+        credentials: 'include'
+    });
+    if (!response.ok) throw new Error('Failed to add teacher');
+    return response.json();
+};
+
+export const removeStudentTeacher = async (studentId: number, teacherId: number) => {
+    const response = await fetch(`${API_URL}/api/users/${studentId}/teachers/${teacherId}`, {
+        method: 'DELETE',
+        credentials: 'include'
+    });
+    if (!response.ok) throw new Error('Failed to remove teacher');
+    return response.json();
+};
+
+export interface Instrument {
+    instrument_id: number;
+    instrument_name: string;
+}
+
+export const fetchInstruments = async (): Promise<Instrument[]> => {
+    const response = await fetch(`${API_URL}/api/instruments`, { credentials: 'include' });
+    if (!response.ok) throw new Error('Failed to fetch instruments');
     return response.json();
 };

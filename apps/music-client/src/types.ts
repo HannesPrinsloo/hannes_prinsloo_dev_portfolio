@@ -14,6 +14,7 @@ export interface UserData {
     teacher_names?: string;
     current_level_name?: string;
     teachers?: { id: number, name: string }[];
+    instruments?: { id: number, name: string }[];
 }
 
 // AdminLesson extends the base Lesson from API to include UI-specific or extended fields

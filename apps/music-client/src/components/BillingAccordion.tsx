@@ -14,8 +14,8 @@ interface BillingAccordionProps {
     schedule: BillingLesson[];
     currentDate?: Date; // Optional, defaults to now
     readOnly?: boolean;
-    onUpdateStatus?: (lessonId: number, status: string) => void;
-    onUpdateNote?: (lessonId: number, note: string) => void;
+    onUpdateStatus?: (lessonId: number, studentId: number, status: string) => void;
+    onUpdateNote?: (lessonId: number, studentId: number, note: string) => void;
 }
 
 const BillingAccordion: React.FC<BillingAccordionProps> = ({
@@ -32,22 +32,22 @@ const BillingAccordion: React.FC<BillingAccordionProps> = ({
     const currentYear = currentDate.getFullYear();
 
     // Handlers for interactions
-    const handleStatusChange = (lessonId: number, newStatus: string) => {
+    const handleStatusChange = (lessonId: number, studentId: number, newStatus: string) => {
         if (readOnly || !onUpdateStatus) return;
-        onUpdateStatus(lessonId, newStatus);
+        onUpdateStatus(lessonId, studentId, newStatus);
     };
 
-    const handleNoteClick = (lessonId: number, currentNote: string) => {
+    const handleNoteClick = (lessonId: number, studentId: number, currentNote: string) => {
         if (readOnly || !onUpdateNote) return;
         const note = prompt("Enter attendance note:", currentNote || "");
         if (note !== null) {
-            onUpdateNote(lessonId, note);
+            onUpdateNote(lessonId, studentId, note);
         }
     };
 
     return (
         <div className="billing-view">
-            <p style={{ marginBottom: '20px', fontSize: '0.9em', color: '#ccc' }}>
+            <p className="mb-5 text-[0.9em] text-[#666]">
                 Showing lessons for <strong>{currentDate.toLocaleString('default', { month: 'long', year: 'numeric' })}</strong>.
                 Click on a student row to view their detailed attendance.
             </p>
@@ -74,69 +74,41 @@ const BillingAccordion: React.FC<BillingAccordionProps> = ({
                 const pendingCount = monthlyLessons.filter(l => !l.attendance_status || l.attendance_status === 'Pending').length;
 
                 return (
-                    <div key={s.student_id} style={{ marginBottom: '16px', border: '1px solid #444', borderRadius: '12px', backgroundColor: '#2f2f2f', overflow: 'hidden', boxShadow: '0 4px 6px rgba(0,0,0,0.1)' }}>
+                    <div key={s.student_id} className={`mb-4 border border-[#eee] rounded-xl overflow-hidden transition-all duration-200 ${isExpanded ? 'bg-[#f9f9f9] shadow-md border-[#ddd]' : 'bg-white shadow-sm hover:border-[#ccc]'}`}>
                         {/* Header Row - Clickable */}
                         <div
                             onClick={() => setExpandedStudentId(isExpanded ? null : s.student_id)}
-                            style={{
-                                display: 'grid',
-                                gridTemplateColumns: '1.8fr 1.8fr 1.4fr 120px',
-                                gap: '15px',
-                                padding: '20px',
-                                cursor: 'pointer',
-                                backgroundColor: isExpanded ? '#383838' : 'transparent',
-                                alignItems: 'center',
-                                transition: 'background-color 0.2s'
-                            }}
+                            className="grid grid-cols-[1.8fr_1.8fr_1.4fr_120px] gap-4 p-5 cursor-pointer items-center transition-colors duration-200"
                         >
                             <div>
-                                <div style={{ fontWeight: '600', fontSize: '1.2em', color: '#fff', marginBottom: '4px' }}>
+                                <div className="font-semibold text-[1.2em] text-text-dark mb-1">
                                     {s.student_first_name} {s.student_last_name}
                                 </div>
-                                <div style={{ fontSize: '0.8em', color: '#888' }}>ID: {s.student_id}</div>
+                                <div className="text-[0.8em] text-[#888]">ID: {s.student_id}</div>
                             </div>
 
-                            <div style={{ color: '#ccc', fontSize: '0.95em', lineHeight: '1.4' }}>
-                                <div style={{ color: '#888', fontSize: '0.8em', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Manager</div>
+                            <div className="text-text-dark text-[0.95em] leading-[1.4]">
+                                <div className="text-[#888] text-[0.8em] uppercase tracking-[0.5px]">Manager</div>
                                 {s.manager_first_name ? (
                                     <>
-                                        <div style={{ fontWeight: '500' }}>{s.manager_first_name} {s.manager_last_name}</div>
-                                        <div style={{ opacity: 0.8 }}>{s.manager_phone}</div>
+                                        <div className="font-medium">{s.manager_first_name} {s.manager_last_name}</div>
+                                        <div className="opacity-80">{s.manager_phone}</div>
                                     </>
                                 ) : (
-                                    <div style={{ fontStyle: 'italic', opacity: 0.6 }}>Self / Unassigned</div>
+                                    <div className="italic opacity-60">Self / Unassigned</div>
                                 )}
                             </div>
 
-                            <div style={{ color: '#ddd' }}>
-                                <div style={{ color: '#888', fontSize: '0.8em', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '2px' }}>Instrument</div>
-                                <div style={{ fontSize: '1em' }}>{s.instrument_list || <span style={{ color: '#666', fontStyle: 'italic' }}>None</span>}</div>
+                            <div className="text-text-dark">
+                                <div className="text-[#888] text-[0.8em] uppercase tracking-[0.5px] mb-[2px]">Instrument</div>
+                                <div className="text-[1em]">{s.instrument_list || <span className="text-[#888] italic">None</span>}</div>
                             </div>
 
-                            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', alignItems: 'flex-end' }}>
-                                <span style={{
-                                    backgroundColor: presentCount > 0 ? '#2e7d32' : '#444',
-                                    color: 'white',
-                                    padding: '4px 10px',
-                                    borderRadius: '12px',
-                                    fontSize: '0.75em',
-                                    fontWeight: '600',
-                                    minWidth: '70px',
-                                    textAlign: 'center'
-                                }}>
+                            <div className="flex flex-col gap-2 items-end">
+                                <span className={`px-2.5 py-1 rounded-full text-[0.75em] font-semibold min-w-[70px] text-center ${presentCount > 0 ? 'bg-primary-red text-white' : 'bg-[#e0e0e0] text-[#666]'}`}>
                                     {presentCount} DONE
                                 </span>
-                                <span style={{
-                                    backgroundColor: pendingCount > 0 ? '#f57c00' : 'transparent',
-                                    border: pendingCount > 0 ? 'none' : '1px solid #555',
-                                    color: pendingCount > 0 ? 'white' : '#888',
-                                    padding: '4px 10px',
-                                    borderRadius: '12px',
-                                    fontSize: '0.75em',
-                                    fontWeight: '600',
-                                    minWidth: '70px',
-                                    textAlign: 'center'
-                                }}>
+                                <span className={`px-2.5 py-1 rounded-full text-[0.75em] font-semibold min-w-[70px] text-center ${pendingCount > 0 ? 'bg-[#ffeaeb] text-primary-red' : 'bg-transparent border border-[#ccc] text-[#888]'}`}>
                                     {pendingCount} BOOKED
                                 </span>
                             </div>
@@ -144,40 +116,33 @@ const BillingAccordion: React.FC<BillingAccordionProps> = ({
 
                         {/* Expanded Content: Attendance Table */}
                         {isExpanded && (
-                            <div style={{ padding: '0', backgroundColor: '#2a2a2a', borderTop: '1px solid #444' }}>
-                                <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.95em' }}>
+                            <div className="p-0 bg-white border-t border-[#eee]">
+                                <table className="w-full border-collapse text-[0.95em]">
                                     <thead>
-                                        <tr style={{ backgroundColor: '#222', color: '#aaa', fontSize: '0.85em', textTransform: 'uppercase' }}>
-                                            <th style={{ textAlign: 'left', padding: '12px 20px', fontWeight: '600' }}>Date/Time</th>
-                                            <th style={{ textAlign: 'left', padding: '12px 20px', fontWeight: '600' }}>Instrument</th>
-                                            <th style={{ textAlign: 'left', padding: '12px 20px', fontWeight: '600' }}>Status</th>
-                                            <th style={{ textAlign: 'left', padding: '12px 20px', fontWeight: '600' }}>Notes</th>
+                                        <tr className="bg-[#f8f8f8] text-[#666] text-[0.85em] uppercase">
+                                            <th className="text-left py-3 px-5 font-semibold">Date/Time</th>
+                                            <th className="text-left py-3 px-5 font-semibold">Instrument</th>
+                                            <th className="text-left py-3 px-5 font-semibold">Status</th>
+                                            <th className="text-left py-3 px-5 font-semibold">Notes</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         {monthlyLessons.length > 0 ? monthlyLessons.map((l, idx) => (
-                                            <tr key={l.lesson_id} style={{ borderBottom: idx === monthlyLessons.length - 1 ? 'none' : '1px solid #3d3d3d' }}>
-                                                <td style={{ padding: '12px 20px', color: '#fff' }}>
+                                            <tr key={l.lesson_id} className={idx === monthlyLessons.length - 1 ? '' : 'border-b border-[#eee]'}>
+                                                <td className="py-3 px-5 text-text-dark">
                                                     {new Date(l.start_time).toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' })}
                                                 </td>
-                                                <td style={{ padding: '12px 20px', color: '#ddd' }}>{l.instrument_name}</td>
-                                                <td style={{ padding: '12px 20px' }}>
+                                                <td className="py-3 px-5 text-text-dark">{l.instrument_name || <span className="text-[#888] italic">None</span>}</td>
+                                                <td className="py-3 px-5">
                                                     {/* Status Cell - Editable if not readOnly */}
                                                     {!readOnly ? (
                                                         <select
                                                             value={l.attendance_status || 'Pending'}
-                                                            onChange={(e) => handleStatusChange(l.lesson_id, e.target.value)}
-                                                            onClick={(e) => e.stopPropagation()} // Prevent row collapse?? Actually row click is on header div, safe here.
-                                                            style={{
-                                                                backgroundColor: l.attendance_status === 'Present' ? 'rgba(76, 175, 80, 0.2)' :
-                                                                    l.attendance_status === 'Absent' ? 'rgba(244, 67, 54, 0.2)' : '#444',
-                                                                color: l.attendance_status === 'Present' ? '#81c784' :
-                                                                    l.attendance_status === 'Absent' ? '#e57373' : '#fff',
-                                                                border: '1px solid #555',
-                                                                padding: '6px',
-                                                                borderRadius: '4px',
-                                                                cursor: 'pointer'
-                                                            }}
+                                                            onChange={(e) => handleStatusChange(l.lesson_id, s.student_id as number, e.target.value)}
+                                                            onClick={(e) => e.stopPropagation()}
+                                                            className={`p-1.5 rounded cursor-pointer border ${l.attendance_status === 'Present' ? 'bg-[#e8f5e9] text-[#2e7d32] border-[#c8e6c9]' :
+                                                                l.attendance_status === 'Absent' ? 'bg-[#ffebee] text-[#c62828] border-[#ffcdd2]' : 'bg-white text-text-dark border-[#ccc]'
+                                                                }`}
                                                         >
                                                             <option value="Pending">Pending</option>
                                                             <option value="Present">Present</option>
@@ -185,37 +150,26 @@ const BillingAccordion: React.FC<BillingAccordionProps> = ({
                                                             <option value="Late">Late</option>
                                                         </select>
                                                     ) : (
-                                                        <span style={{
-                                                            color: l.attendance_status === 'Present' ? '#4caf50' :
-                                                                l.attendance_status === 'Absent' ? '#f44336' : '#fda085',
-                                                            backgroundColor: l.attendance_status === 'Present' ? 'rgba(76, 175, 80, 0.1)' :
-                                                                l.attendance_status === 'Absent' ? 'rgba(244, 67, 54, 0.1)' : 'rgba(255, 152, 0, 0.1)',
-                                                            padding: '4px 8px',
-                                                            borderRadius: '4px',
-                                                            fontWeight: '500'
-                                                        }}>
+                                                        <span className={`px-2 py-1 rounded font-medium ${l.attendance_status === 'Present' ? 'text-[#2e7d32] bg-[#e8f5e9]' :
+                                                            l.attendance_status === 'Absent' ? 'text-[#c62828] bg-[#ffebee]' : 'text-primary-red bg-[#ffeaeb]'
+                                                            }`}>
                                                             {l.attendance_status || 'Pending'}
                                                         </span>
                                                     )}
                                                 </td>
-                                                <td style={{ padding: '12px 20px', color: '#bbb', fontStyle: l.attendance_notes ? 'normal' : 'italic' }}>
+                                                <td className={`py-3 px-5 ${l.attendance_notes ? 'text-text-dark not-italic' : 'text-[#888] italic'}`}>
                                                     <div
-                                                        onClick={() => !readOnly && handleNoteClick(l.lesson_id, l.attendance_notes || '')}
-                                                        style={{
-                                                            cursor: readOnly ? 'default' : 'pointer',
-                                                            display: 'flex',
-                                                            alignItems: 'center',
-                                                            gap: '8px'
-                                                        }}
+                                                        onClick={() => !readOnly && handleNoteClick(l.lesson_id, s.student_id as number, l.attendance_notes || '')}
+                                                        className={`flex items-center gap-2 ${readOnly ? 'cursor-default' : 'cursor-pointer hover:text-primary-red'}`}
                                                         title={!readOnly ? "Click to edit note" : ""}
                                                     >
-                                                        {l.attendance_notes || (readOnly ? 'No notes' : <span style={{ color: '#666' }}>Add note...</span>)}
-                                                        {!readOnly && <span style={{ fontSize: '0.8em', opacity: 0.5 }}>✎</span>}
+                                                        {l.attendance_notes || (readOnly ? 'No notes' : <span className="text-[#888]">Add note...</span>)}
+                                                        {!readOnly && <span className="text-[0.8em] opacity-50">✎</span>}
                                                     </div>
                                                 </td>
                                             </tr>
                                         )) : (
-                                            <tr><td colSpan={4} style={{ textAlign: 'center', color: '#aaa', padding: '20px' }}>No lessons scheduled for this month.</td></tr>
+                                            <tr><td colSpan={4} className="text-center text-[#888] p-5">No lessons scheduled for this month.</td></tr>
                                         )}
                                     </tbody>
                                 </table>

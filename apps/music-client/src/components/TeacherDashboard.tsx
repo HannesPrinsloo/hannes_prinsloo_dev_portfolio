@@ -66,26 +66,26 @@ const TeacherDashboard: React.FC = () => {
         }
     });
 
-    const handleUpdateStatus = (lessonId: number, status: string) => {
+    const handleUpdateStatus = (lessonId: number, studentId: number, status: string) => {
         if (!user?.user_id) return;
-        const lesson = schedule.find(l => l.lesson_id === lessonId);
+        const lesson = schedule.find(l => l.lesson_id === lessonId && Number(l.student_id) === studentId);
         if (!lesson) return;
         attendanceMutation.mutate({
             lessonId,
-            studentId: lesson.student_id as number,
+            studentId, // Now reliable!
             teacherId: user.user_id,
             status,
             notes: typeof lesson.attendance_notes === 'string' ? lesson.attendance_notes : undefined
         });
     };
 
-    const handleUpdateNote = (lessonId: number, note: string) => {
+    const handleUpdateNote = (lessonId: number, studentId: number, note: string) => {
         if (!user?.user_id) return;
-        const lesson = schedule.find(l => l.lesson_id === lessonId);
+        const lesson = schedule.find(l => l.lesson_id === lessonId && Number(l.student_id) === studentId);
         if (!lesson) return;
         attendanceMutation.mutate({
             lessonId,
-            studentId: lesson.student_id as number,
+            studentId, // Reliable student
             teacherId: user.user_id,
             status: lesson.attendance_status || 'Pending',
             notes: note
@@ -111,6 +111,9 @@ const TeacherDashboard: React.FC = () => {
     return (
         /* CHANGELOG: Refactored TeacherDashboard layout container and tabs to use Tailwind CSS utility classes instead of App.css .dashboard-container and .tabs classes. */
         <div className="w-full max-w-7xl mx-auto md:p-5 box-border">
+            <div className="flex flex-col md:flex-row justify-between items-center md:items-center mb-5 gap-4">
+                <h2 className="text-2xl font-bold">Teacher Dashboard</h2>
+            </div>
             {/* Header removed - handled globally by Dashboard.tsx */}
             <div className="hidden md:flex flex-wrap items-center gap-2.5 md:justify-center mb-5">
                 <button className={`px-5 py-2 font-medium rounded-full transition-all duration-200 border ${activeTab === 'roster' ? 'bg-[#ff6b6b] text-white border-[#ff6b6b] shadow-sm tracking-wide' : 'bg-white text-[#555] border-[#f0f0f0] hover:bg-[#ffeaea] hover:border-[#ff6b6b] hover:text-[#ff6b6b]'}`} onClick={() => setActiveTab('roster')}>My Roster</button>
@@ -133,7 +136,7 @@ const TeacherDashboard: React.FC = () => {
                                             <th>Student Name</th>
                                             <th>Age</th>
                                             <th>Level</th>
-                                            <th>Phone</th>
+                                            <th>Instruments</th>
                                             <th>Manager</th>
                                         </tr>
                                     </thead>
@@ -157,7 +160,7 @@ const TeacherDashboard: React.FC = () => {
                                                         ))}
                                                     </select>
                                                 </td>
-                                                <td>{entry.student_phone || 'N/A'}</td>
+                                                <td>{entry.instrument_list || 'None'}</td>
                                                 <td>{entry.manager_first_name ? `${entry.manager_first_name} ${entry.manager_last_name}` : 'Self'}</td>
                                             </tr>
                                         ))}

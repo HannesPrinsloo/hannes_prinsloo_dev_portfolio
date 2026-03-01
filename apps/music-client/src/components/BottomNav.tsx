@@ -93,21 +93,11 @@ const BottomNav: React.FC<BottomNavProps> = ({ activeTab, setActiveTab, role }) 
                         <button
                             key={tab.id}
                             onClick={() => handleTabClick(tab.id)}
-                            style={{
-                                background: 'transparent',
-                                border: 'none',
-                                display: 'flex',
-                                flexDirection: 'column',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                color: isActive ? 'var(--primary-red)' : '#888',
-                                padding: '8px',
-                                flex: 1,
-                                cursor: 'pointer'
-                            }}
+                            className={`flex flex-col items-center justify-center p-2 flex-1 cursor-pointer outline-none transition-colors border-none ${isActive ? 'text-primary-red' : 'text-[#888]'}`}
+                            style={{ background: 'transparent', WebkitTapHighlightColor: 'transparent' }}
                         >
                             <Icon size={24} strokeWidth={isActive ? 2.5 : 2} />
-                            <span style={{ fontSize: '0.75rem', marginTop: '4px', fontWeight: isActive ? '600' : '400' }}>
+                            <span className={`text-[0.75rem] mt-1 ${isActive ? 'font-semibold' : 'font-normal'}`}>
                                 {tab.label}
                             </span>
                         </button>

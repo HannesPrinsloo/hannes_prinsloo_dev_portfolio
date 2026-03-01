@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { registerFamily } from '../services/api';
+import { registerFamily, fetchUsers } from '../services/api';
 
 interface FamilyRegistrationModalProps {
     isOpen: boolean;
@@ -21,11 +21,10 @@ const FamilyRegistrationModal = ({ isOpen, onClose, onSuccess }: FamilyRegistrat
 
     const queryClient = useQueryClient();
 
-    // Fetch users from cache
+    // Fetch users from cache or network
     const { data: allUsers = [] } = useQuery<any[]>({
         queryKey: ['adminUsers'],
-        // Assuming adminUsers is already prefetched/cached by AdminDashboard.
-        // We could provide a queryFn here as a fallback, but AdminDashboard fetches it.
+        queryFn: fetchUsers,
         staleTime: 5 * 60 * 1000,
     });
 
@@ -125,21 +124,21 @@ const FamilyRegistrationModal = ({ isOpen, onClose, onSuccess }: FamilyRegistrat
 
     return (
         /* CHANGELOG: Refactored FamilyRegistrationModal layout and buttons to use Tailwind CSS utility classes instead of inline styling and global CSS. */
-        <div className="fixed inset-0 bg-black/80 flex justify-center items-center z-[1000] p-5">
-            <div className="bg-white text-text-dark p-[25px] rounded-xl w-full max-w-[500px] max-h-[90vh] overflow-y-auto text-left shadow-[0_10px_25px_rgba(0,0,0,0.15)] border border-[#eee]">
-                <h2 style={{ marginTop: 0 }}>Family Registration</h2>
+        <div className="fixed inset-0 bg-black/50 flex justify-center items-center z-[1000] p-5">
+            <div className="bg-white text-text-dark p-[25px] rounded-xl w-full max-w-[600px] max-h-[90vh] overflow-y-auto text-left shadow-[0_10px_25px_rgba(0,0,0,0.15)] border border-[#eee]">
+                <h2 className="mt-0 font-bold mb-[20px] pb-2.5 border-b border-[#eee]">Family Registration</h2>
 
                 {/* Step 1: Manager */}
-                <div style={{ marginBottom: '20px', paddingBottom: '20px', borderBottom: '1px solid #444' }}>
-                    <h3 style={{ color: '#646cff' }}>Step 1: The Manager (Adult)</h3>
+                <div className="mb-[20px] pb-[20px] border-b border-[#eee]">
+                    <h3 className="text-[#646cff] mb-4 mt-0">Step 1: The Manager (Adult)</h3>
 
-                    <div style={{ display: 'flex', gap: '20px', marginBottom: '15px' }}>
-                        <label>
-                            <input type="radio" checked={managerMode === 'new'} onChange={() => setManagerMode('new')} />
+                    <div className="flex gap-4 mb-4">
+                        <label className="flex items-center gap-2 cursor-pointer text-sm font-medium text-[#666]">
+                            <input type="radio" className="accent-primary-red" checked={managerMode === 'new'} onChange={() => setManagerMode('new')} />
                             New Manager
                         </label>
-                        <label>
-                            <input type="radio" checked={managerMode === 'existing'} onChange={() => setManagerMode('existing')} />
+                        <label className="flex items-center gap-2 cursor-pointer text-sm font-medium text-[#666]">
+                            <input type="radio" className="accent-primary-red" checked={managerMode === 'existing'} onChange={() => setManagerMode('existing')} />
                             Existing Manager
                         </label>
                     </div>
@@ -148,7 +147,7 @@ const FamilyRegistrationModal = ({ isOpen, onClose, onSuccess }: FamilyRegistrat
                         <select
                             value={selectedManagerId}
                             onChange={(e) => setSelectedManagerId(Number(e.target.value))}
-                            style={{ width: '100%', padding: '10px' }}
+                            className="w-full p-2.5 rounded-md border border-[#ccc] bg-white text-text-dark focus:outline-none focus:border-primary-red"
                         >
                             <option value="">-- Select Manager --</option>
                             {managers.map((m: any) => (
@@ -158,21 +157,42 @@ const FamilyRegistrationModal = ({ isOpen, onClose, onSuccess }: FamilyRegistrat
                             ))}
                         </select>
                     ) : (
-                        <div className="grid-form">
-                            <input name="first_name" placeholder="First Name" value={managerDetails.first_name} onChange={handleManagerChange} />
-                            <input name="last_name" placeholder="Last Name" value={managerDetails.last_name} onChange={handleManagerChange} />
-                            <input name="email" type="email" placeholder="Email" value={managerDetails.email} onChange={handleManagerChange} />
-                            <input name="phone_number" placeholder="Phone" value={managerDetails.phone_number} onChange={handleManagerChange} />
-                            <input name="date_of_birth" type="date" value={managerDetails.date_of_birth} onChange={handleManagerChange} />
-                            <input name="password" type="password" placeholder="Password" value={managerDetails.password} onChange={handleManagerChange} />
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div className="flex flex-col gap-2">
+                                <label className="text-[#666] font-medium text-xs uppercase tracking-wider">First Name</label>
+                                <input name="first_name" className="w-full p-2.5 rounded-md border border-[#ccc] bg-white text-text-dark focus:outline-none focus:border-primary-red" placeholder="First Name" value={managerDetails.first_name} onChange={handleManagerChange} />
+                            </div>
+                            <div className="flex flex-col gap-2">
+                                <label className="text-[#666] font-medium text-xs uppercase tracking-wider">Last Name</label>
+                                <input name="last_name" className="w-full p-2.5 rounded-md border border-[#ccc] bg-white text-text-dark focus:outline-none focus:border-primary-red" placeholder="Last Name" value={managerDetails.last_name} onChange={handleManagerChange} />
+                            </div>
+                            <div className="flex flex-col gap-2">
+                                <label className="text-[#666] font-medium text-xs uppercase tracking-wider">Email</label>
+                                <input name="email" type="email" className="w-full p-2.5 rounded-md border border-[#ccc] bg-white text-text-dark focus:outline-none focus:border-primary-red" placeholder="Email" value={managerDetails.email} onChange={handleManagerChange} />
+                            </div>
+                            <div className="flex flex-col gap-2">
+                                <label className="text-[#666] font-medium text-xs uppercase tracking-wider">Phone</label>
+                                <input name="phone_number" className="w-full p-2.5 rounded-md border border-[#ccc] bg-white text-text-dark focus:outline-none focus:border-primary-red" placeholder="Phone" value={managerDetails.phone_number} onChange={handleManagerChange} />
+                            </div>
+                            <div className="flex flex-col gap-2">
+                                <label className="text-[#666] font-medium text-xs uppercase tracking-wider">Date of Birth</label>
+                                <input name="date_of_birth" type="date" className="w-full p-2.5 rounded-md border border-[#ccc] bg-white text-text-dark focus:outline-none focus:border-primary-red" value={managerDetails.date_of_birth} onChange={handleManagerChange} />
+                            </div>
+                            <div className="flex flex-col gap-2">
+                                <label className="text-[#666] font-medium text-xs uppercase tracking-wider">Password</label>
+                                <input name="password" type="password" className="w-full p-2.5 rounded-md border border-[#ccc] bg-white text-text-dark focus:outline-none focus:border-primary-red" placeholder="Password" value={managerDetails.password} onChange={handleManagerChange} />
+                            </div>
                         </div>
                     )}
 
                     {managerMode === 'new' && (
-                        <div style={{ marginTop: '10px' }}>
-                            <label style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer', background: '#f9f9f9', padding: '10px', borderRadius: '4px', border: '1px solid #eee' }}>
-                                <input type="checkbox" checked={isAdultStudent} onChange={(e) => setIsAdultStudent(e.target.checked)} />
-                                <strong>This is an Adult Student</strong> (Student is their own Manager)
+                        <div className="mt-4">
+                            <label className="flex items-center gap-3 cursor-pointer bg-[#f9f9f9] p-3 rounded-md border border-[#eee] hover:bg-[#f0f0f0] transition-colors">
+                                <input type="checkbox" className="w-4 h-4 accent-primary-red rounded" checked={isAdultStudent} onChange={(e) => setIsAdultStudent(e.target.checked)} />
+                                <div className="flex flex-col sm:flex-row sm:gap-2 sm:items-center">
+                                    <strong className="text-text-dark">This is an Adult Student</strong>
+                                    <span className="text-[#888]">(Student is their own Manager)</span>
+                                </div>
                             </label>
                         </div>
                     )}
@@ -180,76 +200,88 @@ const FamilyRegistrationModal = ({ isOpen, onClose, onSuccess }: FamilyRegistrat
 
                 {/* Step 2: Students */}
                 <div>
-                    <h3 style={{ color: '#646cff' }}>Step 2: The Student(s)</h3>
+                    <h3 className="text-[#646cff] mb-4 mt-0">Step 2: The Student(s)</h3>
 
-                    {students.map((student, idx) => (
-                        <div key={idx} style={{ background: '#f9f9f9', padding: '15px', borderRadius: '6px', marginBottom: '15px', border: '1px solid #eee' }}>
-                            {!isAdultStudent && (
-                                <>
-                                    <div style={{ display: 'flex', gap: '10px', marginBottom: '10px' }}>
-                                        <input
-                                            placeholder="First Name"
-                                            value={student.firstName}
-                                            onChange={(e) => handleStudentChange(idx, 'firstName', e.target.value)}
-                                            style={{ flex: 1 }}
-                                        />
-                                        <input
-                                            placeholder="Last Name"
-                                            value={student.lastName}
-                                            onChange={(e) => handleStudentChange(idx, 'lastName', e.target.value)}
-                                            style={{ flex: 1 }}
-                                        />
+                    <div className="flex flex-col gap-4">
+                        {students.map((student, idx) => (
+                            <div key={idx} className="bg-[#f9f9f9] p-4 rounded-md border border-[#eee] relative">
+                                {students.length > 1 && !isAdultStudent && (
+                                    <div className="absolute top-2 right-2 text-xs font-bold text-[#888] bg-[#e0e0e0] px-2 py-1 rounded">
+                                        Student {idx + 1}
                                     </div>
-                                    <div style={{ marginBottom: '10px' }}>
-                                        <label style={{ display: 'block', fontSize: '0.8em', marginBottom: '5px' }}>Date of Birth</label>
-                                        <input
-                                            type="date"
-                                            value={student.dob}
-                                            onChange={(e) => handleStudentChange(idx, 'dob', e.target.value)}
-                                            style={{ width: '100%' }}
-                                        />
+                                )}
+
+                                {!isAdultStudent && (
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                                        <div className="flex flex-col gap-2">
+                                            <input
+                                                placeholder="First Name"
+                                                className="w-full p-2.5 rounded-md border border-[#ccc] bg-white text-text-dark focus:outline-none focus:border-primary-red"
+                                                value={student.firstName}
+                                                onChange={(e) => handleStudentChange(idx, 'firstName', e.target.value)}
+                                            />
+                                        </div>
+                                        <div className="flex flex-col gap-2">
+                                            <input
+                                                placeholder="Last Name"
+                                                className="w-full p-2.5 rounded-md border border-[#ccc] bg-white text-text-dark focus:outline-none focus:border-primary-red"
+                                                value={student.lastName}
+                                                onChange={(e) => handleStudentChange(idx, 'lastName', e.target.value)}
+                                            />
+                                        </div>
+                                        <div className="flex flex-col gap-2 md:col-span-2">
+                                            <label className="text-[#666] font-medium text-xs uppercase tracking-wider">Date of Birth</label>
+                                            <input
+                                                type="date"
+                                                className="w-full p-2.5 rounded-md border border-[#ccc] bg-white text-text-dark focus:outline-none focus:border-primary-red"
+                                                value={student.dob}
+                                                onChange={(e) => handleStudentChange(idx, 'dob', e.target.value)}
+                                            />
+                                        </div>
                                     </div>
-                                </>
-                            )}
+                                )}
 
-                            {isAdultStudent && (
-                                <p style={{ color: '#aaa', fontStyle: 'italic', marginBottom: '10px' }}>
-                                    Student details will match Manager details above.
-                                </p>
-                            )}
+                                {isAdultStudent && (
+                                    <p className="text-[#888] italic mb-4 text-sm bg-white p-3 rounded border border-[#eee]">
+                                        Student details will match Manager details above.
+                                    </p>
+                                )}
 
-                            <div>
-                                <label style={{ display: 'block', fontSize: '0.8em', marginBottom: '5px' }}>Assign Teacher (Optional)</label>
-                                <select
-                                    style={{ width: '100%', padding: '8px' }}
-                                    value={student.assignedTeacherId || ''}
-                                    onChange={(e) => handleStudentChange(idx, 'assignedTeacherId', e.target.value ? Number(e.target.value) : undefined)}
-                                >
-                                    <option value="">-- No Teacher Assigned --</option>
-                                    {teachers.map((t: any) => (
-                                        <option key={t.user_id} value={t.user_id}>
-                                            {t.first_name} {t.last_name}
-                                        </option>
-                                    ))}
-                                </select>
+                                <div className="flex flex-col gap-2">
+                                    <label className="text-[#666] font-medium text-xs uppercase tracking-wider">Assign Teacher (Optional)</label>
+                                    <select
+                                        className="w-full p-2.5 rounded-md border border-[#ccc] bg-white text-text-dark focus:outline-none focus:border-primary-red"
+                                        value={student.assignedTeacherId || ''}
+                                        onChange={(e) => handleStudentChange(idx, 'assignedTeacherId', e.target.value ? Number(e.target.value) : undefined)}
+                                    >
+                                        <option value="">-- No Teacher Assigned --</option>
+                                        {teachers.map((t: any) => (
+                                            <option key={t.user_id} value={t.user_id}>
+                                                {t.first_name} {t.last_name}
+                                            </option>
+                                        ))}
+                                    </select>
+                                </div>
                             </div>
-                        </div>
-                    ))}
+                        ))}
+                    </div>
 
                     {!isAdultStudent && (
                         <button
                             type="button"
                             onClick={() => setStudents([...students, { firstName: '', lastName: '', dob: '2015-01-01' }])}
-                            style={{ fontSize: '0.9em', padding: '5px 10px' }}
+                            className="mt-4 text-sm px-4 py-2 bg-[#f0f0f0] text-text-dark border border-[#ddd] rounded hover:bg-[#e4e4e4] transition-colors"
                         >
                             + Add Another Student
                         </button>
                     )}
                 </div>
 
-                <div className="flex gap-2.5 mt-[30px] border-t border-[#eee] pt-5">
-                    <button className="bg-transparent text-[#666] border border-[#ccc] px-4 py-2 rounded cursor-pointer" onClick={onClose} disabled={loading}>Cancel</button>
-                    <button className="bg-primary-red text-white border-none px-4 py-2 rounded cursor-pointer w-full hover:bg-black transition-colors" onClick={handleSubmit} disabled={loading}>
+                <div className="flex justify-end gap-3 mt-[30px] border-t border-[#eee] pt-5">
+                    <button className="bg-transparent text-[#666] border border-[#ccc] px-4 py-2 rounded cursor-pointer hover:bg-[#f9f9f9] transition-colors" onClick={onClose} disabled={loading}>
+                        Cancel
+                    </button>
+                    <button className="bg-primary-red text-white border-none px-6 py-2 rounded cursor-pointer hover:bg-[#cc0000] transition-colors" onClick={handleSubmit} disabled={loading}>
                         {loading ? 'Registering...' : 'Complete Registration'}
                     </button>
                 </div>

@@ -11,7 +11,7 @@ interface ProfileHeaderProps {
 const ProfileHeader: React.FC<ProfileHeaderProps> = ({ profile, role, onLogout }) => {
     return (
         /* CHANGELOG: Refactored ProfileHeader to use Tailwind CSS utility classes, replacing custom App.css classes like .profile-header, .desktop-only, and .mobile-only to handle responsive views and styling. Made sure header stays sticky as requested! */
-        <div className="sticky top-0 z-[100] flex justify-between items-center px-2.5 md:px-5 py-2.5 bg-header-grey backdrop-blur-[5px] shadow-sm mb-5 text-white rounded-md">
+        <div className="sticky top-0 z-[100] w-full flex justify-between items-center px-2.5 md:px-5 py-2.5 bg-header-grey backdrop-blur-md shadow-md mb-5 text-white rounded-b-md">
             <div className="flex-shrink-0">
                 <img src={logo} alt="S15 Logo" className="h-[40px] md:h-[60px] w-auto" />
             </div>

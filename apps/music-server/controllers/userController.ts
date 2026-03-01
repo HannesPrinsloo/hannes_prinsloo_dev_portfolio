@@ -134,3 +134,51 @@ export const createFamilyController = async (req: Request, res: Response) => {
         res.status(500).json({ error: `Internal server error: ${err.message}` });
     }
 };
+
+export const addStudentInstrumentController = async (req: Request, res: Response) => {
+    try {
+        const studentId = parseInt(req.params.userId as string);
+        const { instrumentId } = req.body;
+        if (!studentId || !instrumentId) return res.status(400).json({ error: 'studentId and instrumentId required' });
+        await userService.addStudentInstrument(studentId, parseInt(instrumentId));
+        res.json({ message: 'Instrument added successfully' });
+    } catch (err: any) {
+        res.status(500).json({ error: err.message });
+    }
+};
+
+export const removeStudentInstrumentController = async (req: Request, res: Response) => {
+    try {
+        const studentId = parseInt(req.params.userId as string);
+        const instrumentId = parseInt(req.params.instrumentId as string);
+        if (!studentId || !instrumentId) return res.status(400).json({ error: 'Valid IDs required' });
+        await userService.removeStudentInstrument(studentId, instrumentId);
+        res.json({ message: 'Instrument removed successfully' });
+    } catch (err: any) {
+        res.status(500).json({ error: err.message });
+    }
+};
+
+export const addStudentTeacherController = async (req: Request, res: Response) => {
+    try {
+        const studentId = parseInt(req.params.userId as string);
+        const { teacherId } = req.body;
+        if (!studentId || !teacherId) return res.status(400).json({ error: 'Valid IDs required' });
+        await userService.addStudentTeacher(studentId, parseInt(teacherId));
+        res.json({ message: 'Teacher added successfully' });
+    } catch (err: any) {
+        res.status(500).json({ error: err.message });
+    }
+};
+
+export const removeStudentTeacherController = async (req: Request, res: Response) => {
+    try {
+        const studentId = parseInt(req.params.userId as string);
+        const teacherId = parseInt(req.params.teacherId as string);
+        if (!studentId || !teacherId) return res.status(400).json({ error: 'Valid IDs required' });
+        await userService.removeStudentTeacher(studentId, teacherId);
+        res.json({ message: 'Teacher removed successfully' });
+    } catch (err: any) {
+        res.status(500).json({ error: err.message });
+    }
+};

@@ -26,4 +26,12 @@ router.delete('/:id', userController.deleteUserController);
 // UPDATE user
 router.put('/:id', validateRequest(updateUserSchema), userController.updateUserController);
 
+// --- Instrument Assignments ---
+router.post('/:userId/instruments', userController.addStudentInstrumentController);
+router.delete('/:userId/instruments/:instrumentId', userController.removeStudentInstrumentController);
+
+// --- Teacher Assignments ---
+router.post('/:userId/teachers', userController.addStudentTeacherController);
+router.delete('/:userId/teachers/:teacherId', userController.removeStudentTeacherController);
+
 export default router;

@@ -18,6 +18,7 @@ import lessonRoutes from './routes/lessonRoutes';
 import attendanceRoutes from './routes/attendanceRoutes';
 import levelRoutes from './routes/levelRoutes';
 import eventRoutes from './routes/eventRoutes';
+import instrumentRoutes from './routes/instrumentRoutes';
 
 // Load environment variable from .env file
 // This makes variables like PORT available via process.env.PORT
@@ -80,6 +81,7 @@ app.use('/api/lessons', lessonRoutes);
 app.use('/api/attendance', attendanceRoutes);
 app.use('/api/levels', levelRoutes);
 app.use('/api/events', eventRoutes);
+app.use('/api/instruments', instrumentRoutes);
 
 // ~~~ Define a Basic API Route ~~~
 // This is a simple "GET" request handler for the root URL ("/")

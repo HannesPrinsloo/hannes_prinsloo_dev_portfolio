@@ -67,26 +67,7 @@ const MobileUserDetailModal: React.FC<MobileUserDetailModalProps> = ({
                 </h2>
 
                 {/* Styled Tabs */}
-                <div style={{
-                    display: 'flex',
-                    flexWrap: 'nowrap', // Force single line
-                    overflowX: 'auto', // Allow scrolling if needed
-                    gap: '8px',
-                    marginBottom: '20px',
-                    borderBottom: '1px solid #eee',
-                    paddingBottom: '10px',
-                    scrollbarWidth: 'none', // Firefox
-                    msOverflowStyle: 'none', // IE/Edge
-                    WebkitOverflowScrolling: 'touch' // Smooth scrolling on iOS
-                }}>
-                    <style>
-                        {`
-                            /* Hide scrollbar for Chrome/Safari/Opera */
-                            .tab-container::-webkit-scrollbar {
-                                display: none;
-                            }
-                        `}
-                    </style>
+                <div className="flex flex-wrap gap-2 mb-5 border-b border-[#eee] pb-2.5">
                     {[
                         { id: 'info', label: 'Info', show: true },
                         { id: 'academic', label: 'Academic', show: mainTab === 'Students' },
@@ -100,22 +81,7 @@ const MobileUserDetailModal: React.FC<MobileUserDetailModalProps> = ({
                             <button
                                 key={tab.id}
                                 onClick={() => setActiveTab(tab.id as any)} // Cast safely
-                                style={{
-                                    padding: '6px 12px',
-                                    background: isActive ? '#FF5F5E' : '#f0f0f0',
-                                    color: isActive ? 'white' : '#333',
-                                    border: 'none',
-                                    borderRadius: '16px',
-                                    cursor: 'pointer',
-                                    fontSize: '0.85rem',
-                                    // Smooth transitions & remove defaults
-                                    transition: 'background-color 0.2s ease, color 0.2s ease',
-                                    outline: 'none',
-                                    WebkitTapHighlightColor: 'transparent',
-                                    userSelect: 'none',
-                                    whiteSpace: 'nowrap', // Prevent text wrapping
-                                    flexShrink: 0 // Prevent button squishing
-                                }}
+                                className={`px-3 py-1.5 rounded-2xl text-[0.85rem] cursor-pointer transition-colors outline-none select-none whitespace-nowrap shrink-0 ${isActive ? 'bg-primary-red text-white' : 'bg-[#f0f0f0] text-text-dark hover:bg-[#e4e4e4]'}`}
                             >
                                 {tab.label}
                             </button>

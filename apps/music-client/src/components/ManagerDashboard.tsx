@@ -111,11 +111,8 @@ const ManagerDashboard = () => {
     return (
         /* CHANGELOG: Refactored ManagerDashboard layout container, header, and tabs to use Tailwind CSS utility classes. */
         <div className="w-full max-w-7xl mx-auto md:p-5 box-border">
-            <div className="flex justify-between items-center mb-5">
+            <div className="flex flex-col md:flex-row justify-between items-center md:items-center mb-5 gap-4">
                 <h2 className="text-2xl font-bold">Manager Dashboard</h2>
-                <div className="bg-[#f8f9fa] p-2.5 px-4 rounded border border-[#eee] text-[#333] font-medium shadow-sm">
-                    {profile?.first_name} {profile?.last_name} (ID: {user?.user_id})
-                </div>
             </div>
 
             <div className="hidden md:flex flex-wrap items-center gap-2.5 md:justify-center mb-5">
@@ -130,8 +127,8 @@ const ManagerDashboard = () => {
                     <div className="manager-students-section">
                         <h3>My Students</h3>
                         {managerStudents.length === 0 ? <p>No students linked.</p> : (
-                            <div className="flex justify-center w-full mt-5 overflow-x-auto">
-                                <table className="w-full border-collapse bg-transparent mt-5 [&_th]:bg-[#f8f8f8] [&_th]:text-text-dark [&_th]:px-[25px] [&_th]:py-[18px] [&_th]:text-center [&_th]:font-semibold [&_th]:border-b-2 [&_th]:border-[#eee] [&_th]:tracking-[0.5px] [&_td]:px-[25px] [&_td]:py-[15px] [&_td]:text-text-dark [&_td]:border-b [&_td]:border-[#eee] [&_td]:text-center [&_td]:align-middle [&_tbody_tr:hover]:bg-[#f9f9f9] [&_tbody_tr]:transition-colors">
+                            <div className="w-full mt-5 overflow-x-auto -mx-5 px-5 md:mx-0 md:px-0">
+                                <table className="w-full border-collapse bg-transparent mt-2 [&_th]:bg-[#f8f8f8] [&_th]:text-text-dark [&_th]:px-3 md:[&_th]:px-[25px] [&_th]:py-3 md:[&_th]:py-[18px] [&_th]:text-center [&_th]:font-semibold [&_th]:border-b-2 [&_th]:border-[#eee] [&_th]:tracking-[0.5px] [&_td]:px-3 md:[&_td]:px-[25px] [&_td]:py-3 md:[&_td]:py-[15px] [&_td]:text-text-dark [&_td]:border-b [&_td]:border-[#eee] [&_td]:text-center [&_td]:align-middle [&_tbody_tr:hover]:bg-[#f9f9f9] [&_tbody_tr]:transition-colors">
                                     <thead>
                                         <tr>
                                             <th>Name</th>

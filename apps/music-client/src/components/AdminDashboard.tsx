@@ -6,7 +6,8 @@ import {
     fetchTeacherRoster, getTeacherSchedule, deleteUser,
     fetchEvents, createEvent, deleteEvent, getEligibleStudentsForEvent, getBookedStudentsForEvent,
     bookStudentForEvent, cancelEventBooking, fetchLevels,
-    assignTeacher // New Import
+    assignTeacher,
+    fetchInstruments, addStudentInstrument, removeStudentInstrument, addStudentTeacher, removeStudentTeacher, type Instrument
 } from '../services/api';
 import AddUserModal from './AddUserModal';
 import BillingAccordion from './BillingAccordion';
@@ -113,6 +114,12 @@ const AdminDashboard = () => {
         enabled: !!user && profile?.role_id === 1
     });
 
+    const { data: instruments = [] } = useQuery<Instrument[]>({
+        queryKey: ['adminInstruments'],
+        queryFn: fetchInstruments,
+        enabled: !!user && profile?.role_id === 1
+    });
+
     const { data: upcomingEvents = [], isLoading: upcomingLoading } = useQuery({
         queryKey: ['adminEvents', 'upcoming'],
         queryFn: () => fetchEvents('upcoming'),
@@ -179,6 +186,47 @@ const AdminDashboard = () => {
             assignTeacherMutation.mutate({ studentId, newTeacherId });
         }
     };
+
+    // --- New Instrument & Teacher Assignment Mutations ---
+    const addInstrumentMutation = useMutation({
+        mutationFn: ({ studentId, instrumentId }: { studentId: number, instrumentId: number }) => addStudentInstrument(studentId, instrumentId),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['adminUsers'] });
+        },
+        onError: (err: any) => {
+            alert(`Failed to add instrument: ${err.message}`);
+        }
+    });
+
+    const removeInstrumentMutation = useMutation({
+        mutationFn: ({ studentId, instrumentId }: { studentId: number, instrumentId: number }) => removeStudentInstrument(studentId, instrumentId),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['adminUsers'] });
+        },
+        onError: (err: any) => {
+            alert(`Failed to remove instrument: ${err.message}`);
+        }
+    });
+
+    const addStudentTeacherMutation = useMutation({
+        mutationFn: ({ studentId, teacherId }: { studentId: number, teacherId: number }) => addStudentTeacher(studentId, teacherId),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['adminUsers'] });
+        },
+        onError: (err: any) => {
+            alert(`Failed to add teacher: ${err.message}`);
+        }
+    });
+
+    const removeStudentTeacherMutation = useMutation({
+        mutationFn: ({ studentId, teacherId }: { studentId: number, teacherId: number }) => removeStudentTeacher(studentId, teacherId),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['adminUsers'] });
+        },
+        onError: (err: any) => {
+            alert(`Failed to remove teacher: ${err.message}`);
+        }
+    });
 
     const deleteEventMutation = useMutation({
         mutationFn: (eventId: number) => deleteEvent(eventId),
@@ -482,21 +530,109 @@ const AdminDashboard = () => {
                                     </div>
 
                                     <div className="p-4 bg-gray-50 rounded-lg border border-[#eee]">
-                                        <h4 className="text-md font-semibold mb-3 text-text-dark mt-0">Assigned Teacher</h4>
-                                        <div className="flex items-center gap-3">
-                                            <select
-                                                className="px-3 py-2 bg-white text-text-dark border border-[#ccc] rounded-md focus:outline-none focus:border-primary-red focus:ring-1 focus:ring-primary-red transition-colors shadow-sm text-sm min-w-[200px]"
-                                                value={activeStudent.teachers?.[0]?.id || ''}
-                                                onChange={(e) => handleTeacherAssignmentChange(activeStudent.user_id, e.target.value, activeStudent.teacher_names || '')}
-                                            >
-                                                <option value="">-- Unassigned --</option>
-                                                {teacherOptions.map((t: UserData) => (
-                                                    <option key={t.user_id} value={t.user_id}>
-                                                        {t.first_name} {t.last_name}
-                                                    </option>
-                                                ))}
-                                            </select>
+                                        <h4 className="text-md font-semibold mb-3 text-text-dark mt-0">Assigned Instruments & Teachers</h4>
+
+                                        {/* Display Existing Assignments */}
+                                        <div className="space-y-3 mb-4">
+                                            {/* Instruments */}
+                                            {activeStudent.instruments && activeStudent.instruments.length > 0 && (
+                                                <div className="flex flex-col gap-2">
+                                                    <span className="text-xs text-gray-500 uppercase tracking-wider font-semibold">Instruments</span>
+                                                    <div className="flex flex-wrap gap-2">
+                                                        {activeStudent.instruments.map((inst: any) => (
+                                                            <div key={inst.instrument_id} className="flex items-center gap-1 bg-white border border-[#ccc] px-3 py-1.5 rounded-full text-sm shadow-sm group">
+                                                                <span className="font-medium text-text-dark">{inst.instrument_name}</span>
+                                                                <button
+                                                                    className="ml-1 text-gray-400 hover:text-primary-red transition-colors w-5 h-5 flex items-center justify-center rounded-full hover:bg-red-50"
+                                                                    onClick={() => {
+                                                                        if (confirm(`Remove ${inst.instrument_name}?`)) {
+                                                                            removeInstrumentMutation.mutate({ studentId: activeStudent.user_id, instrumentId: inst.instrument_id });
+                                                                        }
+                                                                    }}
+                                                                >
+                                                                    &times;
+                                                                </button>
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                </div>
+                                            )}
+
+                                            {/* Teachers */}
+                                            {activeStudent.teachers && activeStudent.teachers.length > 0 && (
+                                                <div className="flex flex-col gap-2">
+                                                    <span className="text-xs text-gray-500 uppercase tracking-wider font-semibold">Teachers</span>
+                                                    <div className="flex flex-wrap gap-2">
+                                                        {activeStudent.teachers.map((teach: any) => (
+                                                            <div key={teach.id} className="flex items-center gap-1 bg-white border border-[#ccc] px-3 py-1.5 rounded-full text-sm shadow-sm group">
+                                                                <span className="font-medium text-text-dark">{teach.name}</span>
+                                                                <button
+                                                                    className="ml-1 text-gray-400 hover:text-primary-red transition-colors w-5 h-5 flex items-center justify-center rounded-full hover:bg-red-50"
+                                                                    onClick={() => {
+                                                                        if (confirm(`Remove ${teach.name}?`)) {
+                                                                            removeStudentTeacherMutation.mutate({ studentId: activeStudent.user_id, teacherId: teach.id });
+                                                                        }
+                                                                    }}
+                                                                >
+                                                                    &times;
+                                                                </button>
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                </div>
+                                            )}
+
+                                            {(!activeStudent.instruments || activeStudent.instruments.length === 0) && (!activeStudent.teachers || activeStudent.teachers.length === 0) && (
+                                                <div className="p-3 bg-white border border-[#ccc] rounded-md shadow-sm text-sm text-gray-500 italic">
+                                                    No instruments or teachers assigned yet.
+                                                </div>
+                                            )}
                                         </div>
+
+                                        {/* Add New Assignment Form */}
+                                        <div className="p-3 bg-white border border-dashed border-[#ccc] rounded-md flex flex-col gap-2">
+                                            <span className="text-xs text-gray-700 font-semibold mb-1 block">+ Add New Instrument Assignment</span>
+                                            <div className="flex gap-2">
+                                                <select
+                                                    className="flex-1 px-3 py-2 bg-gray-50 text-text-dark border border-[#eee] rounded-md text-sm"
+                                                    id={`new-instrument-${activeStudent.user_id}`}
+                                                >
+                                                    <option value="">Select Instrument...</option>
+                                                    {instruments.map(inst => (
+                                                        <option key={inst.instrument_id} value={inst.instrument_id}>{inst.instrument_name}</option>
+                                                    ))}
+                                                </select>
+                                                <select
+                                                    className="flex-1 px-3 py-2 bg-gray-50 text-text-dark border border-[#eee] rounded-md text-sm"
+                                                    id={`new-teacher-${activeStudent.user_id}`}
+                                                >
+                                                    <option value="">Select Teacher...</option>
+                                                    {teacherOptions.map((t: UserData) => (
+                                                        <option key={t.user_id} value={t.user_id}>{t.first_name} {t.last_name}</option>
+                                                    ))}
+                                                </select>
+                                                <button
+                                                    className="bg-primary-red text-white px-3 py-2 rounded-md font-medium text-sm hover:bg-red-700 transition-colors whitespace-nowrap"
+                                                    onClick={() => {
+                                                        const instSelect = document.getElementById(`new-instrument-${activeStudent.user_id}`) as HTMLSelectElement;
+                                                        const teacherSelect = document.getElementById(`new-teacher-${activeStudent.user_id}`) as HTMLSelectElement;
+                                                        const instId = instSelect.value;
+                                                        const teachId = teacherSelect.value;
+
+                                                        if (!instId && !teachId) return alert("Please select an instrument or a teacher to add.");
+
+                                                        if (instId) addInstrumentMutation.mutate({ studentId: activeStudent.user_id, instrumentId: parseInt(instId) });
+                                                        if (teachId) addStudentTeacherMutation.mutate({ studentId: activeStudent.user_id, teacherId: parseInt(teachId) });
+
+                                                        instSelect.value = '';
+                                                        teacherSelect.value = '';
+                                                    }}
+                                                >
+                                                    Add
+                                                </button>
+                                            </div>
+                                        </div>
+
                                     </div>
                                 </div>
                             </>
@@ -596,29 +732,38 @@ const AdminDashboard = () => {
                                 ) : (
                                     <div className="tab-content">
                                         {teacherDetailTab === 'roster' && (
-                                            <table>
-                                                <thead>
-                                                    <tr>
-                                                        <th>ID</th><th>Student</th><th>Manager</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    {teacherRoster.map(s => (
-                                                        <tr key={s.student_id}>
-                                                            <td>{s.student_id}</td>
-                                                            <td>{s.student_first_name} {s.student_last_name}</td>
-                                                            <td>{s.manager_first_name} {s.manager_last_name}</td>
+                                            <div className="overflow-x-auto w-full">
+                                                <table className="w-full border-collapse bg-transparent mt-5 [&_th]:bg-[#f8f8f8] [&_th]:text-text-dark [&_th]:px-[25px] [&_th]:py-[18px] [&_th]:text-left [&_th]:font-semibold [&_th]:border-b-2 [&_th]:border-[#eee] [&_th]:tracking-[0.5px] [&_td]:px-[25px] [&_td]:py-[15px] [&_td]:text-text-dark [&_td]:border-b [&_td]:border-[#eee] [&_td]:text-left [&_td]:align-middle [&_tbody_tr:hover]:bg-[#f9f9f9] [&_tbody_tr]:transition-colors">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>ID</th>
+                                                            <th>Student</th>
+                                                            <th>Manager</th>
                                                         </tr>
-                                                    ))}
-                                                    {teacherRoster.length === 0 && <tr><td colSpan={3}>No students assigned.</td></tr>}
-                                                </tbody>
-                                            </table>
+                                                    </thead>
+                                                    <tbody>
+                                                        {teacherRoster.map(s => (
+                                                            <tr key={s.student_id}>
+                                                                <td>{s.student_id}</td>
+                                                                <td className="font-medium">{s.student_first_name} {s.student_last_name}</td>
+                                                                <td>{s.manager_first_name} {s.manager_last_name}</td>
+                                                            </tr>
+                                                        ))}
+                                                        {teacherRoster.length === 0 && (
+                                                            <tr>
+                                                                <td colSpan={3} className="text-center !py-[30px] text-[#aaa]">No students assigned.</td>
+                                                            </tr>
+                                                        )}
+                                                    </tbody>
+                                                </table>
+                                            </div>
                                         )}
 
                                         {teacherDetailTab === 'attendance' && (
                                             <BillingAccordion
                                                 students={teacherRoster}
                                                 schedule={teacherSchedule.map(l => ({ ...l, parent_note: '' }))}
+                                                readOnly={true} // Admin view of teacher schedule is readonly
                                             />
                                         )}
                                     </div>
@@ -859,12 +1004,14 @@ const AdminDashboard = () => {
     return (
         <div>
             {/* CHANGELOG: Refactored Admin Dashboard wrapper and tabs to Tailwind utilities instead of inline logic and App.css classes like .tabs and custom button colors. */}
-            <h2 className="text-2xl font-bold mb-4">Admin Dashboard</h2>
+            <div className="flex flex-col md:flex-row justify-between items-center md:items-center mb-5 gap-4 md:gap-0">
+                <h2 className="text-2xl font-bold mb-4">Admin Dashboard</h2>
+            </div>
 
             {/* Main Tabs */}
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-5 gap-4 md:gap-0">
                 <div className="hidden md:flex flex-wrap items-center gap-2.5 md:justify-center">
-                    {['Students', 'Teachers', 'Managers', 'Admins', 'Events'].map(tab => (
+                    {['Teachers', 'Students', 'Managers', 'Admins', 'Events'].map(tab => (
                         <button
                             key={tab}
                             className={`px-5 py-2 font-medium rounded-full transition-all duration-200 border ${mainTab === tab
