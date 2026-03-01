@@ -28,7 +28,7 @@ const FreelanceWorkModal: React.FC<FreelanceWorkModalProps> = ({ isOpen, onClose
         { title: 'OBC Group', video: '/assets/obc-web.mp4' }
     ];
 
-    const isMobile = typeof window !== 'undefined' && window.matchMedia('(max-width: 768px)').matches;
+    // const isMobile = typeof window !== 'undefined' && window.matchMedia('(max-width: 768px)').matches;
 
 
     const togglePlayPause = (index: number) => {
