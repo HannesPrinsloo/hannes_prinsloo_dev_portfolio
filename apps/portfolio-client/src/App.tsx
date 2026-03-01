@@ -43,6 +43,8 @@ function App() {
     const [dotLottie, setDotLottie] = useState<any>(null);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const navRef = useRef<HTMLElement>(null);
+    const freelanceLottieRef = useRef<HTMLDivElement>(null);
+    const [isFreelanceLottieVisible, setIsFreelanceLottieVisible] = useState(false);
 
     // Audio Footer Interaction States
     const playSegment = useAudioStore((state) => state.playSegment);
@@ -99,6 +101,23 @@ function App() {
             document.documentElement.classList.add('dark');
         }
     }, [isDarkMode, themeClickCount]);
+
+    // Lazy load freelance Lottie when it scrolls into view
+    useEffect(() => {
+        const el = freelanceLottieRef.current;
+        if (!el) return;
+        const observer = new IntersectionObserver(
+            ([entry]) => {
+                if (entry.isIntersecting) {
+                    setIsFreelanceLottieVisible(true);
+                    observer.disconnect();
+                }
+            },
+            { threshold: 0.1 }
+        );
+        observer.observe(el);
+        return () => observer.disconnect();
+    }, []);
 
     return (
         <div className="min-h-screen bg-paper text-ink p-4 md:p-8 font-mono">
@@ -532,14 +551,10 @@ function App() {
                         <div className="border border-ink dark:group-hover:border-surface-muted p-6 md:p-10 flex flex-col md:flex-row gap-10 bg-paper group-hover:bg-surface transition-colors h-full">
 
                             {/* Visual Side */}
-                            <div className="w-full md:w-1/2 aspect-video border-2 border-ink bg-surface-muted relative overflow-hidden grayscale group-hover:grayscale-0 transition-all duration-300">
+                            <div className="w-full md:w-1/2 aspect-video border-2 border-ink bg-surface-muted relative overflow-hidden transition-all duration-300">
                                 {/* Abstract Lines / Screenprint Effect */}
                                 <div className="absolute inset-0 bg-[linear-gradient(45deg,var(--color-ink)_1px,transparent_1px)] bg-[length:10px_10px] opacity-10"></div>
-                                <div className="absolute inset-0 flex items-center justify-center p-8">
-                                    <div className="w-full h-full border-2 border-dashed border-ink flex items-center justify-center">
-                                        <span className="font-sans font-bold text-4xl opacity-20 transform -rotate-12">PREVIEW</span>
-                                    </div>
-                                </div>
+                                <img src="/assets/swallow-15-thumbnail.jpeg" alt="Music School Manager" className="absolute inset-0 w-full h-full object-cover" />
                             </div>
 
                             {/* Info Side */}
@@ -599,11 +614,7 @@ function App() {
                                 <div className={`aspect-video border-2 border-ink bg-surface-muted relative overflow-hidden grayscale group-hover:grayscale-0 transition-all duration-500 ease-in-out origin-left ${isFreeCodeCampExpanded ? 'w-0 opacity-0 overflow-hidden border-0 !p-0 max-h-0 md:max-h-full' : 'w-full md:w-1/2 opacity-100 max-h-[1000px]'}`}>
                                     {/* Abstract Lines / Screenprint Effect */}
                                     <div className="absolute inset-0 bg-[linear-gradient(45deg,var(--color-ink)_1px,transparent_1px)] bg-[length:10px_10px] opacity-10 min-w-[300px]"></div>
-                                    <div className="absolute inset-0 flex items-center justify-center p-8 min-w-[300px]">
-                                        <div className="w-full h-full border-2 border-dashed border-ink flex items-center justify-center p-4 text-center">
-                                            <span className="font-sans font-bold text-4xl opacity-20 transform -rotate-12 whitespace-nowrap">CERTIFICATION PROJECTS</span>
-                                        </div>
-                                    </div>
+                                    <img src="/assets/FreeCodeCamp_logo.png" alt="freeCodeCamp Projects" className="absolute inset-0 w-full h-full object-cover min-w-[300px]" />
                                 </div>
 
                                 {/* Info Side */}
@@ -703,14 +714,18 @@ function App() {
                         <div className="border border-ink dark:group-hover:border-surface-muted p-6 md:p-10 flex flex-col md:flex-row gap-10 bg-paper group-hover:bg-surface transition-colors h-full">
 
                             {/* Visual Side */}
-                            <div className="w-full md:w-1/2 aspect-video border-2 border-ink bg-surface-muted relative overflow-hidden grayscale group-hover:grayscale-0 transition-all duration-300">
-                                {/* Abstract Lines / Screenprint Effect */}
-                                <div className="absolute inset-0 bg-[linear-gradient(45deg,var(--color-ink)_1px,transparent_1px)] bg-[length:10px_10px] opacity-10"></div>
-                                <div className="absolute inset-0 flex items-center justify-center p-8">
-                                    <div className="w-full h-full border-2 border-dashed border-ink flex items-center justify-center">
-                                        <span className="font-sans font-bold text-4xl opacity-20 transform -rotate-12">COMING SOON</span>
-                                    </div>
-                                </div>
+                            <div ref={freelanceLottieRef} className="w-full md:w-1/2 aspect-video border-2 border-ink bg-surface-muted relative overflow-hidden transition-all duration-300">
+                                {/* Lottie - lazy loaded, autoplay on desktop only */}
+                                {isFreelanceLottieVisible && (
+                                    <DotLottieReact
+                                        src={isDarkMode ? '/assets/modal-animation-dark.lottie' : '/assets/modal-animation-light.lottie'}
+                                        loop
+                                        autoplay={typeof window !== 'undefined' && window.matchMedia('(min-width: 768px)').matches}
+                                        className="absolute inset-0 w-full h-full object-cover"
+                                    />
+                                )}
+
+
                             </div>
 
                             {/* Info Side */}

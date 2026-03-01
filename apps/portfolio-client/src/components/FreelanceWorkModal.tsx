@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 
 interface FreelanceWorkModalProps {
     isOpen: boolean;
@@ -6,22 +6,51 @@ interface FreelanceWorkModalProps {
 }
 
 const FreelanceWorkModal: React.FC<FreelanceWorkModalProps> = ({ isOpen, onClose }) => {
+    const videoRefs = useRef<(HTMLVideoElement | null)[]>([]);
+    const [playingStates, setPlayingStates] = useState<boolean[]>([]);
+
     // Lock body scroll when modal is open
     useEffect(() => {
         if (isOpen) {
             document.body.style.overflow = 'hidden';
         } else {
             document.body.style.overflow = 'unset';
+            // Reset playing states when modal closes
+            setPlayingStates([]);
         }
     }, [isOpen]);
 
     if (!isOpen) return null;
 
     const freelanceProjects = [
-        { title: 'Mounted' },
-        { title: 'Debtorsolved' },
-        { title: 'OBC Group' }
+        { title: 'Mounted', video: '/assets/mounted-web.mp4' },
+        { title: 'Debtorsolved', video: '/assets/debtorsolved-web.mp4' },
+        { title: 'OBC Group', video: '/assets/obc-web.mp4' }
     ];
+
+    const isMobile = typeof window !== 'undefined' && window.matchMedia('(max-width: 768px)').matches;
+
+
+    const togglePlayPause = (index: number) => {
+        const video = videoRefs.current[index];
+        if (!video) return;
+
+        if (video.paused) {
+            video.play();
+            setPlayingStates(prev => {
+                const next = [...prev];
+                next[index] = true;
+                return next;
+            });
+        } else {
+            video.pause();
+            setPlayingStates(prev => {
+                const next = [...prev];
+                next[index] = false;
+                return next;
+            });
+        }
+    };
 
     return (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
@@ -65,17 +94,47 @@ const FreelanceWorkModal: React.FC<FreelanceWorkModalProps> = ({ isOpen, onClose
                                     {project.title}
                                 </h3>
                                 {/* Video Showcase Area */}
-                                <div className="w-full aspect-video border-4 border-ink bg-ink relative overflow-hidden shadow-neo-sm">
+                                <div
+                                    className="w-full aspect-video border-4 border-ink bg-ink relative overflow-hidden shadow-neo-sm cursor-pointer group/video"
+                                    onClick={() => togglePlayPause(index)}
+                                >
                                     <video
-                                        src="/assets/placeholder_video.mp4"
+                                        ref={el => { videoRefs.current[index] = el; }}
+                                        src={project.video}
                                         className="w-full h-full object-cover"
-                                        autoPlay
-                                        loop
+                                        preload="metadata"
                                         muted
                                         playsInline
+                                        onPlay={() => setPlayingStates(prev => {
+                                            const next = [...prev];
+                                            next[index] = true;
+                                            return next;
+                                        })}
+                                        onPause={() => setPlayingStates(prev => {
+                                            const next = [...prev];
+                                            next[index] = false;
+                                            return next;
+                                        })}
                                     >
                                         Your browser does not support the video tag.
                                     </video>
+
+                                    {/* Dark overlay when paused */}
+                                    <div className={`absolute inset-0 bg-ink/25 transition-opacity duration-300 pointer-events-none ${playingStates[index] ? 'opacity-0' : 'opacity-100'}`}></div>
+
+                                    {/* Play Button */}
+                                    <div
+                                        className={`absolute inset-0 flex items-center justify-center transition-opacity duration-300 ${playingStates[index] ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}
+                                    >
+                                        <button
+                                            className="w-16 h-16 md:w-20 md:h-20 bg-paper border-4 border-ink shadow-neo flex items-center justify-center hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all active:bg-acid"
+                                            aria-label={`Play ${project.title} video`}
+                                        >
+                                            <svg viewBox="0 0 24 24" fill="var(--color-ink)" className="w-8 h-8 md:w-10 md:h-10 ml-1">
+                                                <polygon points="5 3 19 12 5 21 5 3" />
+                                            </svg>
+                                        </button>
+                                    </div>
 
                                     {/* Inner Video Border highlight */}
                                     <div className="absolute inset-0 border-2 border-white/10 pointer-events-none mix-blend-overlay"></div>
