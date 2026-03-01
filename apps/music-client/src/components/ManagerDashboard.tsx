@@ -183,7 +183,7 @@ const ManagerDashboard = () => {
                                             </div>
 
                                             <div className="lesson-actions" style={{ textAlign: 'right', minWidth: '200px' }}>
-                                                <div style={{ marginBottom: '10px', fontStyle: 'italic', color: '#ddd' }}>
+                                                <div style={{ marginBottom: '10px', fontStyle: 'italic', color: '#666' }}>
                                                     {lesson.parent_note ? `Note: "${lesson.parent_note}"` : "No notes for teacher"}
                                                 </div>
                                                 <button

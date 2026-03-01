@@ -298,9 +298,9 @@ const WeeklySchedule: React.FC<WeeklyScheduleProps> = ({ teacherId, currentWeekS
                         <p><strong>Status:</strong> {selectedLesson.lesson_status}</p>
 
                         {selectedLesson.parent_note && (
-                            <div style={{ background: '#444', padding: '10px', borderRadius: '4px', margin: '10px 0' }}>
-                                <strong>Note from Parent:</strong>
-                                <p style={{ margin: '5px 0 0 0', fontStyle: 'italic' }}>"{selectedLesson.parent_note}"</p>
+                            <div style={{ background: '#f5f5f5', padding: '10px', borderRadius: '4px', margin: '10px 0', border: '1px solid #e0e0e0' }}>
+                                <strong style={{ color: '#555' }}>Note from Parent:</strong>
+                                <p style={{ margin: '5px 0 0 0', fontStyle: 'italic', color: '#333' }}>"{selectedLesson.parent_note}"</p>
                             </div>
                         )}
 
