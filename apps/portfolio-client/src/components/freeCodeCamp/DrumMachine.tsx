@@ -67,7 +67,7 @@ const DrumMachine: React.FC = () => {
                 {/* Display panel — centered, narrower than full width */}
                 <div
                     id="display"
-                    className="border-2 border-acid px-4 py-1 w-48 font-mono text-xs font-bold text-acid uppercase tracking-widest min-h-[2rem] flex items-center justify-center text-center"
+                    className="border-2 border-paper px-4 py-1 w-48 font-mono text-xs font-bold text-paper uppercase tracking-widest min-h-[2rem] flex items-center justify-center text-center"
                 >
                     {displaySoundName || '—'}
                 </div>
@@ -76,7 +76,7 @@ const DrumMachine: React.FC = () => {
             {/* ── 3×3 Pad Grid ────────────────────────────────────────────── */}
             <div
                 id="buttons"
-                className="grid grid-cols-3 border-x-4 border-b-0 border-ink"
+                className="grid text-ink grid-cols-3 border-x-4 border-b-0 border-ink"
             >
                 {DRUM_PADS.map(pad => (
                     <DrumPad
@@ -148,7 +148,7 @@ const DrumPad: React.FC<DrumPadProps> = ({ pad, isActive, onPlay }) => (
         className={`drum-pad relative aspect-square border-2 border-ink flex flex-col items-center justify-center gap-1 cursor-pointer select-none transition-all duration-75
             ${isActive
                 ? 'bg-acid translate-x-px translate-y-px shadow-none'
-                : 'bg-paper hover:bg-acid'
+                : 'bg-paper hover:bg-surface-muted'
             }`}
         onClick={() => onPlay(pad.key, pad.name)}
         aria-label={pad.name}

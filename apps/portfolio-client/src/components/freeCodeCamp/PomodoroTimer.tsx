@@ -184,7 +184,7 @@ const PomodoroTimer: React.FC = () => {
                 <button
                     id="start_stop"
                     onClick={handlePlayPause}
-                    className="flex-1 bg-paper text-ink font-black  uppercase py-4 text-sm tracking-widest hover:bg-acid hover:text-ink transition-colors border-r-2 border-ink active:opacity-80"
+                    className="flex-1 bg-paper text-ink font-black  uppercase py-4 text-sm tracking-widest hover:bg-acid hover:text-black transition-colors border-r-2 border-ink active:opacity-80"
                 >
                     {timerState === 'paused' ? 'Play' : 'Pause'}
                 </button>

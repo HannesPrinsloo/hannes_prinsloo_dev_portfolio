@@ -57,7 +57,7 @@ const RandomNietzsche: React.FC = () => {
                     href={`https://twitter.com/intent/tweet?text="${encodeURIComponent(currentQuote)}" - ${encodeURIComponent(currentAuthor)}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex-1 bg-acid text-ink text-center font-bold uppercase py-4 border-2 border-ink shadow-[4px_4px_0px_0px_#1A1A1A] hover:bg-paper transition-all active:translate-x-1 active:translate-y-1 active:shadow-none flex items-center justify-center gap-2"
+                    className="flex-1 bg-acid text-black text-center font-bold uppercase py-4 border-2 border-ink shadow-[4px_4px_0px_0px_#1A1A1A] hover:bg-paper hover:text-ink transition-all active:translate-x-1 active:translate-y-1 active:shadow-none flex items-center justify-center gap-2"
                 >
                     {/* SVG Twitter X Icon */}
                     <svg viewBox="0 0 24 24" className="w-5 h-5 fill-current" aria-hidden="true">

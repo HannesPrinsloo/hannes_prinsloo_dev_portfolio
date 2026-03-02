@@ -128,7 +128,7 @@ const PokemonSearchApp: React.FC = () => {
                     <button
                         id="search-button"
                         type="submit"
-                        className="bg-acid text-ink font-sans font-black uppercase py-2 border-2 border-ink hover:bg-ink hover:text-paper transition-colors active:translate-x-px active:translate-y-px"
+                        className="bg-acid text-black font-sans font-black uppercase py-2 border-2 border-ink hover:bg-ink hover:text-paper transition-colors active:translate-x-px active:translate-y-px"
                     >
                         Search
                     </button>
@@ -222,7 +222,7 @@ const PokemonSearchApp: React.FC = () => {
                     <button
                         id="guess-btn"
                         type="submit"
-                        className="bg-acid text-ink font-sans font-black uppercase py-2 text-xs border-2 border-acid hover:bg-paper hover:border-paper transition-colors active:translate-x-px active:translate-y-px"
+                        className="bg-acid text-black font-sans font-black uppercase py-2 text-xs border-2 border-acid hover:bg-white hover:border-paper transition-colors active:translate-x-px active:translate-y-px"
                     >
                         Am I right?
                     </button>
@@ -249,14 +249,14 @@ const PokemonSearchApp: React.FC = () => {
                     <button
                         id="randomise-button"
                         onClick={getRandomPokemon}
-                        className="font-mono text-[10px] text-acid uppercase tracking-wide text-left hover:underline"
+                        className="font-mono text-[10px] text-paper uppercase tracking-wide text-left hover:underline"
                     >
                         Generate another Rand-émon
                     </button>
                     <button
                         id="hint"
                         onClick={() => setHintVisible(true)}
-                        className="font-mono text-[10px] text-acid uppercase tracking-wide text-left hover:underline"
+                        className="font-mono text-[10px] text-paper uppercase tracking-wide text-left hover:underline"
                     >
                         Hint, please
                     </button>

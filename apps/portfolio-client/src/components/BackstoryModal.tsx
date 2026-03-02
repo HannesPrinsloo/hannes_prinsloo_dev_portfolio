@@ -65,7 +65,7 @@ const BackstoryModal: React.FC<BackstoryModalProps> = ({ isOpen, onClose /*, isD
     useEffect(() => {
         if (isOpen) {
             document.body.style.overflow = 'hidden';
-            playSegment('backstory');
+            // playSegment('backstory'); // Audio is distracting, so I'm just leaving it out for now.
         } else {
             document.body.style.overflow = 'unset';
             fadeAndPause();
@@ -82,7 +82,7 @@ After high school, despite being dux learner and head boy, I chose this crazy dr
 
 For over a decade, I gigged all over South Africa. I shared stages with Valiant Swart, The South African Blues Society, The Black Cat Bones, Pedro Barbosa, and hundreds of other local musos. 
 
-Coming from a working-class background, I funded the dream myself, working terrible hours as a bartender, restaurant manager, and warehouse manager. Eventually, I realized that the only real money for me in the music industry was probably in corporate gigs and functions - the kind of gigs that paid the bills, and they were fun enough, but never the dream. It was a gamble, but it was all worth it to give my music the shot it deserved. In early 2023, at 28, I saw 30 fast approaching and made the decision. I kept the promise I made to my 18-year-old self and pivoted to my other lifelong passion - software development.`;
+Coming from a working-class background, I funded the dream myself, working terrible hours as a bartender, restaurant manager, and warehouse manager. Eventually, I realised that the only real money for me in the music industry was probably in corporate gigs and functions - the kind of gigs that paid the bills, and they were fun enough, but never the dream. It was a gamble, but it was all worth it to give my music the shot it deserved. In early 2023, at 28, I saw 30 fast approaching and made the decision. I kept the promise I made to my 18-year-old self and pivoted to my other lifelong passion - software development.`;
 
     // Only start typing when open
     const { displayedText, isTyping } = useTypewriter(isOpen ? storyText : '', 15, 500);

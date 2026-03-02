@@ -4,7 +4,7 @@ import { useAudioStore } from '../store/useAudioStore';
 export function useAudioScrollTracker() {
     const scrollTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
     const activeSectionRef = useRef<string | null>(null);
-    const { playSegment, fadeAndPause, currentlyPlaying } = useAudioStore();
+    const { playSegment, fadeAndPause, currentlyPlaying, isAudioEnabled } = useAudioStore();
 
     useEffect(() => {
         const handleScroll = () => {
@@ -75,5 +75,5 @@ export function useAudioScrollTracker() {
             if (scrollTimeoutRef.current) clearTimeout(scrollTimeoutRef.current);
             clearTimeout(initialTimeout);
         };
-    }, [fadeAndPause, playSegment, currentlyPlaying]);
+    }, [fadeAndPause, playSegment, currentlyPlaying, isAudioEnabled]);
 }

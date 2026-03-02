@@ -74,7 +74,7 @@ const RomanNumeralConverter: React.FC = () => {
                 <h3 className="font-sans text-2xl font-black uppercase leading-none tracking-tighter">
                     Roman Numeral<br />Converter
                 </h3>
-                <span className="border-2 border-acid px-2 py-1 text-xs font-bold text-acid uppercase self-start sm:self-auto shrink-0">
+                <span className="border-2 border-paper px-2 py-1 text-xs font-bold text-paper uppercase self-start sm:self-auto shrink-0">
                     I–MMMCMXCIX
                 </span>
             </div>
@@ -100,7 +100,7 @@ const RomanNumeralConverter: React.FC = () => {
                         <button
                             id="convert-btn"
                             onClick={handleConvert}
-                            className="bg-ink text-paper font-sans font-black uppercase px-6 py-3 border-2 border-ink hover:bg-acid hover:text-ink transition-colors active:translate-x-px active:translate-y-px"
+                            className="bg-ink text-paper font-sans font-black uppercase px-6 py-3 border-2 border-ink hover:bg-surface-muted hover:text-ink transition-colors active:translate-x-px active:translate-y-px"
                         >
                             Go
                         </button>

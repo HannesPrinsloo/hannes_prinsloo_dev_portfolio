@@ -23,9 +23,21 @@ const FreelanceWorkModal: React.FC<FreelanceWorkModalProps> = ({ isOpen, onClose
     if (!isOpen) return null;
 
     const freelanceProjects = [
-        { title: 'Mounted', video: '/assets/mounted-web.mp4' },
-        { title: 'Debtorsolved', video: '/assets/debtorsolved-web.mp4' },
-        { title: 'OBC Group', video: '/assets/obc-web.mp4' }
+        {
+            title: 'Mounted',
+            video: '/assets/mounted-web.mp4',
+            description: 'A fitness and wellness brand started by an ex-Springbok Woman\'s Rugby player. They sell one piece of unique gym equipment. Had to integrate with PayFast for payments. Worked closely with a designer.'
+        },
+        {
+            title: 'Debtorsolved',
+            video: '/assets/debtorsolved-web.mp4',
+            description: 'A comprehensive debtor management and recovery business. The client went out of business in the meanwhile, so the site is only on my hosting servers (hence the "Not Secure" warning in the browser). Worked closely with a designer on this one also.'
+        },
+        {
+            title: 'OBC Group',
+            video: '/assets/obc-web.mp4',
+            description: 'A national butchery chain with over 90 stores across South Africa. For this project, I worked with the marketing and design team at OBC.'
+        }
     ];
 
     // const isMobile = typeof window !== 'undefined' && window.matchMedia('(max-width: 768px)').matches;
@@ -93,6 +105,11 @@ const FreelanceWorkModal: React.FC<FreelanceWorkModalProps> = ({ isOpen, onClose
                                 <h3 className="text-2xl font-black uppercase inline-block bg-ink text-paper px-4 py-2 self-start shadow-neo-sm transform -rotate-1">
                                     {project.title}
                                 </h3>
+                                <div className="bg-paper border-2 border-ink p-6 shadow-neo-sm">
+                                    <p className="text-sm leading-relaxed font-mono">
+                                        {project.description}
+                                    </p>
+                                </div>
                                 {/* Video Showcase Area */}
                                 <div
                                     className="w-full aspect-video border-4 border-ink bg-ink relative overflow-hidden shadow-neo-sm cursor-pointer group/video"

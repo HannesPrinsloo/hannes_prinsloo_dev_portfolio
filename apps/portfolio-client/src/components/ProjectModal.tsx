@@ -67,17 +67,17 @@ const ProjectModal: React.FC<ProjectModalProps> = ({ isOpen, onClose }) => {
         {
             title: 'Admin',
             video: '/assets/s15/s15-intro-web.mp4',
-            description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.'
+            description: 'Onboarding and assigning students to teachers, managing users\' information, creating events and viewing attendance and messaging - and more.'
         },
         {
             title: 'Teacher',
             video: '/assets/s15/s15-teacher-web.mp4',
-            description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.'
+            description: 'Assigning student syllabus levels, managing their own schedules with in-app messages from parents (managers), viewing/managing event bookings and marking attendance with accompanying messaging to parents.'
         },
         {
             title: 'Manager',
             video: '/assets/s15/s15-manager-web.mp4',
-            description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.'
+            description: 'Viewing schedules for all associated students, sending messages to teachers about specific lessons, viewing attendance and receiving messages from teachers as well as managing and booking events for their little rockstars.'
         }
     ];
 
@@ -120,7 +120,7 @@ const ProjectModal: React.FC<ProjectModalProps> = ({ isOpen, onClose }) => {
                         <h2 className="text-2xl md:text-4xl font-black uppercase leading-none tracking-tighter mix-blend-multiply dark:mix-blend-normal">
                             Music School Manager
                         </h2>
-                        <span className="border border-ink px-2 py-1 text-xs font-bold bg-acid text-black hidden sm:inline-block">v1.0-alpha</span>
+                        <span className="border border-ink px-2 py-1 text-xs font-bold bg-acid text-black hidden sm:inline-block">v1.0-beta</span>
                     </div>
 
                     <button
@@ -197,14 +197,17 @@ const ProjectModal: React.FC<ProjectModalProps> = ({ isOpen, onClose }) => {
                             {/* Right: Project Overview + Key Features stacked */}
                             <div className="flex flex-col gap-8">
                                 <div className="bg-paper border-2 border-ink p-6 shadow-neo-sm">
-                                    <h3 className="text-xl font-bold uppercase border-b-2 border-ink pb-2 mb-4">Project Overview</h3>
+                                    <h3 className="text-xl font-bold uppercase border-b-2 border-ink pb-2 mb-4">Beta Version - Project Overview</h3>
                                     <p className="text-sm leading-relaxed font-mono">
-                                        The Music School Manager is a comprehensive CRM built specifically for a growing music academy.
-                                        It handles the complex relationships between multiple user roles: Administrators, Teachers, Managers, and Students.
+                                        The idea for this app came from my own daily struggles with using multiple unrelated platforms to manage my music school related admin and scheduling. I also saw the school's
+                                        admin office take on the burden of keeping 2000 students', their parents' and teachers' records straight. Every person currently has their own little island of data that has to be manually
+                                        shared with everyone else - and the staff and owners are always stretched thin because of it. <br /><br />The beta version of the application already handles the complex relationships
+                                        between multiple user roles: Administrators, Teachers, Students and their Parents/Guardians (affectionately called ‘Managers’ - because they manage little rockstars). <br />Day-to-day and
+                                        recurring scheduling, teacher-student rosters, event eligibility and bookings, billing and registration are all handled with one source of truth for them all.
                                     </p>
                                     <p className="text-sm leading-relaxed font-mono mt-4">
-                                        The application streamlines daily operations including scheduling lessons, building teacher rosters,
-                                        managing event bookings, and handling billing and registration procedures.
+                                        While it is still in development, the Minimum Viable Product (MVP) is ready for beta testing. I am currently in conversation with the owners of the school
+                                        about an initial testing-phase rollout of our very own Client Relationship Management (CRM) application. Web-app for now, native iOS and Android soon to come.
                                     </p>
                                 </div>
 
@@ -212,20 +215,20 @@ const ProjectModal: React.FC<ProjectModalProps> = ({ isOpen, onClose }) => {
                                     <h3 className="text-xl font-bold uppercase border-b-2 border-ink pb-2 mb-4">Key Features</h3>
                                     <ul className="text-sm font-mono space-y-3">
                                         <li className="flex gap-2">
-                                            <span className="text-acid font-bold">»</span>
-                                            <span>Multi-role dashboards with distinct permission sets</span>
+                                            <span className="text-ink font-bold">»</span>
+                                            <span>Dashboards with distinct permission sets for each role</span>
                                         </li>
                                         <li className="flex gap-2">
-                                            <span className="text-acid font-bold">»</span>
+                                            <span className="text-ink font-bold">»</span>
                                             <span>Complex event and lesson booking systems</span>
                                         </li>
                                         <li className="flex gap-2">
-                                            <span className="text-acid font-bold">»</span>
-                                            <span>Real-time UI synchronization across sessions</span>
+                                            <span className="text-ink font-bold">»</span>
+                                            <span>Real-time UI updates and data synchronisation across sessions</span>
                                         </li>
                                         <li className="flex gap-2">
-                                            <span className="text-acid font-bold">»</span>
-                                            <span>Automated student progression leveling</span>
+                                            <span className="text-ink font-bold">»</span>
+                                            <span>Simple messaging between teachers and their parents (managers)</span>
                                         </li>
                                     </ul>
                                 </div>
@@ -238,7 +241,7 @@ const ProjectModal: React.FC<ProjectModalProps> = ({ isOpen, onClose }) => {
                                 onClick={() => setShowTourSection(!showTourSection)}
                                 className={`
                                     bg-ink text-paper px-8 py-4 font-bold uppercase tracking-widest text-sm border-2 border-transparent
-                                    hover:bg-acid hover:text-ink hover:border-ink hover:shadow-neo transition-all active:translate-y-1 active:translate-x-1 active:shadow-none
+                                    hover:bg-acid hover:text-black hover:border-ink hover:shadow-neo transition-all active:translate-y-1 active:translate-x-1 active:shadow-none
                                     flex items-center gap-3 group
                                 `}
                             >
@@ -267,9 +270,11 @@ const ProjectModal: React.FC<ProjectModalProps> = ({ isOpen, onClose }) => {
                                         <h3 className="text-2xl font-black uppercase inline-block bg-ink text-paper px-4 py-2 self-start shadow-neo-sm transform -rotate-1">
                                             {section.title}
                                         </h3>
-                                        <p className="text-sm leading-relaxed font-mono">
-                                            {section.description}
-                                        </p>
+                                        <div className="bg-paper border-2 border-ink p-6 shadow-neo-sm">
+                                            <p className="text-sm leading-relaxed font-mono">
+                                                {section.description}
+                                            </p>
+                                        </div>
                                         {/* Video with play button */}
                                         <div
                                             className="w-full aspect-video border-4 border-ink bg-ink relative overflow-hidden shadow-neo-sm cursor-pointer group/video"
@@ -312,7 +317,7 @@ const ProjectModal: React.FC<ProjectModalProps> = ({ isOpen, onClose }) => {
                                 onClick={() => setShowTechnicalDetails(!showTechnicalDetails)}
                                 className={`
                                     bg-ink text-paper px-8 py-4 font-bold uppercase tracking-widest text-sm border-2 border-transparent
-                                    hover:bg-acid hover:text-ink hover:border-ink hover:shadow-neo transition-all active:translate-y-1 active:translate-x-1 active:shadow-none
+                                    hover:bg-acid hover:text-black hover:border-ink hover:shadow-neo transition-all active:translate-y-1 active:translate-x-1 active:shadow-none
                                     flex items-center gap-3 group
                                 `}
                             >
@@ -370,8 +375,8 @@ const ProjectModal: React.FC<ProjectModalProps> = ({ isOpen, onClose }) => {
                                             To prevent users from hitting those backend locks due to stale UIs, the entire frontend was migrated away from standard <code className="bg-surface-muted px-1 border border-ink/30 relative -top-[1px]">useEffect</code> fetching to TanStack Query.
                                         </p>
                                         <ul className="mt-4 space-y-3 pl-4 border-l-2 border-acid">
-                                            <li><strong className="text-acid bg-ink px-1 filter invert dark:invert-0 shadow-sm">Short-Polling:</strong> Dashboards silently re-fetch data in the background (e.g., every 10s) so the UI acts as a living document.</li>
-                                            <li><strong className="text-acid bg-ink px-1 filter invert dark:invert-0 shadow-sm">Cache Invalidation:</strong> Mutations preemptively invalidate query keys, forcing immediate background updates globally without manual prop-drilling or state juggling.</li>
+                                            <li><strong className="text-black bg-acid px-1 shadow-sm">Short-Polling:</strong> Dashboards silently re-fetch data in the background (e.g., every 10s) so the UI acts as a living document.</li>
+                                            <li><strong className="text-black bg-acid px-1 shadow-sm">Cache Invalidation:</strong> Mutations preemptively invalidate query keys, forcing immediate background updates globally without manual prop-drilling or state juggling.</li>
                                         </ul>
                                     </div>
 

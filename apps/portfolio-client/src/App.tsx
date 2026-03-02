@@ -43,8 +43,7 @@ function App() {
     const [dotLottie, setDotLottie] = useState<any>(null);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const navRef = useRef<HTMLElement>(null);
-    const freelanceLottieRef = useRef<HTMLDivElement>(null);
-    const [isFreelanceLottieVisible, setIsFreelanceLottieVisible] = useState(false);
+
 
     // Audio Footer Interaction States
     const playSegment = useAudioStore((state) => state.playSegment);
@@ -102,22 +101,7 @@ function App() {
         }
     }, [isDarkMode, themeClickCount]);
 
-    // Lazy load freelance Lottie when it scrolls into view
-    useEffect(() => {
-        const el = freelanceLottieRef.current;
-        if (!el) return;
-        const observer = new IntersectionObserver(
-            ([entry]) => {
-                if (entry.isIntersecting) {
-                    setIsFreelanceLottieVisible(true);
-                    observer.disconnect();
-                }
-            },
-            { threshold: 0.1 }
-        );
-        observer.observe(el);
-        return () => observer.disconnect();
-    }, []);
+
 
     return (
         <div className="min-h-screen bg-paper text-ink p-4 md:p-8 font-mono">
@@ -302,11 +286,12 @@ function App() {
                             {themeClickCount >= 4 ? (
                                 <>
                                     <h1 className="text-6xl md:text-8xl font-medium leading-[0.85] mb-8 tracking-tighter mix-blend-multiply dark:mix-blend-normal fun:mix-blend-normal">
-                                        Surprise!
+                                        Comic, Sans the comedy
                                     </h1>
 
                                     <p className="text-lg md:text-xl max-w-2xl leading-relaxed border-l-4 border-acid pl-6 italic mb-8">
-                                        I knew you couldn't resist playing with that button! Flashing lights, unicorn hats, a really cool bald guy and <i>Comic, Sans the comedy</i> (where the designers at?). <br />I hope this makes someone chuckle.<br /> I've wasted so much time on this.
+                                        I hope someone finds this entertaining<br />
+                                        I've wasted so much time on this.
                                     </p>
                                 </>
                             ) : (
@@ -386,7 +371,7 @@ function App() {
                                 Building end-to-end applications with a focus on the modern React ecosystem. Capable of developing both interactive user interfaces and the backend services that support them.
                             </p>
                             <div className="flex flex-wrap gap-2 mt-auto">
-                                {['React', 'Zustand', 'JavaScript/TypeScript', 'Tailwind', 'Node.js', 'PostgreSQL', 'Express'].map(t => (
+                                {['React', 'React Query', 'Zustand', 'JavaScript/TypeScript', 'Tailwind', 'Node.js', 'PostgreSQL', 'Express'].map(t => (
                                     <span key={t} className="text-xs font-bold border border-ink px-1 bg-surface-muted">{t}</span>
                                 ))}
                             </div>
@@ -412,7 +397,7 @@ function App() {
                                 Delivering functional, user-friendly websites for freelance clients while working closely with designers. Experienced in configuring CMS platforms and enhancing core functionality through targeted custom JS and CSS.
                             </p>
                             <div className="flex flex-wrap gap-2 mt-auto">
-                                {['WordPress', 'Elementor Pro', 'Custom CSS/JS', 'Client Relations'].map(t => (
+                                {['WordPress', 'Elementor Pro', 'Custom CSS/JS', 'Figma/Adobe XD', 'Client Relations'].map(t => (
                                     <span key={t} className="text-xs font-bold border border-ink px-1 bg-surface-muted">{t}</span>
                                 ))}
                             </div>
@@ -431,7 +416,7 @@ function App() {
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                                 <div>
                                     <h4 className="font-medium border-b border-ink mb-3 pb-1">University of South Africa (UNISA)</h4>
-                                    <p className="text-sm">Bachelor of Science in Computing — <span className="font-bold bg-acid px-1">Current</span></p>
+                                    <p className="text-sm">Bachelor of Science in Computing — <span className="font-bold text-black bg-acid px-1">Current</span></p>
                                 </div>
                                 <div>
                                     <h4 className="font-medium border-b border-ink mb-3 pb-1">Hoërskool Wonderfontein, Carletonville</h4>
@@ -554,7 +539,7 @@ function App() {
                             <div className="w-full md:w-1/2 aspect-video border-2 border-ink bg-surface-muted relative overflow-hidden transition-all duration-300">
                                 {/* Abstract Lines / Screenprint Effect */}
                                 <div className="absolute inset-0 bg-[linear-gradient(45deg,var(--color-ink)_1px,transparent_1px)] bg-[length:10px_10px] opacity-10"></div>
-                                <img src="/assets/swallow-15-thumbnail.jpeg" alt="Music School Manager" className="absolute inset-0 w-full h-full object-cover" />
+                                <img src="/assets/s15-thumbnail.webp" alt="Music School Manager" className="absolute inset-0 w-full h-full object-cover" />
                             </div>
 
                             {/* Info Side */}
@@ -571,7 +556,7 @@ function App() {
 
                                     {/* Tech Tags */}
                                     <div className="flex flex-wrap gap-2 mb-8">
-                                        {['TypeScript', 'React', 'React Query', 'Zustand', 'Node / Express', 'Tailwind', 'JWT Auth', 'PostgreSQL'].map(tech => (
+                                        {['TypeScript', 'React', 'React Query', 'Zustand', 'Node/Express', 'Tailwind', 'JWT Auth', 'PostgreSQL'].map(tech => (
                                             <span key={tech} className="text-xs font-bold uppercase border border-ink px-2 py-1 hover:bg-ink hover:text-paper cursor-default transition-colors">
                                                 {tech}
                                             </span>
@@ -611,21 +596,21 @@ function App() {
 
                             <div className="flex flex-col md:flex-row gap-10">
                                 {/* Visual Side - Conditional visibility based on expansion */}
-                                <div className={`aspect-video border-2 border-ink bg-surface-muted relative overflow-hidden grayscale group-hover:grayscale-0 transition-all duration-500 ease-in-out origin-left ${isFreeCodeCampExpanded ? 'w-0 opacity-0 overflow-hidden border-0 !p-0 max-h-0 md:max-h-full' : 'w-full md:w-1/2 opacity-100 max-h-[1000px]'}`}>
+                                <div className={`aspect-video border-2 border-ink bg-surface-muted relative overflow-hidden origin-left ${isFreeCodeCampExpanded ? 'w-0 opacity-0 overflow-hidden border-0 !p-0 max-h-0 md:max-h-full' : 'w-full md:w-1/2 opacity-100 max-h-[1000px]'}`}>
                                     {/* Abstract Lines / Screenprint Effect */}
                                     <div className="absolute inset-0 bg-[linear-gradient(45deg,var(--color-ink)_1px,transparent_1px)] bg-[length:10px_10px] opacity-10 min-w-[300px]"></div>
-                                    <img src="/assets/FreeCodeCamp_logo.png" alt="freeCodeCamp Projects" className="absolute inset-0 w-full h-full object-cover min-w-[300px]" />
+                                    <img src="/assets/projects-modal-thumbnail.webp" alt="freeCodeCamp Projects" className="absolute inset-0 w-full h-full object-cover min-w-[300px]" />
                                 </div>
 
                                 {/* Info Side */}
                                 <div className={`flex flex-col justify-between transition-all duration-500 ease-in-out ${isFreeCodeCampExpanded ? 'w-full' : 'w-full md:w-1/2'}`}>
                                     <div>
                                         <div className="flex justify-between items-start mb-4">
-                                            <h3 className="text-3xl font-black uppercase leading-none">freeCodeCamp<br />Projects</h3>
+                                            <h3 className="text-3xl font-black uppercase leading-none">Self-study<br />Projects</h3>
                                             <span className="border border-ink px-2 py-1 text-xs font-bold bg-acid text-black">v1.0</span>
                                         </div>
                                         <p className="text-sm mb-6 border-l-2 border-ink pl-4">
-                                            A selection of functional projects built during my <a href="https://www.freecodecamp.org/" target="_blank" rel="noopener noreferrer" className="font-bold hover:bg-acid hover:text-ink cursor-default transition-colors">freeCodeCamp</a> self-study to gain certification.
+                                            A selection of functional projects built during my <a href="https://www.freecodecamp.org/" target="_blank" rel="noopener noreferrer" className="font-bold hover:bg-acid hover:text-ink cursor-default transition-colors">freeCodeCamp</a> self-study to gain certification. I refactored and restyled them to fit into a modern React/TypeScript/Tailwind stack.
                                         </p>
 
                                         {/* Tech Tags */}
@@ -714,18 +699,10 @@ function App() {
                         <div className="border border-ink dark:group-hover:border-surface-muted p-6 md:p-10 flex flex-col md:flex-row gap-10 bg-paper group-hover:bg-surface transition-colors h-full">
 
                             {/* Visual Side */}
-                            <div ref={freelanceLottieRef} className="w-full md:w-1/2 aspect-video border-2 border-ink bg-surface-muted relative overflow-hidden transition-all duration-300">
-                                {/* Lottie - lazy loaded, autoplay on desktop only */}
-                                {isFreelanceLottieVisible && (
-                                    <DotLottieReact
-                                        src={isDarkMode ? '/assets/modal-animation-dark.lottie' : '/assets/modal-animation-light.lottie'}
-                                        loop
-                                        autoplay={typeof window !== 'undefined' && window.matchMedia('(min-width: 768px)').matches}
-                                        className="absolute inset-0 w-full h-full object-cover"
-                                    />
-                                )}
-
-
+                            <div className="w-full md:w-1/2 aspect-video border-2 border-ink bg-surface-muted relative overflow-hidden transition-all duration-300">
+                                {/* Abstract Lines / Screenprint Effect */}
+                                <div className="absolute inset-0 bg-[linear-gradient(45deg,var(--color-ink)_1px,transparent_1px)] bg-[length:10px_10px] opacity-10"></div>
+                                <img src="/assets/freelance-modal-thumbnail.webp" alt="Freelance Work" className="absolute inset-0 w-full h-full object-cover" />
                             </div>
 
                             {/* Info Side */}
@@ -736,12 +713,12 @@ function App() {
                                         <span className="border border-ink px-2 py-1 text-xs font-bold bg-acid text-black">v1.0</span>
                                     </div>
                                     <p className="text-sm mb-6 border-l-2 border-ink pl-4">
-                                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam.
+                                        A collection of websites I have built for word-of-mouth clients.
                                     </p>
 
                                     {/* Tech Tags */}
                                     <div className="flex flex-wrap gap-2 mb-8">
-                                        {['React', 'TypeScript', 'Tailwind', '...'].map(tech => (
+                                        {['WordPress', 'JavaScript', 'Vanilla CSS', 'Figma/Adobe XD'].map(tech => (
                                             <span key={tech} className="text-xs font-bold uppercase border border-ink px-2 py-1 hover:bg-ink hover:text-paper cursor-default transition-colors">
                                                 {tech}
                                             </span>
@@ -808,10 +785,10 @@ function App() {
                         {/* Timeline Item 3 */}
                         <div className="relative group">
                             <div className="absolute -left-[43px] top-1 w-5 h-5 bg-[#f4f4f0] dark:bg-[#1A1A1A] rounded-full border-4 border-ink group-hover:bg-acid transition-colors"></div>
-                            <h3 className="text-xl font-bold mb-4 border-b-2 border-ink pb-2">Music Teacher</h3>
+                            <h3 className="text-xl font-bold mb-4 border-b-2 border-ink pb-2">Guitar Teacher at Swallow 15</h3>
                             <span className="text-sm font-mono opacity-70 mb-4 block bg-surface-muted inline-block px-2">February 2024 - Present</span>
                             <p className="max-w-2xl leading-relaxed text-sm">
-                                I have taught musical improvisation and musicality lessons to adults on and off for my whole music career, but this was nearly always to already capable musicians. In 2024 I took an official job as a music teacher to kids from various Primary Schools in Centurion. The amount of students vary, but I usually have between 30 and 40 students on my roster any given month.
+                                I have taught musical improvisation and musicality lessons to adults on and off for my whole music career, but this was nearly always to already capable musicians. In 2024 I took an official job as a music teacher with Swallow 15, the largest music school in South Africa. I teach guitar to kids from various Primary Schools in Centurion. The amount of students vary, but I usually have between 30 and 40 students on my roster any given month.
                                 <br />I mainly teach guitar and the accompanying music theory, but I also teach my more advanced students Jazz style improvisation with different styles of music and musicality.
                             </p>
                         </div>
@@ -921,7 +898,7 @@ function App() {
                         Technical Arsenal
                     </h4>
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                        {['TypeScript', 'React', 'Redux', 'Zustand', 'Node.js', 'Express', 'PostgreSQL', 'WordPress', 'Elementor Pro', 'HTML', 'CSS', 'Tailwind', 'Vite', 'Git', 'Vercel', 'Render', 'Supabase', 'Figma', 'Designer-Speak', 'Client Relations'].map((tool, i) => (
+                        {['TypeScript', 'React', 'React Query', 'Redux', 'Zustand', 'Node.js', 'Express', 'PostgreSQL', 'WordPress', 'Elementor Pro', 'HTML', 'CSS', 'Tailwind', 'Vite', 'Git', 'Vercel', 'Render', 'Supabase', 'Figma', 'Client Relations'].map((tool, i) => (
                             <div key={tool} className="border-2 border-ink p-4 hover:shadow-neo hover:bg-surface transition-all cursor-default">
                                 <div className="text-xs opacity-60 mb-1">0{i + 1}</div>
                                 <div className="font-bold uppercase">{tool}</div>
@@ -963,7 +940,7 @@ function App() {
                     }}
                 >
                     <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-12 md:gap-8 w-full">
-                        {/* Brand */}
+                        {/* Brand + GitHub */}
                         <div className="flex-shrink-0">
                             <div className="text-6xl md:text-8xl font-black text-transparent leading-none" style={{ WebkitTextStroke: '2px var(--color-ink)' }}>HP_DEV</div>
                         </div>
@@ -1017,9 +994,20 @@ function App() {
                         </div>
                     </div>
 
-                    {/* Credits & Copyright */}
+                    {/* Credits, Copyright & GitHub */}
                     <div className="mt-16 pt-8 border-t-2 border-ink/20 flex flex-col items-center pb-8 text-center text-sm font-mono w-full">
                         <div className="flex flex-col gap-2">
+                            <a
+                                href="https://github.com/HannesPrinsloo"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="inline-flex items-center justify-center gap-2 mt-2 mb-2 font-mono text-sm font-bold uppercase tracking-widest hover:underline transition-colors"
+                            >
+                                <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
+                                    <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z" />
+                                </svg>
+                                GitHub
+                            </a>
                             <span className="font-bold uppercase tracking-widest">Developed, written and performed by Hannes Prinsloo</span>
                             <span className="opacity-60 text-xs">© 2026 Hannes Prinsloo</span>
                             <span className="opacity-40 hover:opacity-80 transition-opacity cursor-default text-[10px] mt-1 italic">i also played the guitar you hear in the background music</span>
