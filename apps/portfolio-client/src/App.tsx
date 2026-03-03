@@ -302,7 +302,7 @@ function App() {
                                     </h1>
 
                                     <p className="text-lg md:text-xl max-w-2xl leading-relaxed border-l-4 border-acid pl-6 italic mb-8">
-                                        I am a self-taught Full Stack Developer and freelancer, currently studying for a Computer Science degree. I am also a professional gigging musician and music teacher looking to move into a career in tech.
+                                        I am a self-taught Full Stack Developer and freelancer, currently studying for a Computer Science degree. I am also a professional gigging musician and music teacher building a career in tech.
                                     </p>
                                 </>
                             )}
@@ -547,11 +547,11 @@ function App() {
                                 <div>
                                     <div className="flex justify-between items-start mb-4">
                                         <h3 className="text-3xl font-black uppercase leading-none">Music School<br />Manager</h3>
-                                        <span className="border border-ink px-2 py-1 text-xs font-bold bg-acid text-black">v1.0-alpha</span>
+                                        <span className="border border-ink px-2 py-1 text-xs font-bold bg-acid text-black">v1.0-beta</span>
                                     </div>
                                     <p className="text-sm mb-6 border-l-2 border-ink pl-4">
-                                        A comprehensive CRM for managing students, scheduling, and billing.
-                                        Built for high-volume data handling and reliability.
+                                        A CRM for South Africa's largest music school (2000+ students, 100 teachers, admin staff and parents of students), whose minimum viable product is in beta.
+                                        <br /><br />Please <a href="#footer_contact" className="hover:bg-acid font-black hover:text-black transition-colors decoration-2 underline-offset-2">contact me</a> to schedule a demo or view source code.
                                     </p>
 
                                     {/* Tech Tags */}
@@ -607,10 +607,11 @@ function App() {
                                     <div>
                                         <div className="flex justify-between items-start mb-4">
                                             <h3 className="text-3xl font-black uppercase leading-none">Self-study<br />Projects</h3>
-                                            <span className="border border-ink px-2 py-1 text-xs font-bold bg-acid text-black">v1.0</span>
+                                            {/* Removed version number, for obvious reasons */}
+                                            {/* <span className="border border-ink px-2 py-1 text-xs font-bold bg-acid text-black">v1.0</span> */}
                                         </div>
                                         <p className="text-sm mb-6 border-l-2 border-ink pl-4">
-                                            A selection of functional projects built during my <a href="https://www.freecodecamp.org/" target="_blank" rel="noopener noreferrer" className="font-bold hover:bg-acid hover:text-ink cursor-default transition-colors">freeCodeCamp</a> self-study to gain certification. I refactored and restyled them to fit into a modern React/TypeScript/Tailwind stack.
+                                            A selection of functional projects built during my <a href="https://www.freecodecamp.org/" target="_blank" rel="noopener noreferrer" className="font-bold hover:bg-acid hover:text-ink cursor-default transition-colors">freeCodeCamp</a> self-study to gain certification. <br />The code for the versions on this site differ from the code on GitHub - <strong>I refactored and restyled them to fit into a modern React/TypeScript/Tailwind stack</strong>. The original code can be accessed by clicking the GitHub icon in each card.
                                         </p>
 
                                         {/* Tech Tags */}
@@ -646,12 +647,12 @@ function App() {
                             <div className={`transition-all duration-500 overflow-hidden flex flex-col ${isFreeCodeCampExpanded ? 'max-h-[3000px] opacity-100 mt-10 border-t-2 border-ink pt-10' : 'max-h-0 opacity-0 mt-0 pt-0'}`}>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                                     {[
-                                        { title: 'JavaScript Calculator', tech: 'React + JS', thumbnail: '/assets/js-calculator.JPG' },
-                                        { title: 'Pokemon Search App', tech: 'Pure JS + API', thumbnail: '/assets/pokemon-search-app.jpeg' },
-                                        { title: 'Pomodoro Timer', tech: 'React + JS', thumbnail: '/assets/pomodoro-timer.jpeg' },
-                                        { title: 'Random Nietzsche', tech: 'React + JS', thumbnail: '/assets/random-nietzsche.jpeg' },
-                                        { title: 'Drum Machine', tech: 'React + JS', thumbnail: '/assets/drum-machine.jpeg' },
-                                        { title: 'Roman Numeral Converter', tech: 'React + JS', thumbnail: '/assets/roman-numeral-converter.jpeg' }
+                                        { title: 'JavaScript Calculator', tech: 'React + JS', thumbnail: '/assets/js-calculator.JPG', github: 'https://github.com/HannesPrinsloo/javascript-calculator' },
+                                        { title: 'Pokemon Search App', tech: 'Pure JS + API', thumbnail: '/assets/pokemon-search-app.jpeg', github: 'https://github.com/HannesPrinsloo/fCC_pokemon_search_app' },
+                                        { title: 'Pomodoro Timer', tech: 'React + JS', thumbnail: '/assets/pomodoro-timer.jpeg', github: 'https://github.com/HannesPrinsloo/pomodoro-timer' },
+                                        { title: 'Random Nietzsche', tech: 'React + JS', thumbnail: '/assets/random-nietzsche.jpeg', github: 'https://github.com/HannesPrinsloo/fcc_random-quote-machine' },
+                                        { title: 'Drum Machine', tech: 'React + JS', thumbnail: '/assets/drum-machine.jpeg', github: 'https://github.com/HannesPrinsloo/drum-machine' },
+                                        { title: 'Roman Numeral Converter', tech: 'React + JS', thumbnail: '/assets/roman-numeral-converter.jpeg', github: 'https://github.com/HannesPrinsloo/romanNumeralConverterFcc' }
                                     ].map((project, index) => (
                                         <div key={index} className="border-2 border-ink bg-surface-muted flex flex-col shadow-neo hover:translate-y-1 hover:translate-x-1 hover:shadow-none transition-all">
                                             <div className="aspect-video bg-ink border-b-2 border-ink relative overflow-hidden group/thumb">
@@ -660,7 +661,20 @@ function App() {
                                             </div>
                                             <div className="p-4 flex flex-col flex-grow bg-paper">
                                                 <h4 className="font-bold text-lg uppercase mb-2">{project.title}</h4>
-                                                <span className="text-xs font-mono border border-ink px-2 py-1 self-start mb-4 bg-acid/20">{project.tech}</span>
+                                                <div className="flex items-center gap-2 mb-4">
+                                                    <span className="text-xs font-mono border border-ink px-2 py-1 bg-acid/20">{project.tech}</span>
+                                                    <a
+                                                        href={project.github}
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        className="border border-ink p-1 hover:bg-ink hover:text-paper transition-colors group/gh"
+                                                        title="View Source on GitHub"
+                                                    >
+                                                        <svg viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4">
+                                                            <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z" />
+                                                        </svg>
+                                                    </a>
+                                                </div>
                                                 <button
                                                     onClick={() => {
                                                         setActiveFreeCodeCampProject(project.title);

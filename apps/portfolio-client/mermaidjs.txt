@@ -1,0 +1,187 @@
+erDiagram
+    %% ==================================================
+    %% IDENTITY & ACCESS MANAGEMENT
+    %% ==================================================
+    ROLES ||--o{ USERS : "assigned to"
+    USERS {
+        int user_id PK
+        string email UK
+        string password_hash
+        int role_id FK
+        string first_name
+        string last_name
+        string phone_number
+        boolean is_active
+        timestamp created_at
+        timestamp updated_at
+        date date_of_birth
+    }
+    ROLES {
+        int role_id PK
+        string role_name UK
+    }
+
+    %% ==================================================
+    %% CURRICULUM & PROGRESSION
+    %% ==================================================
+    INSTRUMENTS ||--o{ LEVELS : "contains"
+    INSTRUMENTS ||--o{ STUDENT_INSTRUMENTS : "learned by"
+    INSTRUMENTS ||--o{ TEACHER_INSTRUMENTS : "taught by"
+    LEVELS ||--o{ STUDENT_LEVELS : "achieved"
+    USERS ||--o{ STUDENT_INSTRUMENTS : "as student"
+    USERS ||--o{ TEACHER_INSTRUMENTS : "as teacher"
+    USERS ||--o{ STUDENT_LEVELS : "tracks"
+    USERS ||--o{ STUDENT_LEVELS : "recorded_by"
+
+    INSTRUMENTS {
+        int instrument_id PK
+        string instrument_name UK
+    }
+    LEVELS {
+        int level_id PK
+        int instrument_id FK
+        int level_number
+        string level_name
+        text description
+    }
+    STUDENT_INSTRUMENTS {
+        int student_user_id PK, FK
+        int instrument_id PK, FK
+    }
+    TEACHER_INSTRUMENTS {
+        int teacher_user_id PK, FK
+        int instrument_id PK, FK
+    }
+    STUDENT_LEVELS {
+        int student_level_id PK
+        int student_user_id FK
+        int level_id FK
+        date date_completed
+        int recorded_by_user_id FK
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    %% ==================================================
+    %% CORE SCHEDULING ENGINE
+    %% ==================================================
+    LESSON_SERIES ||--o{ LESSONS : "generates"
+    LESSONS ||--o{ ENROLLMENTS : "has"
+    ENROLLMENTS ||--|| ATTENDANCE_RECORDS : "tracked by"
+    USERS ||--o{ LESSON_SERIES : "teaches/attends"
+    USERS ||--o{ ATTENDANCE_RECORDS : "recorded_by"
+    INSTRUMENTS ||--o{ LESSONS : "subject"
+
+    LESSON_SERIES {
+        int lesson_series_id PK
+        int teacher_user_id FK
+        int student_user_id FK
+        int instrument_id FK
+        time start_time_of_day
+        int duration_minutes
+        int day_of_week
+        boolean is_group_lesson
+    }
+    LESSONS {
+        int lesson_id PK
+        int lesson_series_id FK
+        int teacher_user_id FK
+        int instrument_id FK
+        timestamp start_time
+        timestamp end_time
+        int duration_minutes
+        string venue
+        int capacity
+        boolean is_catch_up
+        string lesson_status
+        uuid recurrence_group_id
+    }
+    ENROLLMENTS {
+        int enrollment_id PK
+        int lesson_id FK
+        int student_user_id FK
+        boolean is_primary_student
+        text parent_note
+    }
+    ATTENDANCE_RECORDS {
+        int attendance_id PK
+        int enrollment_id FK, UK
+        string attendance_status
+        text notes
+        timestamp recorded_at
+        int recorded_by_user_id FK
+    }
+
+    %% ==================================================
+    %% BUSINESS RELATIONSHIPS
+    %% ==================================================
+    USERS ||--o{ MANAGER_STUDENT_RELATIONSHIPS : "manager"
+    USERS ||--o{ MANAGER_STUDENT_RELATIONSHIPS : "student"
+    USERS ||--o{ TEACHER_STUDENT_ROSTERS : "teacher"
+    USERS ||--o{ TEACHER_STUDENT_ROSTERS : "student"
+
+    MANAGER_STUDENT_RELATIONSHIPS {
+        int manager_student_relationship_id PK
+        int manager_user_id FK
+        int student_user_id FK
+        string relationship_type
+    }
+    TEACHER_STUDENT_ROSTERS {
+        int roster_id PK
+        int teacher_user_id FK
+        int student_user_id FK
+    }
+
+    %% ==================================================
+    %% EVENTS & COMMUNICATIONS
+    %% ==================================================
+    EVENTS ||--o{ EVENT_BOOKINGS : "holds"
+    EVENTS ||--o{ EVENT_ELIGIBILITY_LEVELS : "restricts"
+    LEVELS ||--o{ EVENT_ELIGIBILITY_LEVELS : "qualifies"
+    USERS ||--o{ EVENT_BOOKINGS : "booked_by/for"
+    
+    ANNOUNCEMENTS ||--o{ USER_ANNOUNCEMENT_READ_STATUS : "logs"
+    USERS ||--o{ USER_ANNOUNCEMENT_READ_STATUS : "reads"
+    USERS ||--o{ MESSAGES : "sender/recipient"
+
+    EVENTS {
+        int event_id PK
+        string event_name
+        text description
+        timestamp start_time
+        timestamp end_time
+        string venue_name
+        int max_capacity
+        string event_type
+        boolean is_active
+    }
+    EVENT_BOOKINGS {
+        int event_booking_id PK
+        int event_id FK
+        int student_user_id FK
+        int booked_by_user_id FK
+        string booking_status
+    }
+    EVENT_ELIGIBILITY_LEVELS {
+        int event_eligibility_id PK
+        int event_id FK
+        int level_id FK
+    }
+    ANNOUNCEMENTS {
+        int announcement_id PK
+        int sender_user_id FK
+        string subject
+        text content
+        int target_role_id FK
+        boolean is_global
+    }
+    MESSAGES {
+        int message_id PK
+        int sender_user_id FK
+        int recipient_user_id FK
+        string subject
+        text message_content
+        boolean is_read
+        int parent_message_id FK
+    }
+    
