@@ -32,7 +32,7 @@ router.get('/', async (req, res) => {
 
         res.status(200).json({ message: 'Authentication successful.', user });
     } catch (err: any) {
-        return res.status(401).json(`{ message: 'Invalid or expired authentication token' }, ${err}`);
+        return res.status(401).json({ message: 'Invalid or expired authentication token.' });
     }
 });
 

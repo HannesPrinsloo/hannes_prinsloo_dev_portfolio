@@ -91,30 +91,31 @@ app.get('/', (req, res) => {
     res.send('new-guitar-app API is running');
 });
 
-app.get('/test-db-connection', async (req, res) => {
-    try {
-        const client = await pool.connect(); // Attempt to get a client from the pool
-        const result = await client.query('SELECT NOW() as current_time'); // Execute a simple query
-        client.release(); // Release the client back to the pool
+// ~~~ Development-only debug routes ~~~
+// These are stripped in production to avoid leaking internal information
+if (process.env.NODE_ENV !== 'production') {
+    app.get('/test-db-connection', async (req, res) => {
+        try {
+            const client = await pool.connect();
+            const result = await client.query('SELECT NOW() as current_time');
+            client.release();
+            res.status(200).json({
+                message: 'Database connection successful.',
+                currentTime: result.rows[0].current_time,
+            });
+        } catch (err: any) {
+            console.error('Database connection error:', err.message);
+            res.status(500).json({
+                message: 'Database connection failed.',
+                hint: 'Check your .env file DB credentials, PostgreSQL server status, and database name.'
+            });
+        }
+    });
 
-        res.status(200).json({
-            message: 'Database connection successful.',
-            currentTime: result.rows[0].current_time,
-            database: process.env.DB_DATABASE
-        });
-    } catch (err: any) {
-        console.error('Database connection error:', err.message);
-        res.status(500).json({
-            message: 'Database connection failed.',
-            error: err.message,
-            hint: 'Check your .env file DB credentials, PostgreSQL server status, and database name.'
-        });
-    }
-});
-
-app.get('/express-test', async (req, res) => {
-    res.send('Express test passed');
-});
+    app.get('/express-test', async (req, res) => {
+        res.send('Express test passed');
+    });
+}
 
 // <~~~ END OF NEW ROUTE
 

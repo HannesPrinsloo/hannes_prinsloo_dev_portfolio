@@ -2,7 +2,11 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 
-const JWT_SECRET = process.env.JWT_SECRET || 'secret'; // Fallback for safety, but should be env
+const JWT_SECRET = process.env.JWT_SECRET;
+if (!JWT_SECRET) {
+    throw new Error('JWT_SECRET env variable not set. Server cannot start safely.');
+}
+
 
 export interface AuthRequest extends Request {
     user?: {

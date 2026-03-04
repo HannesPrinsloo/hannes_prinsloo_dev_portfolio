@@ -1,7 +1,12 @@
 import express from 'express';
 import * as lessonController from '../controllers/lessonController';
+import { authenticateToken } from '../middleware/authMiddleware';
 
 const router = express.Router();
+
+// Require a valid JWT for all lesson routes
+router.use(authenticateToken);
+
 
 // POST /api/lessons - Create a new lesson
 router.post('/', lessonController.createLesson);

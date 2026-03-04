@@ -2,8 +2,12 @@ import { Router } from 'express';
 import { validateRequest } from '../middleware/validateRequest';
 import { createUserSchema, updateUserSchema } from '../validation/userValidation';
 import * as userController from '../controllers/userController';
+import { authenticateToken } from '../middleware/authMiddleware';
 
 const router = Router();
+
+// Require a valid JWT for all user routes
+router.use(authenticateToken);
 
 // GET all users
 router.get('/', userController.getUsers);

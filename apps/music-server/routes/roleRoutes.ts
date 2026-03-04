@@ -1,7 +1,11 @@
 import { Router } from 'express';
 import pool from '../db';
+import { authenticateToken } from '../middleware/authMiddleware';
 
 const router = Router();
+
+// Require a valid JWT for all role routes
+router.use(authenticateToken);
 
 //GET all roles
 router.get('/', async (req, res) => {
