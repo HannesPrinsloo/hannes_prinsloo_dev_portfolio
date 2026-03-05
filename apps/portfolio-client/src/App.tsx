@@ -873,7 +873,7 @@ function App() {
                             <span className="text-sm font-mono opacity-70 mb-4 block bg-surface-muted inline-block px-2">January 2013 - February 2021</span>
                             <div className="max-w-2xl text-sm">
                                 <p className="leading-relaxed mb-4">
-                                    For a full list of the jobs that I had over the years as well as references for these jobs, feel free to <a href="#footer_contact" className="text-ink font-bold hover:underline">reach out</a> to me for a comprehensive Curriculim Vitae.<br />
+                                    For a more comprehensive list of the jobs that I had over the years as well as references for all of my jobs, feel free to <a href="#footer_contact" className="text-ink font-bold hover:underline">reach out</a> to me for a comprehensive Curriculim Vitae.<br />
                                     <br />Some notable jobs I had include:
                                 </p>
                                 <ul className="space-y-3 pl-2">
@@ -887,7 +887,7 @@ function App() {
                                     </li>
                                     <li className="flex items-start gap-3">
                                         <span className="text-ink font-bold translate-y-0.5">»</span>
-                                        <span className="leading-relaxed">Brief stint as a High School English teacher at my old high school, <br />Hoërskool Wonderfontein. Interesting story there.</span>
+                                        <span className="leading-relaxed">Brief stint as a substitute High School English teacher at my old high school, <br />Hoërskool Wonderfontein. Interesting story there.</span>
                                     </li>
                                     <li className="flex items-start gap-3">
                                         <span className="text-ink font-bold translate-y-0.5">»</span>
