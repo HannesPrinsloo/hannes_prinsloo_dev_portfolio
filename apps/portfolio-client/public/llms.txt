@@ -1,0 +1,26 @@
+# Hannes Prinsloo - Full-Stack Developer
+
+> Junior full-stack developer with a background in operations and music. Building with React, TypeScript, Node.js, and PostgreSQL.
+
+## About
+I am a self-taught Full Stack Developer and freelancer, currently studying for a Computer Science degree. I am also a professional gigging musician and music teacher building a career in tech.
+
+## Expertise
+- **Full Stack Architecture**: Building end-to-end applications with a focus on the modern React ecosystem. Capable of developing both interactive user interfaces and the backend services that support them. Technologies: React, React Query, Zustand, JavaScript/TypeScript, Tailwind, Node.js, PostgreSQL, Express.
+- **Computer Science & Foundations**: Combining a practical grasp of modern web technologies with a solid foundation in core computing principles and database management. Technologies: JavaScript/TypeScript, C/C++, SQL (PostgreSQL), Data Structures and Algorithms.
+- **Freelance & CMS**: Delivering functional, user-friendly websites for freelance clients while working closely with designers. Experienced in configuring CMS platforms and enhancing core functionality through targeted custom JS and CSS. Technologies: WordPress, Elementor Pro, Custom CSS/JS, Figma/Adobe XD.
+
+## Education
+- **University of South Africa (UNISA)**: Bachelor of Science in Computing (Current)
+- **Harvard CS50**: Introduction to Computer Science (Weeks 0-5)
+- **freeCodeCamp**: JavaScript Algorithms & Data Structures, Responsive Web Design, Front End Development Libraries
+- **University of Michigan (Coursera)**: Interactivity with JavaScript, Introduction to CSS3, Introduction to HTML5
+
+## Core Projects
+- **Music School Manager (v1.0-beta)**: A CRM for South Africa's largest music school (2000+ students, 100 teachers, admin staff and parents of students). Stack: TypeScript, React, React Query, Zustand, Node/Express, Tailwind, JWT Auth, PostgreSQL.
+- **Freelance Work**: Custom tailored WordPress sites for various clients including an online store and national butchery chain.
+- **FreeCodeCamp Projects**: A collection of functional projects built during self-study. I refactored and restyled them to fit into a modern React/TypeScript/Tailwind stack.
+
+## Contact & Links
+- **Website**: https://hannesprinsloo.dev
+- **GitHub**: https://github.com/HannesPrinsloo
