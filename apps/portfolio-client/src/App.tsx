@@ -507,11 +507,20 @@ function App() {
                                 </ul>
                             </div>
                         </div>
-
+                        {/* Meta's Advanced React */}
+                        <div>
+                            <h4 className="font-medium border-b border-ink mb-3 pb-1">Meta's Advanced React</h4>
+                            <p className="text-sm opacity-80 mb-2 italic">Currently enrolled, 2/3rds complete.</p>
+                        </div>
+                        {/* IBM Highlight */}
+                        <div>
+                            <h4 className="font-medium border-b border-ink mb-3 pb-1">IBM's Developing Back-End Apps with Node.js and Express</h4>
+                            <p className="text-sm opacity-80 mb-2 italic">Currently enrolled, 1/4 complete.</p>
+                        </div>
                         {/* CS50 Highlight */}
                         <div>
                             <h4 className="font-medium border-b border-ink mb-3 pb-1">Harvard CS50: Introduction to Computer Science</h4>
-                            <p className="text-sm opacity-80 mb-2 italic">Completed Weeks 0 to 5.</p>
+                            <p className="text-sm opacity-80 mb-2 italic">Currently enrolled - Completed Weeks 0 to 5.</p>
                             <p className="text-sm">
                                 <span className="font-bold opacity-70 uppercase tracking-widest text-[10px] mr-2">Covered:</span>
                                 Scratch, C, Arrays, Algorithms, Memory, Data Structures.
@@ -550,7 +559,7 @@ function App() {
                                         <span className="border border-ink px-2 py-1 text-xs font-bold bg-acid text-black">v1.0-beta</span>
                                     </div>
                                     <p className="text-sm mb-6 border-l-2 border-ink pl-4">
-                                        A CRM for South Africa's largest music school (2000+ students, 100 teachers, admin staff and parents of students), whose minimum viable product is in beta.
+                                        A real project of love.<br></br>A CRM for South Africa's largest music school (±2000 students, ±2000 parents, 100 teachers, admin staff), whose minimum viable product is ready for beta.
                                         <br /><br />Please <a href="#footer_contact" className="hover:bg-acid font-black hover:text-black transition-colors decoration-2 underline-offset-2">contact me</a> to schedule a demo or view source code.
                                     </p>
 
@@ -802,8 +811,7 @@ function App() {
                             <h3 className="text-xl font-bold mb-4 border-b-2 border-ink pb-2">Guitar Teacher at Swallow 15</h3>
                             <span className="text-sm font-mono opacity-70 mb-4 block bg-surface-muted inline-block px-2">February 2024 - Present</span>
                             <p className="max-w-2xl leading-relaxed text-sm">
-                                I have taught musical improvisation and musicality lessons to adults on and off for my whole music career, but this was nearly always to already capable musicians. In 2024 I took an official job as a music teacher with Swallow 15, the largest music school in South Africa. I teach guitar to kids from various Primary Schools in Centurion. The amount of students vary, but I usually have between 30 and 40 students on my roster any given month.
-                                <br />I mainly teach guitar and the accompanying music theory, but I also teach my more advanced students Jazz style improvisation with different styles of music and musicality.
+                                I have taught musical improvisation and musicality lessons to adults on and off for my whole music career, but this was nearly always to already capable musicians. In 2024 I took an official job as a music teacher with Swallow 15, the largest music school in South Africa. I teach guitar to kids from various Primary Schools in Centurion. The amount of students vary, but I usually have between 30 and 37 students on my roster any given month.
                             </p>
                         </div>
                         {/* Timeline Item 4 */}
